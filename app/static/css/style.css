@@ -1,0 +1,662 @@
+body { padding-top: 70px; padding-bottom: 100px; }
+
+
+
+.printbody{
+    margin: 20px 50px 20px 50px;
+}
+
+.popover{
+    max-width: 500px;
+}
+
+h1{
+    page-break-before:always;
+}
+
+h2{
+    margin-top:50px;
+    border-bottom:2px solid #a0a0a0;
+    padding-bottom:5px;
+}
+
+h3{
+    /*border-bottom: 1px solid #e0e0e0;*/
+    padding-bottom: 5px;
+}
+
+p{
+    padding-left:10px;
+}
+
+textarea{
+    font-family: monospace;
+}
+
+/*
+pre[class*="language-"]{
+    max-height: none;
+}
+*/
+
+pre[class="coding"]{
+    background-color:white;
+    padding: 0px 0px 0px 0px;
+    border: none;
+    margin: 3px 0px 3px 0px;
+    line-height: 1.1;
+}
+
+.examplecode{
+    margin-left:20px;
+    font-family: "courier new", monospace;
+    font-size:1.2em;
+
+}
+
+table.table-exercise td{
+    font-family: monospace;
+    font-size:.9em;
+}
+
+.pythonreference {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #eee;
+    border-image: none;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px 1px 1px 5px;
+    margin: 20px;
+    padding: 10px 10px 10px 65px;
+    border-left-color: #337ab7;
+    background-image: url("/static/images/python-icon-64.png");
+    background-repeat: no-repeat;
+    background-position: top left;
+}
+
+.pythonreference .rtitle{
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/*
+pre{
+    font-family: monospace;
+    background-color: #f0f0f0;
+    font-size:8pt;
+}
+*/
+
+/*
+.jumbotron{
+    background-color: white;
+    background-image: url("/static/images/banner-image-us.jpg");
+    background-size: 100%;
+    min-height: 500px;
+    background-repeat: no-repeat;
+    color:white;
+}
+
+.jumbotron p{
+    color:white;
+    text-align: right;
+}
+
+.jumbotron .labcode{
+    font-size:72px;
+    color:white;
+    text-align: right;
+}
+
+.jumbotron .title{
+    font-size:32px;
+    color:white;
+    text-align:right;
+}
+
+.jumbotron h2{
+    color:white;
+    text-align: right;
+}
+
+.jumbotronsubtitle{
+}
+*/
+
+.fileident{
+    margin:10px 20px 0px 20px;
+    padding: 5px 0px 5px 70px;
+    line-height: 1em;
+    font-size: 1.8em;
+    border:1px solid white;
+    background-color: #ffffff;
+    border-radius: 4px 4px 4px 4px;
+    background-image: url('/static/images/File-Icon-512.png');
+    background-repeat: no-repeat;
+    background-size: 58px 58px;
+    background-position: 2px 4px;
+    border-left:4px solid red;
+    margin-top:20px;
+    margin-bottom:20px;
+}
+
+.fileident .toptext{
+    font-size:.6em;
+}
+
+.cisco-white{
+    background-image: url('/static/images/CiscoWhiteLogo.png');
+    background-size: 32px 32px;
+    background-repeat: no-repeat;
+
+}
+
+.copyseqnumber{
+    float:right;
+    color:#A0A0A0;
+    margin-right:50px;
+    margin-top:6px;
+    font-size:.9em;
+}
+
+
+.forkinroad{
+    background-image: url('/static/images/fork-in-road.jpg');
+    background-size: 300px;
+    background-repeat: no-repeat;
+    background-position: right top;
+    float:right;
+    min-height: 400px;
+    padding-right:300px;
+}
+
+/* navbar */
+.navbar-default {
+    background-color: #337ab7;
+    border-color: #337ab7;
+    font-size:1.2em;
+}
+/* title */
+.navbar-default .navbar-brand {
+    color: white;
+}
+
+.navbar-default .navbar-brand:hover,
+.navbar-default .navbar-brand:focus {
+    color: #5E5E5E;
+}
+/* link */
+.navbar-default .navbar-nav > li > a {
+    color: white;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+    color: #333;
+}
+.navbar-default .navbar-nav > .active > a, 
+.navbar-default .navbar-nav > .active > a:hover, 
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #555;
+    background-color: #E7E7E7;
+}
+.navbar-default .navbar-nav > .open > a, 
+.navbar-default .navbar-nav > .open > a:hover, 
+.navbar-default .navbar-nav > .open > a:focus {
+    color: #555;
+    background-color: #D5D5D5;
+}
+/* caret */
+.navbar-default .navbar-nav > .dropdown > a .caret {
+    border-top-color: #777;
+    border-bottom-color: #777;
+}
+.navbar-default .navbar-nav > .dropdown > a:hover .caret,
+.navbar-default .navbar-nav > .dropdown > a:focus .caret {
+    border-top-color: #333;
+    border-bottom-color: #333;
+}
+.navbar-default .navbar-nav > .open > a .caret, 
+.navbar-default .navbar-nav > .open > a:hover .caret, 
+.navbar-default .navbar-nav > .open > a:focus .caret {
+    border-top-color: #555;
+    border-bottom-color: #555;
+}
+/* mobile version */
+.navbar-default .navbar-toggle {
+    border-color: #DDD;
+}
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background-color: #DDD;
+}
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #CCC;
+}
+@media (max-width: 767px) {
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+        color: white;
+    }
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover,
+    .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+        color: white;
+    }
+}
+.navbar-collapsed .dropdown-menu > li{
+    color:black;
+}
+
+
+.navbar-header{
+    border-right:1px solid white;
+}
+
+
+/*
+ multi column bootstrap Menu    
+*/
+    
+    .dropdown-menu {
+    min-width: 200px;
+    }
+    .dropdown-menu.columns-2 {
+    min-width: 800px;
+    }
+    .dropdown-menu.columns-3 {
+    min-width: 1000px;
+    }
+    .dropdown-menu li a {
+    padding: 5px 15px;
+    font-weight: 300;
+    }
+    .multi-column-dropdown {
+    list-style: none;
+    }
+    .multi-column-dropdown li a {
+    display: block;
+    clear: both;
+    line-height: 1.428571429;
+    color: #333;
+    white-space: normal;
+    }
+    .multi-column-dropdown li a:hover {
+    text-decoration: none;
+    color: #262626;
+    background-color: #f5f5f5;
+    }
+     
+    @media (max-width: 767px) {
+    .dropdown-menu.multi-column {
+    min-width: 240px !important;
+    overflow-x: hidden;
+    }
+    }
+
+
+
+
+
+.table kbd{
+    background-color:red;
+    font-size: 1.3em;
+}
+
+
+
+#bigpodtitle{
+    color:black;
+    font-size:4.0em;
+    padding-left:5px;
+    /*padding:0px 20px 0px 20px;*/
+    border-left:2px solid white;
+}
+
+div#title {
+        width: 100%;
+        height:auto;
+        padding:5px 0px 5px 0px;
+        color: #FFFFFF;
+        background-color: #5493e7;
+}
+
+div#title {
+        padding-left: 10px;
+        font-size: 1.5em;
+}
+
+.podtitle{
+    font-size:1em;
+}
+
+
+.podlistrow{
+    margin-bottom:20px;
+}
+
+.margin20{
+    margin:20px;
+}
+
+.center-image{
+    display: block;
+    margin-left: auto;
+    margin-right: auto; 
+}
+
+.left-image{
+    float:left;
+    margin:10px; 
+}
+
+.center-table
+{
+  margin: 0 auto !important;
+  float: none !important;
+}
+
+.width50{
+    width:50%;
+}
+
+.width60{
+    width:60%;
+}
+
+.width70{
+    width:70%;
+}
+
+.width80{
+    width:80%;
+}
+
+/*
+Emulated Linux Window   
+*/
+
+.linuxterm {
+    background: url("/static/images/xterm2.png"), url("/static/images/xterm1.png");
+    background-repeat: no-repeat, repeat-x;
+    background-position: left top, right top;
+    background-size:115px 25px;
+    padding:25px 0px 0px 0px;
+    border:3px solid #e0e0e0;
+    margin:5px 25px 5px 25px;
+}
+
+.linuxterm pre{
+    background-color:white;
+    font-size: .8em;
+    color:#404040;
+    border-radius: 0px;
+    border:0px;
+    margin:none;
+}
+
+.linuxterm .overflow{
+    overflow: scroll;
+}
+
+
+
+/*
+    Server Selection
+*/
+
+.serverselect {
+    margin:5px 20px 5px 10px;
+    padding: 0px 0px 0px 40px;
+    line-height: 2.5em;
+    font-size: 1.2em;
+    border:1px solid #f0f0f0;
+    background-color: #f0f0f0;
+    border-radius: 4px 4px 4px 4px;
+    background-image: url('/static/images/apicicon.png');
+    background-repeat: no-repeat;
+    background-size: 36px 36px;
+    background-position: 2px 4px;
+    border-left:5px solid #337ab7;
+    display:block;
+}
+
+.serverselect .apicnav {
+    font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+    display: inline-block;
+    margin-left:10px;
+}
+.serverselect .apicnavleft {
+    display:inline-block;
+}
+
+@media screen and (max-width: 992px) {
+    .apicnav {
+        font-size:0.8em;
+    }
+
+    .apicnavleft {
+        font-size:.8em;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .apicnav {
+        font-size:0.7em;
+    }
+
+    .apicnavleft {
+        display: none !important;
+    }
+}
+
+@media screen and (max-width: 568px) {
+    .apicnav {
+        font-size:0.6em;
+    }
+
+    .apicnavleft {
+        display: none !important;
+    }
+
+}
+
+/*
+    ZERO Clipboard functionality    
+*/
+
+.zero-clipboard {
+    position: relative;
+    display: none;
+}
+.btn-clipboard {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 10;
+    display: block;
+    padding: 5px 8px;
+    font-size: 12px;
+    color: #777;
+    cursor: pointer;
+    background-color: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 0px 4px 0px 4px;
+}
+.btn-clipboard-hover {
+    color: #378af7;
+}
+
+@media (min-width: 768px) {
+    .zero-clipboard {
+        display: block;
+    }
+    .zero-clipboard .btn-clipboard {
+       /*top: 14px;*/
+        border-top-right-radius: 4px;
+    }
+}
+
+.ciscohl {
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+    border-radius: 4px;
+    padding: 9px 14px;
+}
+
+.ciscohl pre {
+    background-color: transparent;
+    border: 0 none;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding: 0;
+    white-space: nowrap;
+    word-break: normal;
+}
+.ciscohl pre code {
+    /*color: #333;*/
+    font-size: inherit;
+}
+.ciscohl pre code:first-child {
+    display: inline-block;
+    padding-right: 45px;
+}
+
+.cledit{
+    background-color: #d0d0d0;
+    color:black;
+    line-height: 2.2em;
+    border-radius: 4px 4px 0px 0px;
+    border-color: #d0d0d0;
+    padding-left:55px;
+    background-image: url('/static/images/prompt6.png');
+    background-repeat: no-repeat;
+    background-size: 32px 32px;
+    background-position: 10px 15px; 
+}
+
+.clinput{
+    background-color: #f0f0f0;
+    color:black;
+    line-height: 2.2em;
+    margin-bottom: 0px;
+    border-radius: 4px 4px 4px 4px;
+    border-color: #d0d0d0;
+    padding-left:55px;
+    background-image: url('/static/images/prompt6.png');
+    background-repeat: no-repeat;
+    background-size: 32px 32px;
+    background-position: 10px 15px; 
+}
+
+.filechange{
+    background-color: #f0f0f0;
+    border-color: #d0d0d0;
+    border-radius: 0px 0px 4px 4px;
+}
+
+.cledit pre{
+    color:black;
+}
+
+.clinput pre{
+    color:black;
+}
+
+.commandblock{
+    margin:14px 20px 14px 20px;
+    display: block;
+}
+
+/*
+    GUI image styles    
+*/
+
+.gui-image-center{
+    margin:10px 20px 10px 20px;
+    padding:5px 5px 5px 10px;
+    border-left:10px solid #d0d0d0;
+    border-top:1px solid #e0e0e0;
+    border-right:1px solid #e0e0e0;
+    border-bottom:1px solid #e0e0e0;
+}
+
+
+
+/*
+    Copy/Paste Command sections
+*/
+
+
+
+
+
+
+/*
+    Callout sections    
+*/
+
+
+.bs-callout {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: #eee;
+    border-image: none;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px 1px 1px 5px;
+    margin: 20px 20px 0px 20px;
+    padding: 5px 15px 15px 15px;
+}
+
+.bs-callout-info {
+    border-left-color: #5bc0de;
+}
+
+.bs-callout-warn {
+    border-left-color: red;
+}
+
+.clip_button {
+    width:50px;
+    text-align: center;
+    border: 1px solid black;
+    background-color: #ccc;
+    margin: 10px;
+    padding: 10px;
+}
+
+.clip_button.zeroclipboard-is-hover { background-color: #eee; }
+.clip_button.zeroclipboard-is-active { background-color: #aaa; }
+
+
+
+.tscommand{
+    margin:25px;
+    font-size: 1.2em;
+    font-family: monospace;
+}
+
+
+
+.nextsection{
+    width:100%;
+    margin-top:40px;
+    padding-top:5px;
+    border-top:2px solid #696969;
+    font-size:1.4em;
+}
+
+.finished{
+    border-top:5px solid #5ca2ff;
+    padding-top:10px;
+    margin-top:20px;
+    color:#5ca2ff;
+    font-size:4.0em;
+    font-style: italic;
+}
+.error {
+    color: #d9534f;
+}

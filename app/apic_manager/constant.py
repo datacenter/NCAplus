@@ -1,0 +1,3 @@
+QUERY_TARGET_CHILDREN = 'children'
+QUERY_TARGET_SELF = 'self'
+QUERY_TARGET_SUBTREE = 'subtree'

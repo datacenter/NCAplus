@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+{{ super() }}
+<title>Create VLAN</title>
+{% endblock head %}
+{% block content %}
+    {% set labelclass = "col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label" %}
+    {% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+    {% set selectclass = "col-lg-3 col-md-3 col-sm-2 col-xs-6" %}
+    {% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+    {% set txtinputclasssm = "col-lg-3 col-md-3 col-sm-6 col-xs-12" %}
+    {% set ipinputclass = "col-lg-3 col-md-3 col-sm-3 col-xs-12" %}
+    {% set ipinputclasssm = "col-lg-2 col-md-2 col-sm-3 col-xs-6" %}
+    {% set apiclabels = "col-lg-1 col-md-1 col-sm-1 col-xs-6 control-label" %}
+    {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
+<form action="javascript:void(null);"
+              onsubmit="submit_form(this)"
+              id="vlan_form"
+              class="form-horizontal">
+    <input type="hidden" id="operation" name="operation" value="">
+    <input type="hidden" id="sub_operation" name="sub_operation" value="">
+
+    </form>
+
+
+{% endblock content %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+	$().ready(function() {
+		// validate signup form on keyup and submit
+		$("#apic_form").validate({
+		    errorClass: "error",
+            errorElement: "label",
+			rules: {
+				vlan_number: {
+					required: true,
+					number: true
+				},
+				sel_leaf_create_vlan: {
+					required: true
+				},
+				sel_port_create_vlan: {
+					required: true
+				}
+			},
+			highlight: function(element, errorClass) {
+                $(element).removeClass(errorClass);
+            }
+		});
+	});
+
+function submit_vlan_form() {
+    $('#operation').val('test_submit')
+    if($('#vlan_form').valid()){
+        Sijax.request('vlan_form_handler', [Sijax.getFormValues('#vlan_form')]);
+     }
+}
+
+</script>
+{% endblock scripts %}

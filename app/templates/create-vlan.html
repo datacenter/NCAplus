@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+
+{% block head %}
+{{ super() }}
+<title>Create VLAN</title>
+{% endblock head %}
+{% block content %}
+    {% set labelclass = "col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label" %}
+    {% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+    {% set selectclass = "col-lg-3 col-md-3 col-sm-2 col-xs-6" %}
+    {% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+    {% set txtinputclasssm = "col-lg-3 col-md-3 col-sm-6 col-xs-12" %}
+    {% set ipinputclass = "col-lg-3 col-md-3 col-sm-3 col-xs-12" %}
+    {% set ipinputclasssm = "col-lg-2 col-md-2 col-sm-3 col-xs-6" %}
+    {% set apiclabels = "col-lg-1 col-md-1 col-sm-1 col-xs-6 control-label" %}
+    {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
+<form action="javascript:void(null);"
+              onsubmit="submit_form(this)"
+              id="vlan_form"
+              class="form-horizontal">
+    <input type="hidden" id="operation" name="operation" value="">
+    <input type="hidden" id="sub_operation" name="sub_operation" value="">
+    <div id="div_create_vlan" name="div_create_vlan" class="panel panel-primary">
+        <div  class="panel-heading">VLAN information
+            <div id="create_vlan_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+                 <div class="form-group">
+                        <label class="{{ labelclass }}" > VLAN number
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                        data-toggle="popover"
+                                        data-trigger="hover"
+                                        title="VLAN number"
+                                        data-content="Specify the number of the new VLAN">
+                            </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="vlan_number" value="" name="vlan_number" placeholder="Number">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}" > Leaf switch
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                        data-toggle="popover"
+                                        data-trigger="hover"
+                                        title="Leaf"
+                                        data-content="Select the leaf to assign">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_leaf_create_vlan"  name="sel_create_vlan" class="form-control sel-tenant">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}" > Switch port
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                        data-toggle="popover"
+                                        data-trigger="hover"
+                                        title="Switch port"
+                                        data-content="Select the port to assign">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_port_create_vlan"  name="sel_port_create_vlan" class="form-control sel-tenant">
+                            </select>
+                        </div>
+                    </div>
+                <hr>
+            <button id="btn_add" type="button"  class="btn btn-primary" onclick="submit_vlan_form()">Create</button>
+            </div>
+        </div>
+    </form>
+
+
+{% endblock content %}
+
+{% block scripts %}
+{{ super() }}
+<script type="text/javascript">
+
+	$().ready(function() {
+		// validate signup form on keyup and submit
+		$("#apic_form").validate({
+		    errorClass: "error",
+            errorElement: "label",
+			rules: {
+				vlan_number: {
+					required: true,
+					number: true
+				},
+				sel_leaf_create_vlan: {
+					required: true
+				},
+				sel_port_create_vlan: {
+					required: true
+				}
+			},
+			highlight: function(element, errorClass) {
+                $(element).removeClass(errorClass);
+            }
+		});
+	});
+
+function submit_vlan_form() {
+    $('#operation').val('test_submit')
+    if($('#vlan_form').valid()){
+        Sijax.request('vlan_form_handler', [Sijax.getFormValues('#vlan_form')]);
+     }
+}
+
+</script>
+{% endblock scripts %}
