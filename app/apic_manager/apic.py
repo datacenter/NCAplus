@@ -36,6 +36,7 @@ class Apic:
     def create_tenant(self, tenant_name):
         fv_tenant_mo = Tenant(self.uniMo, tenant_name)
         self.commit(fv_tenant_mo)
+        return fv_tenant_mo
 
     # Deletes a tenant and commit changes to controller
     def delete_tenant(self, tenant_dn):
@@ -183,6 +184,7 @@ class Apic:
             rsbd_mo = filter(lambda x: type(x).__name__ == 'RsBd', self.query_child_objects(str(epg_mo.dn)))[0]
             rsbd_mo.tnFvBDName = self.moDir.lookupByDn(bd_dn).name
             self.commit(rsbd_mo)
+        return epg_mo
 
     def delete_epg(self, epg_dn):
         epg_mo = self.moDir.lookupByDn(epg_dn)
@@ -192,6 +194,7 @@ class Apic:
     def create_ap(self, tenant_dn, ap_name):
         ap_mo = Ap(tenant_dn, ap_name)
         self.commit(ap_mo)
+        return ap_mo
 
     def delete_ap(self, ap_dn):
         ap_mo = self.moDir.lookupByDn(ap_dn)
@@ -226,3 +229,47 @@ class Apic:
         for consumer in epg_consumers:
             consumer.delete()
             self.commit(consumer)
+
+    def create_vlan_abstraction(self, vlan_o):
+        tn_list = filter(lambda x: x.name == vlan_o.tenant_name, self.get_all_tenants())
+        if len(tn_list) == 0:
+            vlan_tenant = self.create_tenant(vlan_o.tenant_name)
+        else:
+            vlan_tenant = tn_list[0]
+
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == vlan_o.ap_name,
+                         self.query_child_objects(str(vlan_tenant.dn)))
+        if len(ap_list) == 0:
+            vlan_ap = self.create_ap(str(vlan_tenant.dn), vlan_o.ap_name)
+        else:
+            vlan_ap = ap_list[0]
+
+        epg_list = filter(lambda x: type(x).__name__ == 'AEPg' and x.name == vlan_o.epg_name,
+                          self.query_child_objects(str(vlan_ap.dn)))
+        if len(epg_list) == 0:
+            vlan_epg = self.create_epg(str(vlan_ap.dn), None, vlan_o.epg_name)
+        else:
+            vlan_epg = epg_list[0]
+
+    def create_network(self, network_o):
+        class_query = ClassQuery('fvTenant')
+        class_query.propFilter = 'eq(fvTenant.name, "' + network_o.group.name + '")'
+        tenant_list = self.moDir.query(class_query)
+        if len(tenant_list) > 0:
+            tenant_mo = tenant_list[0]
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
+                         self.query_child_objects(str(tenant_mo.dn)))
+        if len(ap_list) == 0:
+            network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
+        else:
+            network_ap = ap_list[0]
+        self.create_epg(str(network_ap.dn), None, network_o.name)
+
+
+
+
+    def create_group(self, group_o):
+        pass
+
+
+

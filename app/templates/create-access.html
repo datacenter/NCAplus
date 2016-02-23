@@ -16,18 +16,18 @@
     {% set apiclabels = "col-lg-1 col-md-1 col-sm-1 col-xs-6 control-label" %}
     {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
 <form action="javascript:void(null);"
-              onsubmit="submit_form(this)"
-              id="vlan_form"
+              onsubmit="submit_access_form()"
+              id="access_form"
               class="form-horizontal">
     <input type="hidden" id="operation" name="operation" value="">
     <input type="hidden" id="sub_operation" name="sub_operation" value="">
-    <div id="div_create_vlan" name="div_create_vlan" class="panel panel-primary">
+    <div id="div_create_access" name="div_create_access" class="panel panel-primary">
         <div  class="panel-heading">VLAN information
-            <div id="create_vlan_response" style="float:right;font-size:16px"></div>
+            <div id="create_access_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
                  <div class="form-group">
-                        <label class="{{ labelclass }}" > VLAN number
+                        <label class="{{ labelclass }}" > Access switch
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                         data-toggle="popover"
                                         data-trigger="hover"
@@ -36,7 +36,7 @@
                             </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
-                            <input type="text" class="form-control" maxlength="50" id="vlan_number" value="" name="vlan_number" placeholder="Number">
+                            <input type="text" class="form-control" maxlength="50" id="access_number" value="" name="access_number" placeholder="Number">
                         </div>
                     </div>
                     <div class="form-group">
@@ -49,7 +49,7 @@
                             </span>
                         </label>
                         <div class="{{ selectclass }}">
-                            <select id="sel_leaf_create_vlan"  name="sel_create_vlan" class="form-control sel-tenant">
+                            <select id="sel_leaf_create_access"  name="sel_create_access" class="form-control sel-tenant">
                             </select>
                         </div>
                     </div>
@@ -63,12 +63,12 @@
                             </span>
                         </label>
                         <div class="{{ selectclass }}">
-                            <select id="sel_port_create_vlan"  name="sel_port_create_vlan" class="form-control sel-tenant">
+                            <select id="sel_port_create_access"  name="sel_port_create_access" class="form-control sel-tenant">
                             </select>
                         </div>
                     </div>
                 <hr>
-            <button id="btn_add" type="button"  class="btn btn-primary" onclick="submit_vlan_form()">Create</button>
+            <button id="btn_add" type="button"  class="btn btn-primary" onclick="create_access()">Create</button>
             </div>
         </div>
     </form>
@@ -82,18 +82,11 @@
 
 	$().ready(function() {
 		// validate signup form on keyup and submit
-		$("#apic_form").validate({
+		$("#access_form").validate({
 		    errorClass: "error",
             errorElement: "label",
-			rules: {
-				vlan_number: {
-					required: true,
-					number: true
-				},
-				sel_leaf_create_vlan: {
-					required: true
-				},
-				sel_port_create_vlan: {
+            rules: {
+				access_number: {
 					required: true
 				}
 			},
@@ -103,11 +96,11 @@
 		});
 	});
 
-function submit_vlan_form() {
-    $('#operation').val('test_submit')
-    if($('#vlan_form').valid()){
-        Sijax.request('vlan_form_handler', [Sijax.getFormValues('#vlan_form')]);
-     }
+function submit_access_form() {
+
+    if($('#access_form').valid()){
+        Sijax.request('access_form_handler', [Sijax.getFormValues('#access_form')]);
+    }
 }
 
 </script>
