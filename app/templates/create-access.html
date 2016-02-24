@@ -3,75 +3,184 @@
 
 {% block head %}
 {{ super() }}
-<title>Create VLAN</title>
+<title>Create network access</title>
 {% endblock head %}
 {% block content %}
-    {% set labelclass = "col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label" %}
-    {% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
-    {% set selectclass = "col-lg-3 col-md-3 col-sm-2 col-xs-6" %}
-    {% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
-    {% set txtinputclasssm = "col-lg-3 col-md-3 col-sm-6 col-xs-12" %}
-    {% set ipinputclass = "col-lg-3 col-md-3 col-sm-3 col-xs-12" %}
-    {% set ipinputclasssm = "col-lg-2 col-md-2 col-sm-3 col-xs-6" %}
-    {% set apiclabels = "col-lg-1 col-md-1 col-sm-1 col-xs-6 control-label" %}
-    {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
+{% set labelclass = "col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label" %}
+{% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+{% set selectclass = "col-lg-3 col-md-3 col-sm-2 col-xs-6" %}
+{% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+{% set txtinputclasssm = "col-lg-3 col-md-3 col-sm-6 col-xs-12" %}
+{% set ipinputclass = "col-lg-3 col-md-3 col-sm-3 col-xs-12" %}
+{% set ipinputclasssm = "col-lg-2 col-md-2 col-sm-3 col-xs-6" %}
+{% set apiclabels = "col-lg-1 col-md-1 col-sm-1 col-xs-6 control-label" %}
+{% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
 <form action="javascript:void(null);"
-              onsubmit="submit_access_form()"
-              id="access_form"
-              class="form-horizontal">
+      onsubmit="submit_create_access_form()"
+      id="create_access_form"
+      class="form-horizontal">
     <input type="hidden" id="operation" name="operation" value="">
     <input type="hidden" id="sub_operation" name="sub_operation" value="">
-    <div id="div_create_access" name="div_create_access" class="panel panel-primary">
-        <div  class="panel-heading">VLAN information
-            <div id="create_access_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-                 <div class="form-group">
-                        <label class="{{ labelclass }}" > Access switch
-                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
-                                        data-toggle="popover"
-                                        data-trigger="hover"
-                                        title="VLAN number"
-                                        data-content="Specify the number of the new VLAN">
-                            </span>
-                        </label>
-                        <div class="{{ txtinputclassmd }}">
-                            <input type="text" class="form-control" maxlength="50" id="access_number" value="" name="access_number" placeholder="Number">
-                        </div>
-                    </div>
+    <ul style="margin: 20px 0px 22px; visibility: visible;" class="test1 nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#div_create_vpc_access">VPC Access</a></li>
+        <li class=""><a data-toggle="tab" href="#div_create_port_access">Single Access</a></li>
+    </ul>
+    <div class="tab-content">
+        <div id="div_create_vpc_access" name="div_create_vpc_access" class="tab-pane fade in active">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Create Virtual Port Channel Access
+                    <div id="div_create_vpc_access_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
                     <div class="form-group">
-                        <label class="{{ labelclass }}" > Leaf switch
+                        <label class="{{ labelclass }}"> Network
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
-                                        data-toggle="popover"
-                                        data-trigger="hover"
-                                        title="Leaf"
-                                        data-content="Select the leaf to assign">
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
                             </span>
                         </label>
                         <div class="{{ selectclass }}">
-                            <select id="sel_leaf_create_access"  name="sel_create_access" class="form-control sel-tenant">
+                            <select id="sel_network_create_vpc_access" name="sel_network_create_vpc_access"
+                                    class="form-control network">
                             </select>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="{{ labelclass }}" > Switch port
+                        <label class="{{ labelclass }}"> VPC
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
-                                        data-toggle="popover"
-                                        data-trigger="hover"
-                                        title="Switch port"
-                                        data-content="Select the port to assign">
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Leaf"
+                                  data-content="Select the virtual port channel to be assigned to the network">
                             </span>
                         </label>
                         <div class="{{ selectclass }}">
-                            <select id="sel_port_create_access"  name="sel_port_create_access" class="form-control sel-tenant">
+                            <select id="sel_vpc_create_vpc_access" name="sel_vpc_create_vpc_access"
+                                    class="form-control sel-vpc">
                             </select>
                         </div>
                     </div>
-                <hr>
-            <button id="btn_add" type="button"  class="btn btn-primary" onclick="create_access()">Create</button>
+                    <hr>
+                    <button id="btn_create_vpc_access" type="button" class="btn btn-primary"
+                            onclick="create_vpc_access()">Create
+                    </button>
+                </div>
+            </div>
+            <div id="div_delete_vpc_access" name="div_delete_vpc_access" class="panel panel-primary">
+                <div class="panel-heading">Delete Virtual Port Channel Access
+                    <div id="div_delete_vpc_access_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network - VPC
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network - VPC"
+                                  data-content="Select the network - virtual port channel association to be deleted">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_network_vpc_association" name="sel_delete_network_vpc_association"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_network_vpc_association" type="button" class="btn btn-primary"
+                            onclick="delete_network_vpc_association()">Delete
+                    </button>
+                </div>
             </div>
         </div>
-    </form>
+        <div id="div_create_port_access" name="div_create_port_access" class="tab-pane fade">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Virtual Port Channel Access
+                    <div id="create_access_port_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_network_create_port_access" name="sel_network_create_port_access"
+                                    class="form-control network">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Leaf switch
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Leaf"
+                                  data-content="Select the leaf switch to be assigned to the network">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_leaf_create_port_access" name="sel_leaf_create_port_access"
+                                    class="form-control" onchange="get_ports()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Port
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Leaf"
+                                  data-content="Select the switch port to be assigned to the network">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_port_create_port_access" name="sel_port_create_port_access"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_create_port_access" type="button" class="btn btn-primary"
+                            onclick="create_port_access()">Create
+                    </button>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Virtual Port Channel Access
+                    <div id="delete_access_port_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_port_access" name="sel_delete_port_access"
+                                    class="form-control network">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_port_access" type="button" class="btn btn-primary"
+                            onclick="delete_port_access()">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
 
 
 {% endblock content %}
@@ -82,25 +191,134 @@
 
 	$().ready(function() {
 		// validate signup form on keyup and submit
-		$("#access_form").validate({
+		$("#create_access_form").validate({
 		    errorClass: "error",
             errorElement: "label",
             rules: {
-				access_number: {
-					required: true
-				}
 			},
 			highlight: function(element, errorClass) {
                 $(element).removeClass(errorClass);
             }
 		});
+		get_leafs();
+		get_networks();
+		get_vpcs();
+		get_network_vpc_associations();
+		get_port_accesses();
 	});
 
-function submit_access_form() {
-
-    if($('#access_form').valid()){
-        Sijax.request('access_form_handler', [Sijax.getFormValues('#access_form')]);
+function submit_create_access_form() {
+    if($('#create_access_form').valid()){
+        Sijax.request('create_access_form_handler', [Sijax.getFormValues('#create_access_form')]);
     }
+}
+
+function create_vpc_access(){
+    $('#sel_network_create_vpc_access').rules("add", "required");
+    $('#sel_vpc_create_vpc_access').rules("add", "required");
+    if($('#create_access_form').valid()){
+        $('#operation').val('create_vpc_access')
+        $('#create_access_form').submit();
+        $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_network_create_vpc_access').rules("remove", "required");
+    $('#sel_vpc_create_vpc_access').rules("remove", "required");
+}
+
+function get_leafs(){
+    if($('#create_access_form').valid()){
+            $('#operation').val('get_leafs')
+            $('#create_access_form').submit();
+            $('#create_access_port_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function get_ports(){
+    $('#sel_leaf_create_port_access').rules("add", "required");
+    if($('#create_access_form').valid()){
+            $('#operation').val('get_ports')
+            $('#create_access_form').submit();
+            $('#create_access_port_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_leaf_create_port_access').rules("remove", "required");
+}
+
+function get_networks() {
+    if($('#create_access_form').valid()){
+            $('#operation').val('get_networks')
+            $('#create_access_form').submit();
+            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function get_vpcs(){
+    if($('#create_access_form').valid()){
+            $('#operation').val('get_vpcs')
+            $('#create_access_form').submit();
+            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function create_vpc_access() {
+    $('#sel_network_create_vpc_access').rules("add", "required");
+    $('#sel_vpc_create_vpc_access').rules("add", "required");
+    if($('#create_access_form').valid()){
+            $('#operation').val('create_vpc_access')
+            $('#create_access_form').submit();
+            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_network_create_vpc_access').rules("remove", "required");
+    $('#sel_vpc_create_vpc_access').rules("remove", "required");
+}
+
+function delete_network_vpc_association() {
+    $('#sel_delete_network_vpc_association').rules("add", "required");
+    if($('#create_access_form').valid()){
+            $('#operation').val('delete_vpc_access')
+            $('#create_access_form').submit();
+            $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_delete_network_vpc_association').rules("remove", "required");
+}
+
+function get_network_vpc_associations(){
+    if($('#create_access_form').valid()){
+            $('#operation').val('get_network_vpc_associations')
+            $('#create_access_form').submit();
+            $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function create_port_access() {
+    $('#sel_network_create_port_access').rules("add", "required");
+    $('#sel_leaf_create_port_access').rules("add", "required");
+    $('#sel_port_create_port_access').rules("add", "required");
+    if($('#create_access_form').valid()){
+        $('#operation').val('create_port_access')
+        $('#create_access_form').submit();
+        $('#create_access_port_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_network_create_port_access').rules("remove", "required");
+    $('#sel_leaf_create_port_access').rules("remove", "required");
+    $('#sel_port_create_port_access').rules("remove", "required");
+}
+
+function get_port_accesses(){
+    if($('#create_access_form').valid()){
+            $('#operation').val('get_port_accesses')
+            $('#create_access_form').submit();
+            $('#delete_access_port_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function delete_port_access(){
+    $('#sel_delete_port_access').rules("add", "required");
+    if($('#create_access_form').valid()){
+        $('#operation').val('delete_port_access')
+        $('#create_access_form').submit();
+        $('#delete_access_port_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_delete_port_access').rules("remove", "required");
 }
 
 </script>

@@ -19,17 +19,29 @@ class network(base):
     group = ForeignKeyField(group)
 
 
+class vpc(base):
+    name = CharField(unique=True)
+
+
+class vpcxnetwork(base):
+    network = ForeignKeyField(network)
+    vpc = ForeignKeyField(vpc)
+
+
+class port(base):
+    port_dn = CharField()
+    assigned_vpc = ForeignKeyField(vpc, null=True)
+
+
+class portxnetwork(base):
+    switch_port = ForeignKeyField(port)
+    network = ForeignKeyField(network)
+
+
 def create_tables():
     database.connect()
-    database.create_tables([network, group])
+    database.create_tables([network, group, vpc, vpcxnetwork, port, portxnetwork])
 
-
-class vlan:
-    def __init__(self, vlan_number, tenant_name, ap_name, epg_name):
-        self.tenant_name = tenant_name
-        self.vlan_number = vlan_number
-        self.ap_name = ap_name
-        self.epg_name = epg_name
 
 
 

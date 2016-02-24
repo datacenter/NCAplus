@@ -13,10 +13,20 @@ from cobra.model.vmm import ProvP, DomP, UsrAccP, CtrlrP, RsAcc
 # from cobra.modelimpl.infra.nodep import NodeP
 from cobra.mit.request import DnQuery, ClassQuery
 from cobra.model.vz import Filter, BrCP, Subj, RsSubjFiltAtt
+import re
 
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
+def natural_keys(text):
+    '''
+    alist.sort(key=natural_keys) sorts in human order
+    '''
+    return [atoi(c) for c in re.split('(\d+)', text)]
+
+
+def atoi(text):
+    return int(text) if text.isdigit() else text
 
 class Apic:
 
@@ -114,12 +124,13 @@ class Apic:
     def logout(self):
         self.moDir.logout()
 
-    def create_bd(self, bd_name, tenant_dn, default_gw):
-        fv_bd_mo = BD(tenant_dn, bd_name)
+    def create_bd(self, bd_name, tenant_dn, default_gw, **creation_props):
+        fv_bd_mo = BD(tenant_dn, bd_name, creation_props)
         self.commit(fv_bd_mo)
         if default_gw is not None and len(default_gw) > 0:
             fv_subnet_mo = Subnet(fv_bd_mo, default_gw)
             self.commit(fv_subnet_mo)
+        return fv_bd_mo
 
     def delete_bd(self, bd_dn):
         db_mo = self.moDir.lookupByDn(bd_dn)
@@ -257,19 +268,88 @@ class Apic:
         tenant_list = self.moDir.query(class_query)
         if len(tenant_list) > 0:
             tenant_mo = tenant_list[0]
-        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
+            ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
                          self.query_child_objects(str(tenant_mo.dn)))
-        if len(ap_list) == 0:
-            network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
-        else:
-            network_ap = ap_list[0]
-        self.create_epg(str(network_ap.dn), None, network_o.name)
+            if len(ap_list) == 0:
+                network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
+            else:
+                network_ap = ap_list[0]
+            self.create_epg(str(network_ap.dn), None, network_o.name)
 
-
-
+    def delete_network(self, network_o):
+        class_query = ClassQuery('fvTenant')
+        class_query.propFilter = 'eq(fvTenant.name, "' + network_o.group.name + '")'
+        tenant_list = self.moDir.query(class_query)
+        if len(tenant_list) > 0:
+            tenant_mo = tenant_list[0]
+            ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
+                             self.query_child_objects(str(tenant_mo.dn)))
+            if len(ap_list) > 0:
+                network_ap = ap_list[0]
+                network_epgs = filter(lambda x: type(x).__name__ == 'AEPg' and x.name == network_o.name,
+                                      self.query_child_objects(str(network_ap.dn)))
+                if len(network_epgs) > 0:
+                    network_epgs[0].delete()
+                    self.commit(network_epgs[0])
 
     def create_group(self, group_o):
-        pass
+        tenant_mo = self.create_tenant(group_o.name)
+        bd_mo = self.create_bd(group_o.name + '-BD', tenant_mo, None)
+        bd_mo.arpFlood = 'yes'
+        bd_mo.multiDstPktAct = 'bd-flood'
+        bd_mo.unicastRoute = 'no'
+        bd_mo.unkMacUcastAct = 'flood'
+        bd_mo.unkMcastAct = 'flood'
+        self.commit(bd_mo)
+
+    def delete_group(self, group_o):
+        class_query = ClassQuery('fvTenant')
+        class_query.propFilter = 'eq(fvTenant.name, "' + group_o.name + '")'
+        tenant_list = self.moDir.query(class_query)
+        if len(tenant_list) > 0:
+            tenant_list[0].delete()
+            self.commit(tenant_list[0])
+
+    def get_leafs(self):
+        class_query = ClassQuery('fabricNode')
+        class_query.propFilter = 'eq(fabricNode.role, "leaf")'
+        leafs = self.moDir.query(class_query)
+        result = []
+        dns = []
+        rns = []
+        for leaf in leafs:
+            dns.append(str(leaf.dn))
+            rns.append(str(leaf.rn))
+        # Need to be human sorted
+        dns.sort(key=natural_keys)
+        rns.sort(key=natural_keys)
+        result.append(dns)
+        result.append(rns)
+        return result
+
+    def get_ports(self, leaf_dn):
+        leaf_ports = filter(lambda x: type(x).__name__ == 'PhysIf', self.query_child_objects(leaf_dn + '/sys'))
+        result = []
+        dns = []
+        port_ids = []
+        for port in leaf_ports:
+            dns.append(str(port.dn))
+            port_ids.append(port.id)
+        # Need to be human sorted
+        dns.sort(key=natural_keys)
+        port_ids.sort(key=natural_keys)
+        result.append(dns)
+        result.append(port_ids)
+        return result
+
+    def get_switch_by_port(self, port_o):
+        port_mo = self.moDir.lookupByDn(port_o.port_dn)
+        switch_sys_mo = self.moDir.lookupByDn(port_mo.parentDn)
+        switch_mo = self.moDir.lookupByDn(switch_sys_mo.parentDn)
+        return switch_mo
+
+
+
 
 
 

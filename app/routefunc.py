@@ -15,7 +15,7 @@ def base_section_files():
                 "createnetwork": {"line":"data", "pos": 1, "weburl": "create_network",
                                "file": "create-network.html", "title": "Create Network"},
                 "createaccess": {"line":"data", "pos": 1, "weburl": "create_access",
-                               "file": "create-access.html", "title": "Create access vlan"},
+                               "file": "create-access.html", "title": "Create access"},
             },
     }
     return data
