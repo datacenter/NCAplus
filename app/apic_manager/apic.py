@@ -268,13 +268,19 @@ class Apic:
         tenant_list = self.moDir.query(class_query)
         if len(tenant_list) > 0:
             tenant_mo = tenant_list[0]
+            tenant_children = self.query_child_objects(str(tenant_mo.dn))
             ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
-                         self.query_child_objects(str(tenant_mo.dn)))
+                             tenant_children)
             if len(ap_list) == 0:
                 network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
             else:
                 network_ap = ap_list[0]
-            self.create_epg(str(network_ap.dn), None, network_o.name)
+            bd_list = filter(lambda x: type(x).__name__ == 'BD',
+                             tenant_children)
+            if len(bd_list) > 0:
+                self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name)
+            else:
+                self.create_epg(str(network_ap.dn), None, network_o.name)
 
     def delete_network(self, network_o):
         class_query = ClassQuery('fvTenant')

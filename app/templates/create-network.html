@@ -25,6 +25,8 @@
         <li class="active"><a data-toggle="tab" href="#create_network_tab">Network</a></li>
         <li class=""><a data-toggle="tab" href="#create_group_tab">Group</a></li>
         <li class=""><a data-toggle="tab" href="#create_vpc_tab">VPC</a></li>
+        <li class=""><a data-toggle="tab" href="#access_switch_tab">Access Switches</a></li>
+
     </ul>
     <div class="tab-content">
         <div id="create_network_tab" class="tab-pane fade in active">
@@ -48,12 +50,12 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="{{ labelclass }}"> Encapsulation
+                        <label class="{{ labelclass }}"> VLAN
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Encapsulation"
-                                          data-content="Specify the VLAN encapsulation of the new network">
+                                          data-content="Specify the VLAN of the new network">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
@@ -279,6 +281,61 @@
                     </div>
                     <hr>
                     <button id="btn_delete_vpc" type="button" class="btn btn-primary" onclick="delete_vpc()">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="access_switch_tab" class="tab-pane fade">
+            <div id="div_access_switch" name="div_access_switch" class="panel panel-primary">
+                <div class="panel-heading">Delete Management Group
+                    <div id="access_switch_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> IP
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Group"
+                                          data-content="Select the group to be deleted">
+                                    </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="ip_access_switch" value=""
+                                   name="create_group_name" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Interface
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Group"
+                                          data-content="Select the group to be deleted">
+                                    </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="interface_access_switch" value=""
+                                   name="create_group_name" placeholder="Name">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> VLAN
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Group"
+                                          data-content="Select the group to be deleted">
+                                    </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="vlan_access_switch" value=""
+                                   name="create_group_name" placeholder="Name">
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_access_switch" type="button" class="btn btn-primary" onclick="access_switch()">
+                        Configure
                     </button>
                 </div>
             </div>
