@@ -22,7 +22,23 @@ def create_access_vlan():
         g.db = model.database
         g.db.connect()
 
-        if values['operation'] == 'get_vpc_access':
+        if values['operation'] == 'get_groups':
+            try:
+                tenants = apic_object.get_all_tenants()
+                option_list = '<option value="">Select</option>'
+                for tenant in tenants:
+                    option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
+                obj_response.html(".sel-group", option_list)
+                obj_response.html("#div_create_vpc_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
+                                                              '<i class="fa fa-times-circle"></i> '
+                                                              'Can not create network: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_vpc_access':
             try:
                 vpcs = model.vpc.select()
                 option_list = '<option value="">Select</option>'
@@ -40,11 +56,13 @@ def create_access_vlan():
 
         elif values['operation'] == 'get_networks':
             try:
-                networks = model.network.select()
-                option_list = '<option value="">Select</option>'
-                for network in networks:
-                    option_list += '<option value="' + str(network.id) + '">' + network.name + '</option>'
-                obj_response.html(".network", option_list)
+                network_aps = apic_object.get_ap_by_tenant(values['sel_group_create_vpc_access'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html(".network", option_list)
                 obj_response.html("#div_create_vpc_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
@@ -257,10 +275,10 @@ def create_network():
 
         if values['operation'] == 'get_groups':
             try:
-                groups = model.group.select()
+                tenants = apic_object.get_all_tenants()
                 option_list = '<option value="">Select</option>'
-                for group in groups:
-                    option_list += '<option value="' + str(group.id) + '">' + group.name + '</option>'
+                for tenant in tenants:
+                    option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
                 obj_response.html(".sel-group", option_list)
                 obj_response.html("#create_network_response", '')
             except Exception as e:
@@ -273,34 +291,23 @@ def create_network():
 
         elif values['operation'] == 'create_group':
             try:
-                group = model.group.create(name=values['create_group_name'])
-                apic_object.create_group(group)
+                apic_object.create_group(values['create_group_name'])
                 obj_response.html("#create_group_response", '<label class="label label-success" > '
                                                             '<i class="fa fa-check-circle"></i> Created </label>')
 
-                groups = model.group.select()
-                option_list = '<option value="">Select</option>'
-                for group in groups:
-                    option_list += '<option value="' + str(group.id) + '">' + group.name + '</option>'
-                obj_response.html(".sel-group", option_list)
+                obj_response.script('get_groups();')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_network_response", '<label class="label label-danger" > '
+                obj_response.html("#create_group_response", '<label class="label label-danger" > '
                                                               '<i class="fa fa-times-circle">'
-                                                              '</i> Can not create network: ' + e.message + '</label>')
+                                                              '</i> Can not create group: ' + e.message + '</label>')
             finally:
                 g.db.close()
 
         elif values['operation'] == 'delete_group':
             try:
-                groups = model.group.select().where(model.group.id == values['sel_delete_group_name'])
-                apic_object.delete_group(groups[0])
-                model.group.delete().where(model.group.id == values['sel_delete_group_name']).execute()
-                groups = model.group.select()
-                option_list = '<option value="">Select</option>'
-                for group in groups:
-                    option_list += '<option value="' + str(group.id) + '">' + group.name + '</option>'
-                obj_response.html(".sel-group", option_list)
+                apic_object.delete_tenant(values['sel_delete_group_name'])
+                obj_response.script("get_groups();")
                 obj_response.html("#delete_group_response", '<label class="label label-success" > '
                                                             '<i class="fa fa-check-circle"></i> Deleted </label>')
             except Exception as e:
@@ -313,9 +320,9 @@ def create_network():
 
         elif values['operation'] == 'create_network':
             try:
-                network_object = model.network.create(name=values['create_network_name'],
-                                                      encapsulation=int(values['create_network_encapsulation']),
-                                                      group=int(values['sel_create_network_group']))
+                network_object = model.network(name=values['create_network_name'],
+                                               encapsulation=int(values['create_network_encapsulation']),
+                                               group=values['sel_create_network_group'])
                 apic_object.create_network(network_object)
                 obj_response.html("#create_network_response", '<label class="label label-success" > '
                                                               '<i class="fa fa-check-circle"></i> Created </label>')
@@ -329,11 +336,13 @@ def create_network():
 
         elif values['operation'] == 'get_sel_delete_networks':
             try:
-                networks = model.network.select().where(model.network.group == int(values['sel_delete_network_group']))
-                option_list = '<option value="">Select</option>'
-                for network in networks:
-                    option_list += '<option value="' + str(network.id) + '">' + network.name + '</option>'
-                obj_response.html("#sel_delete_network_name", option_list)
+                network_aps = apic_object.get_ap_by_tenant(values['sel_delete_network_group'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html("#sel_delete_network_name", option_list)
                 obj_response.html("#delete_network_response", '')
             except Exception as e:
                 print traceback.print_exc()
@@ -345,11 +354,10 @@ def create_network():
 
         elif values['operation'] == 'delete_network':
             try:
-                network_object = model.network.select().where(model.network.id == values['sel_delete_network_name'])
-                apic_object.delete_network(network_object[0])
-                model.network.delete().where(model.network.id == values['sel_delete_network_name']).execute()
+                apic_object.delete_epg(values['sel_delete_network_name'])
+                obj_response.script('get_sel_delete_networks()')
                 obj_response.html("#delete_network_response", '<label class="label label-success" > '
-                                                              '<i class="fa fa-check-circle"></i> Created </label>')
+                                                              '<i class="fa fa-check-circle"></i> Deleted </label>')
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.html("#delete_network_response", '<label class="label label-danger" > '
@@ -511,5 +519,5 @@ def create_network():
 
 @app.before_request
 def before_request():
-    if not model.group.table_exists():
+    if not model.network.table_exists():
         model.create_tables()

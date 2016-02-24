@@ -263,12 +263,8 @@ class Apic:
             vlan_epg = epg_list[0]
 
     def create_network(self, network_o):
-        class_query = ClassQuery('fvTenant')
-        class_query.propFilter = 'eq(fvTenant.name, "' + network_o.group.name + '")'
-        tenant_list = self.moDir.query(class_query)
-        if len(tenant_list) > 0:
-            tenant_mo = tenant_list[0]
-            tenant_children = self.query_child_objects(str(tenant_mo.dn))
+            tenant_mo = self.moDir.lookupByDn(network_o.group)
+            tenant_children = self.query_child_objects(network_o.group)
             ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
                              tenant_children)
             if len(ap_list) == 0:
@@ -278,9 +274,11 @@ class Apic:
             bd_list = filter(lambda x: type(x).__name__ == 'BD',
                              tenant_children)
             if len(bd_list) > 0:
-                self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name)
+                self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name + '-vlan' +
+                                str(network_o.encapsulation))
             else:
-                self.create_epg(str(network_ap.dn), None, network_o.name)
+                self.create_epg(str(network_ap.dn), None, network_o.name + '-vlan' +
+                                str(network_o.encapsulation))
 
     def delete_network(self, network_o):
         class_query = ClassQuery('fvTenant')
@@ -298,9 +296,9 @@ class Apic:
                     network_epgs[0].delete()
                     self.commit(network_epgs[0])
 
-    def create_group(self, group_o):
-        tenant_mo = self.create_tenant(group_o.name)
-        bd_mo = self.create_bd(group_o.name + '-BD', tenant_mo, None)
+    def create_group(self, group_name):
+        tenant_mo = self.create_tenant(group_name)
+        bd_mo = self.create_bd(group_name + '-BD', tenant_mo, None)
         bd_mo.arpFlood = 'yes'
         bd_mo.multiDstPktAct = 'bd-flood'
         bd_mo.unicastRoute = 'no'

@@ -33,6 +33,21 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
+                        <label class="{{ labelclass }}"> Group
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the group to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_group_create_vpc_access" name="sel_group_create_vpc_access"
+                                    class="form-control sel-group" onchange="get_networks()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="{{ labelclass }}"> Network
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
@@ -201,8 +216,7 @@
             }
 		});
 		get_leafs();
-		get_networks();
-		get_vpcs();
+		get_groups();
 		get_network_vpc_associations();
 		get_port_accesses();
 	});
@@ -244,11 +258,13 @@ function get_ports(){
 }
 
 function get_networks() {
+    $('#sel_group_create_vpc_access').rules("add", "required");
     if($('#create_access_form').valid()){
             $('#operation').val('get_networks')
             $('#create_access_form').submit();
             $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
+    $('#sel_group_create_vpc_access').rules("remove", "required");
 }
 
 function get_vpcs(){
@@ -319,6 +335,12 @@ function delete_port_access(){
         $('#delete_access_port_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_port_access').rules("remove", "required");
+}
+
+function get_groups(){
+    $('#operation').val('get_groups')
+    $('#create_access_form').submit();
+    $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 </script>

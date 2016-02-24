@@ -9,14 +9,11 @@ class base(Model):
     class Meta:
         database = database
 
-class group(base):
-    name = CharField(unique=True)
-
 
 class network(base):
     encapsulation = IntegerField(unique=True)
     name = CharField()
-    group = ForeignKeyField(group)
+    group = CharField()
 
 
 class vpc(base):
