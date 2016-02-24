@@ -22,14 +22,68 @@
     <input type="hidden" id="operation" name="operation" value="">
     <input type="hidden" id="sub_operation" name="sub_operation" value="">
     <ul style="margin: 20px 0px 22px; visibility: visible;" class="test1 nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#create_network_tab">Network</a></li>
-        <li class=""><a data-toggle="tab" href="#create_group_tab">Group</a></li>
+        <li class="active"><a data-toggle="tab" href="#create_group_tab">Group</a></li>
+        <li class=""><a data-toggle="tab" href="#create_network_tab">Network</a></li>
         <li class=""><a data-toggle="tab" href="#create_vpc_tab">VPC</a></li>
+        <li class=""><a data-toggle="tab" href="#div_create_vpc_access">VPC Access</a></li>
+        <li class=""><a data-toggle="tab" href="#div_create_port_access">Single Access</a></li>
         <li class=""><a data-toggle="tab" href="#access_switch_tab">Access Switches</a></li>
-
     </ul>
     <div class="tab-content">
-        <div id="create_network_tab" class="tab-pane fade in active">
+        <div id="create_group_tab" class="tab-pane fade in active">
+            <div id="div_create_group" name="div_create_group" class="panel panel-primary">
+                <div class="panel-heading">Create Management Group
+                    <div id="create_group_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Group name
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network name"
+                                  data-content="Specify the name of the new group">
+                            </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="create_group_name" value=""
+                                   name="create_group_name" placeholder="Name">
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_create_group" type="button" class="btn btn-primary" onclick="create_group()">
+                        Create
+                    </button>
+                </div>
+            </div>
+            <div id="div_delete_group" name="div_delete_group" class="panel panel-primary">
+                <div class="panel-heading">Delete Management Group
+                    <div id="delete_group_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Group
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Group"
+                                          data-content="Select the group to be deleted">
+                                    </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_group_name" name="sel_delete_group_name"
+                                    class="form-control sel-group">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_group" type="button" class="btn btn-primary" onclick="delete_group()">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="create_network_tab" class="tab-pane fade">
             <div id="div_create_network" name="div_create_network" class="panel panel-primary">
                 <div class="panel-heading">Create Network
                     <div id="create_network_response" style="float:right;font-size:16px"></div>
@@ -121,59 +175,6 @@
                     </div>
                     <hr>
                     <button id="btn_delete_network" type="button" class="btn btn-primary" onclick="delete_network()">
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
-        <div id="create_group_tab" class="tab-pane fade">
-            <div id="div_create_group" name="div_create_group" class="panel panel-primary">
-                <div class="panel-heading">Create Management Group
-                    <div id="create_group_response" style="float:right;font-size:16px"></div>
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label class="{{ labelclass }}"> Group name
-                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
-                                  data-toggle="popover"
-                                  data-trigger="hover"
-                                  title="Network name"
-                                  data-content="Specify the name of the new group">
-                            </span>
-                        </label>
-                        <div class="{{ txtinputclassmd }}">
-                            <input type="text" class="form-control" maxlength="50" id="create_group_name" value=""
-                                   name="create_group_name" placeholder="Name">
-                        </div>
-                    </div>
-                    <hr>
-                    <button id="btn_create_group" type="button" class="btn btn-primary" onclick="create_group()">
-                        Create
-                    </button>
-                </div>
-            </div>
-            <div id="div_delete_group" name="div_delete_group" class="panel panel-primary">
-                <div class="panel-heading">Delete Management Group
-                    <div id="delete_group_response" style="float:right;font-size:16px"></div>
-                </div>
-                <div class="panel-body">
-                    <div class="form-group">
-                        <label class="{{ labelclass }}"> Group
-                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Group"
-                                          data-content="Select the group to be deleted">
-                                    </span>
-                        </label>
-                        <div class="{{ selectclass }}">
-                            <select id="sel_delete_group_name" name="sel_delete_group_name"
-                                    class="form-control sel-group">
-                            </select>
-                        </div>
-                    </div>
-                    <hr>
-                    <button id="btn_delete_group" type="button" class="btn btn-primary" onclick="delete_group()">
                         Delete
                     </button>
                 </div>
@@ -281,6 +282,174 @@
                     </div>
                     <hr>
                     <button id="btn_delete_vpc" type="button" class="btn btn-primary" onclick="delete_vpc()">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="div_create_vpc_access" class="tab-pane fade">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Create Virtual Port Channel Access
+                    <div id="div_create_vpc_access_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Group
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the group to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_group_create_vpc_access" name="sel_group_create_vpc_access"
+                                    class="form-control sel-group" onchange="get_networks()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_network_create_vpc_access" name="sel_network_create_vpc_access"
+                                    class="form-control network">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> VPC
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Leaf"
+                                  data-content="Select the virtual port channel to be assigned to the network">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_vpc_create_vpc_access" name="sel_vpc_create_vpc_access"
+                                    class="form-control sel-vpc">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_create_vpc_access" type="button" class="btn btn-primary"
+                            onclick="create_vpc_access()">Create
+                    </button>
+                </div>
+            </div>
+            <div id="div_delete_vpc_access" name="div_delete_vpc_access" class="panel panel-primary">
+                <div class="panel-heading">Delete Virtual Port Channel Access
+                    <div id="div_delete_vpc_access_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network - VPC
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network - VPC"
+                                  data-content="Select the network - virtual port channel association to be deleted">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_network_vpc_association" name="sel_delete_network_vpc_association"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_network_vpc_association" type="button" class="btn btn-primary"
+                            onclick="delete_network_vpc_association()">Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="div_create_port_access" class="tab-pane fade">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Virtual Port Channel Access
+                    <div id="create_access_port_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_network_create_port_access" name="sel_network_create_port_access"
+                                    class="form-control network">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Leaf switch
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Leaf"
+                                  data-content="Select the leaf switch to be assigned to the network">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_leaf_create_port_access" name="sel_leaf_create_port_access"
+                                    class="form-control" onchange="get_ports()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Port
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Leaf"
+                                  data-content="Select the switch port to be assigned to the network">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_port_create_port_access" name="sel_port_create_port_access"
+                                    class="form-control">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_create_port_access" type="button" class="btn btn-primary"
+                            onclick="create_port_access()">Create
+                    </button>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Virtual Port Channel Access
+                    <div id="delete_access_port_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Network
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
+                            </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_port_access" name="sel_delete_port_access"
+                                    class="form-control network">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_port_access" type="button" class="btn btn-primary"
+                            onclick="delete_port_access()">Delete
                     </button>
                 </div>
             </div>

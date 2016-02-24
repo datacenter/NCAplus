@@ -6,7 +6,7 @@ import flask_sijax
 import model
 import traceback
 
-@app.route('/')
+#@app.route('/')
 @app.route('/index')
 def index():
     section_info = base_section_files()
@@ -263,7 +263,7 @@ def create_access_vlan():
     return render_template('create-access.html', title='Create access VLAN', data=ordered_menu_list(section_info))
 
 
-
+@flask_sijax.route(app, '/')
 @flask_sijax.route(app, '/integration/create_network')
 def create_network():
     def network_form_handler(obj_response, formvalues):
