@@ -8,11 +8,13 @@ from constant import *
 from cobra.mit.access import MoDirectory
 from cobra.mit.session import LoginSession
 from cobra.mit.request import ConfigRequest, CommitError
-from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons
+from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
 from cobra.model.vmm import ProvP, DomP, UsrAccP, CtrlrP, RsAcc
 # from cobra.modelimpl.infra.nodep import NodeP
 from cobra.mit.request import DnQuery, ClassQuery
 from cobra.model.vz import Filter, BrCP, Subj, RsSubjFiltAtt
+from cobra.modelimpl.fvns.vlaninstp import VlanInstP
+from cobra.modelimpl.fvns.encapblk import EncapBlk
 import re
 
 
@@ -274,11 +276,17 @@ class Apic:
             bd_list = filter(lambda x: type(x).__name__ == 'BD',
                              tenant_children)
             if len(bd_list) > 0:
-                self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name + '-vlan' +
-                                str(network_o.encapsulation))
+                bd_cxts = filter(lambda x: type(x).__name__ == 'RsCtx',
+                                     self.query_child_objects(str(bd_list[0].dn)))
+                if len(bd_cxts) > 0:
+                    if bd_cxts[0].tnFvCtxName == '':
+                        bd_cxts[0].tnFvCtxName = 'default'
+                        self.commit(bd_cxts[0])
+                return self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name + '-vlan' +
+                                       str(network_o.encapsulation))
             else:
-                self.create_epg(str(network_ap.dn), None, network_o.name + '-vlan' +
-                                str(network_o.encapsulation))
+                return self.create_epg(str(network_ap.dn), None, network_o.name + '-vlan' +
+                                       str(network_o.encapsulation))
 
     def delete_network(self, network_o):
         class_query = ClassQuery('fvTenant')
@@ -352,8 +360,54 @@ class Apic:
         switch_mo = self.moDir.lookupByDn(switch_sys_mo.parentDn)
         return switch_mo
 
+    def get_vpcs(self):
+        class_query = ClassQuery('fabricProtPathEpCont')
+        vpc_containers = self.moDir.query(class_query)
+        vpc_list = []
+        for container in vpc_containers:
+            for vdc in self.query_child_objects(str(container.dn)):
+                vpc_list.append(vdc)
+        return vpc_list
 
+    def associate_epg_vpc(self,epg_dn, vpc_dn, vlan_number):
+        rspath = RsPathAtt(epg_dn, vpc_dn, encap='vlan-' + str(vlan_number))
+        self.commit(rspath)
 
+    def associate_epg_physical_domain(self, epg_dn, physicaldom_dn='uni/phys-FEDEX_PhysicalDomain'):
+        rsdom = RsDomAtt(epg_dn, physicaldom_dn)
+        self.commit(rsdom)
 
+    def get_vpc_assignments(self, epg_dn):
+        return filter(lambda x: type(x).__name__ == 'RsPathAtt', self.query_child_objects(epg_dn))
 
+    def delete_vpc_assignment(self, rspathattr_dn):
+        fv_rspathattr_mo = self.moDir.lookupByDn(rspathattr_dn)
+        if fv_rspathattr_mo is not None:
+            fv_rspathattr_mo.delete()
+            self.commit(fv_rspathattr_mo)
 
+    def create_single_access(self, epg_dn, port_dn, vlan_number):
+        fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys','pathep')
+        rspathatt_mo = RsPathAtt(epg_dn, fabric_path_dn, encap='vlan-' + str(vlan_number))
+        self.commit(rspathatt_mo)
+
+    def delete_single_access(self, epg_dn, port_dn):
+        fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys', 'pathep')
+        rspathatt_list = filter(lambda x: type(x).__name__ == 'RsPathAtt' and str(x.tDn) == fabric_path_dn,
+                                self.query_child_objects(epg_dn))
+        if len(rspathatt_list) > 0:
+            rspathatt_list[0].delete()
+            self.commit(rspathatt_list[0])
+
+    def add_vlan(self, vlan_number, vlan_pool_dn='uni/infra/vlanns-[FEDEX_VLANPOOL]-static'):
+        encap_mo = EncapBlk(vlan_pool_dn, 'vlan-' + str(vlan_number),'vlan-' + str(vlan_number), allocMode='static')
+        self.commit(encap_mo)
+        pass
+
+    def remove_vlan(self, vlan_number, vlan_pool_dn='uni/infra/vlanns-[FEDEX_VLANPOOL]-static'):
+        vlan_pool_children = self.query_child_objects(vlan_pool_dn)
+        for vlan in vlan_pool_children:
+            if vlan.to == 'vlan-' + str(vlan_number):
+                vlan.delete()
+                self.commit(vlan)
+                break

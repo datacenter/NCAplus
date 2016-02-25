@@ -54,23 +54,7 @@ def create_access_vlan():
             finally:
                 g.db.close()
 
-        elif values['operation'] == 'get_networks':
-            try:
-                network_aps = apic_object.get_ap_by_tenant(values['sel_group_create_vpc_access'])
-                if len(network_aps) > 0:
-                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                    option_list = '<option value="">Select</option>'
-                    for network in networks:
-                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
-                    obj_response.html(".network", option_list)
-                obj_response.html("#div_create_vpc_access_response", '')
-            except Exception as e:
-                print traceback.print_exc()
-                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve VPCs: ' + e.message + '</label>')
-            finally:
-                g.db.close()
+
 
         elif values['operation'] == 'get_vpcs':
             try:
@@ -320,10 +304,16 @@ def create_network():
 
         elif values['operation'] == 'create_network':
             try:
-                network_object = model.network(name=values['create_network_name'],
-                                               encapsulation=int(values['create_network_encapsulation']),
-                                               group=values['sel_create_network_group'])
-                apic_object.create_network(network_object)
+                network_object = model.network.create(name=values['create_network_name'],
+                                                      encapsulation=int(values['create_network_encapsulation']),
+                                                      group=values['sel_create_network_group'],
+                                                      epg_dn='')
+                apic_object.add_vlan(network_object.encapsulation)
+                epg = apic_object.create_network(network_object)
+                apic_object.associate_epg_physical_domain(str(epg.dn))
+                network_object.update(epg_dn=str(epg.dn)).where(
+                    model.network.id == network_object.id).execute()
+
                 obj_response.html("#create_network_response", '<label class="label label-success" > '
                                                               '<i class="fa fa-check-circle"></i> Created </label>')
             except Exception as e:
@@ -354,10 +344,19 @@ def create_network():
 
         elif values['operation'] == 'delete_network':
             try:
-                apic_object.delete_epg(values['sel_delete_network_name'])
-                obj_response.script('get_sel_delete_networks()')
-                obj_response.html("#delete_network_response", '<label class="label label-success" > '
-                                                              '<i class="fa fa-check-circle"></i> Deleted </label>')
+                network_o = model.network.select()\
+                    .where(model.network.epg_dn == values['sel_delete_network_name'])
+                if len(network_o) > 0:
+                    apic_object.remove_vlan(network_o[0].encapsulation)
+                    model.network.delete().where(model.network.epg_dn == values['sel_delete_network_name']).execute()
+                    apic_object.delete_epg(values['sel_delete_network_name'])
+                    obj_response.script('get_sel_delete_networks()')
+                    obj_response.html("#delete_network_response", '<label class="label label-success" > '
+                                                                  '<i class="fa fa-check-circle"></i> Deleted </label>')
+                else:
+                    obj_response.html("#delete_network_response", '<label class="label label-danger" > '
+                                                                  '<i class="fa fa-times-circle"></i> '
+                                                                  'Network not found in local database</label>')
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.html("#delete_network_response", '<label class="label label-danger" > '
@@ -371,7 +370,7 @@ def create_network():
             leafs = apic_object.get_leafs()
             for i in range(0, len(leafs[0])):
                 option_list += '<option value="' + leafs[0][i] + '">' + leafs[1][i] + '</option>'
-            obj_response.html("#sel_leaf_create_vpc", option_list)
+            obj_response.html(".sel-leaf", option_list)
             obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_ports':
@@ -472,10 +471,10 @@ def create_network():
 
         elif values['operation'] == 'get_vpcs':
             try:
-                vpc_list = model.vpc.select()
+                vpc_list = apic_object.get_vpcs()
                 option_list = '<option value="">Select</option>'
                 for vpc in vpc_list:
-                   option_list += '<option value="' + str(vpc.id) + '">' + vpc.name + '</option>'
+                   option_list += '<option value="' + str(vpc.dn) + '">' + vpc.name + '</option>'
                 obj_response.html(".sel-vpc", option_list)
                 obj_response.html("#delete_vpc_response", '')
             except Exception as e:
@@ -508,7 +507,318 @@ def create_network():
             finally:
                 g.db.close()
 
+        elif values['operation'] == 'create_vpc_access':
+            try:
+                if values['create_vpc_access_type'] == 'single_vlan':
+                    network_o = model.network.select().where(model.network.epg_dn ==
+                                                             values['sel_network_create_vpc_access'])
+                    if len(network_o) > 0:
+                        apic_object.associate_epg_vpc(values['sel_network_create_vpc_access'],
+                                                      values['sel_vpc_create_vpc_access'], network_o[0].encapsulation)
+                        obj_response.html("#div_create_vpc_access_response",
+                                          '<label class="label label-success" > '
+                                          '<i class="fa fa-check-circle"></i> Assigned </label>')
+                    else:
+                        obj_response.html("#div_create_vpc_access_response",
+                                          '<label class="label label-danger" > '
+                                          '<i class="fa fa-times-circle"></i> Network not found in '
+                                          'local database </label>')
+                elif values['create_vpc_access_type'] == 'vlan_profile':
+                    network_profilexnetworks = model.network_profilexnetwork.select().where(
+                        model.network_profilexnetwork.network_profile == int(values['sel_profile_create_vpc_access']))
+                    for network_profile in network_profilexnetworks:
+                        network_o = model.network.select().where(model.network.id == network_profile.network.id)
+                        if len(network_o) > 0:
+                            apic_object.associate_epg_vpc(network_o[0].epg_dn,
+                                                          values['sel_vpc_create_vpc_access'],
+                                                          network_o[0].encapsulation)
+                            obj_response.html("#div_create_vpc_access_response",
+                                              '<label class="label label-success" > '
+                                              '<i class="fa fa-check-circle"></i> Assigned </label>')
+                        else:
+                            obj_response.html("#div_create_vpc_access_response",
+                                              '<label class="label label-danger" > '
+                                              '<i class="fa fa-times-circle"></i> Network not found in '
+                                              'local database </label>')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not delete vpc: ' + e.message + '</label>')
+            finally:
+                g.db.close()
 
+        elif values['operation'] == 'get_create_vpc_access_networks':
+            try:
+                network_aps = apic_object.get_ap_by_tenant(values['sel_group_create_vpc_access'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html("#sel_network_create_vpc_access", option_list)
+                obj_response.html("#div_create_vpc_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve VPCs: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_delete_vpc_access_networks':
+            try:
+                network_aps = apic_object.get_ap_by_tenant(values['sel_group_delete_vpc_access'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html("#sel_network_delete_vpc_access", option_list)
+                obj_response.html("#div_delete_vpc_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_delete_vpc_access_assignments':
+            try:
+                vpc_assignments = apic_object.get_vpc_assignments(values['sel_network_delete_vpc_access'])
+                option_list = '<option value="">Select</option>'
+                for vpc_assignment in vpc_assignments:
+                    vpc = apic_object.moDir.lookupByDn(str(vpc_assignment.tDn))
+                    option_list += '<option value="' + str(vpc_assignment.dn) + '">' + vpc.name + '</option>'
+                obj_response.html("#sel_vpc_delete_vpc_access", option_list)
+                obj_response.html("#div_delete_vpc_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'delete_vpc_access':
+            try:
+                apic_object.delete_vpc_assignment(values['sel_vpc_delete_vpc_access'])
+                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-success" > '
+                                                                     '<i class="fa fa-check-circle"></i> '
+                                                                     'Removed</label>')
+                obj_response.script('get_delete_vpc_access_assignments()')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_create_single_access_networks':
+            try:
+                network_aps = apic_object.get_ap_by_tenant(values['sel_create_single_access_group'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html("#sel_create_single_access_network", option_list)
+                obj_response.html("#create_single_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#create_single_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_create_single_access_ports':
+            try:
+                ports = apic_object.get_ports(values['sel_create_single_access_leaf'])
+                option_list = '<option value="">Select</option>'
+                for i in range(0, len(ports[0])):
+                    option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
+                obj_response.html("#sel_create_single_access_port", option_list)
+                obj_response.html("#create_single_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#create_single_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve ports: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'create_single_access':
+            try:
+                if values['create_port_access_type'] == 'single_vlan_port':
+                    network_o = model.network.select().where(model.network.epg_dn ==
+                                                             values['sel_create_single_access_network'])
+                    if len(network_o) > 0:
+                        apic_object.create_single_access(values['sel_create_single_access_network'],
+                                                         values['sel_create_single_access_port'],
+                                                         network_o[0].encapsulation)
+                        obj_response.html("#create_single_access_response",
+                                          '<label class="label label-success" > '
+                                          '<i class="fa fa-check-circle"></i> Assigned </label>')
+                    else:
+                        obj_response.html("#create_single_access_response",
+                                          '<label class="label label-danger" > '
+                                          '<i class="fa fa-times-circle"></i> Network not found in '
+                                          'local database </label>')
+                elif values['create_port_access_type'] == 'vlan_profile_port':
+                    network_profilexnetworks = model.network_profilexnetwork.select().where(
+                        model.network_profilexnetwork.network_profile == int(values['sel_profile_create_port_access']))
+                    for network_profile in network_profilexnetworks:
+                        network_o = model.network.select().where(model.network.id == network_profile.network.id)
+                        if len(network_o) > 0:
+                            apic_object.create_single_access(network_o[0].epg_dn,
+                                                             values['sel_create_single_access_port'],
+                                                             network_o[0].encapsulation)
+                            obj_response.html("#create_single_access_response",
+                                              '<label class="label label-success" > '
+                                              '<i class="fa fa-check-circle"></i> Assigned </label>')
+                        else:
+                            obj_response.html("#create_single_access_response",
+                                              '<label class="label label-danger" > '
+                                              '<i class="fa fa-times-circle"></i> Network not found in '
+                                              'local database </label>')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#create_single_access_response", '<label class="label label-danger" > '
+                                                                    '<i class="fa fa-times-circle"></i> '
+                                                                    'Can not create single access: ' + e.message +
+                                                                    '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_delete_single_access_networks':
+            try:
+                network_aps = apic_object.get_ap_by_tenant(values['sel_delete_single_access_group'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html("#sel_delete_single_access_network", option_list)
+                obj_response.html("#delete_single_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#delete_single_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_delete_single_access_ports':
+            try:
+                ports = apic_object.get_ports(values['sel_delete_single_access_leaf'])
+                option_list = '<option value="">Select</option>'
+                for i in range(0, len(ports[0])):
+                    option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
+                obj_response.html("#sel_delete_single_access_port", option_list)
+                obj_response.html("#delete_single_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#delete_single_access_response", '<label class="label label-danger" > '
+                                                                    '<i class="fa fa-times-circle"></i> '
+                                                                    'Can not retrieve ports: ' + e.message +
+                                                                    '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'delete_single_access':
+            try:
+                network_o = model.network.select().where(model.network.epg_dn ==
+                                                         values['sel_delete_single_access_network'])
+                if len(network_o) > 0:
+                    apic_object.delete_single_access(values['sel_delete_single_access_network'],
+                                                     values['sel_delete_single_access_port'])
+                    obj_response.html("#delete_single_access_response",
+                                      '<label class="label label-success" > '
+                                      '<i class="fa fa-check-circle"></i> Assigned </label>')
+                else:
+                    obj_response.html("#delete_single_access_response",
+                                      '<label class="label label-danger" > '
+                                      '<i class="fa fa-times-circle"></i> Network not found in '
+                                      'local database </label>')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#delete_single_access_response", '<label class="label label-danger" > '
+                                                                    '<i class="fa fa-times-circle"></i> '
+                                                                    'Can not delete single access: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_create_network_profile_networks':
+            try:
+                network_aps = apic_object.get_ap_by_tenant(values['sel_create_network_profile_group'])
+                if len(network_aps) > 0:
+                    networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    option_list = '<option value="">Select</option>'
+                    for network in networks:
+                        option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
+                    obj_response.html("#sel_create_network_profile_network", option_list)
+                obj_response.html("#create_network_profile_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#create_network_profile_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'create_network_profile':
+            try:
+                network_profile_o = model.network_profile.create(name=values['create_network_profile_name'])
+                selected_networks = str(values['create_network_profile_dns']).split(';')
+                for epg_dn in selected_networks:
+                    if len(epg_dn) > 0:
+                        network_list = model.network.select().where(model.network.epg_dn == epg_dn)
+                        if len(network_list) > 0:
+                            model.network_profilexnetwork.create(network=network_list[0],
+                                                                 network_profile=network_profile_o)
+                table = '<thead>' \
+                            '<tr>' \
+                                '<th>Switch</th>' \
+                                '<th>Port</th>' \
+                            '</tr>' \
+                        '</thead>' \
+                        '<tbody>' \
+                        '<tr></tr>' \
+                        '</tbody>'
+                obj_response.html("#table_create_network_profile", table)
+                obj_response.html("#sel_create_network_profile_network", '')
+                obj_response.script('get_network_profiles()')
+                obj_response.script('$("#sel_create_network_profile_group").val("")')
+                obj_response.html("#create_network_profile_response", '<label class="label label-success" > '
+                                                                      '<i class="fa fa-check-circle"></i> '
+                                                                      'Created</label>')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#create_network_profile_response", '<label class="label label-danger" > '
+                                                                      '<i class="fa fa-times-circle"></i> '
+                                                                      'Can not retrieve create: ' + e.message +
+                                                                      '</label>')
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_network_profiles':
+            try:
+                network_profiles = model.network_profile.select()
+                option_list = '<option value="">Select</option>'
+                for network_p in network_profiles:
+                    option_list += '<option value="' + str(network_p.id) + '">' + network_p.name + '</option>'
+                obj_response.html(".sel-net-profile", option_list)
+                obj_response.html("#div_create_vpc_access_response",'')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
+                                                                     '<i class="fa fa-times-circle"></i> '
+                                                                     'Can not retrieve vlan profiles: ' + e.message + '</label>')
+            finally:
+                g.db.close()
 
     if g.sijax.is_sijax_request:
         g.sijax.register_callback('network_form_handler', network_form_handler)

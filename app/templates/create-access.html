@@ -89,16 +89,6 @@ function get_ports(){
     $('#sel_leaf_create_port_access').rules("remove", "required");
 }
 
-function get_networks() {
-    $('#sel_group_create_vpc_access').rules("add", "required");
-    if($('#create_access_form').valid()){
-            $('#operation').val('get_networks')
-            $('#create_access_form').submit();
-            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
-    }
-    $('#sel_group_create_vpc_access').rules("remove", "required");
-}
-
 function get_vpcs(){
     if($('#create_access_form').valid()){
             $('#operation').val('get_vpcs')

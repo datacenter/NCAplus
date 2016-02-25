@@ -11,10 +11,11 @@ class base(Model):
 
 
 class network(base):
-    encapsulation = IntegerField(unique=True)
+    encapsulation = IntegerField()
     name = CharField()
     group = CharField()
-
+    epg_dn = CharField()
+    network_profile = CharField(null=True)
 
 class vpc(base):
     name = CharField(unique=True)
@@ -35,9 +36,18 @@ class portxnetwork(base):
     network = ForeignKeyField(network)
 
 
+class network_profile(base):
+    name = CharField(unique=True)
+
+
+class network_profilexnetwork(base):
+    network_profile = ForeignKeyField(network_profile)
+    network = ForeignKeyField(network)
+
+
 def create_tables():
     database.connect()
-    database.create_tables([network, group, vpc, vpcxnetwork, port, portxnetwork])
+    database.create_tables([network, vpc, vpcxnetwork, port, portxnetwork, network_profile, network_profilexnetwork])
 
 
 
