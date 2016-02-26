@@ -13,9 +13,7 @@ def base_section_files():
                 "head": {"line":"head", "pos": 0, "weburl": "head",
                          "file": None, "title": "Integration"},
                 "createnetwork": {"line":"data", "pos": 1, "weburl": "create_network",
-                               "file": "create-network.html", "title": "Create Network"},
-                "createaccess": {"line":"data", "pos": 1, "weburl": "create_access",
-                               "file": "create-access.html", "title": "Create access"},
+                               "file": "create-network.html", "title": "Create Network"}
             },
     }
     return data

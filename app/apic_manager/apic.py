@@ -411,3 +411,4 @@ class Apic:
                 vlan.delete()
                 self.commit(vlan)
                 break
+

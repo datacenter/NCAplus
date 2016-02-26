@@ -22,15 +22,15 @@
     <input type="hidden" id="operation" name="operation" value="">
     <input type="hidden" id="sub_operation" name="sub_operation" value="">
     <ul style="margin: 20px 0px 22px; visibility: visible;" class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#create_group_tab">Group</a></li>
-        <li class=""><a data-toggle="tab" href="#create_network_tab">Network</a></li>
-        <li class=""><a data-toggle="tab" href="#create_vpc_tab">VPC</a></li>
-        <li class=""><a data-toggle="tab" href="#div_create_vpc_access">VPC Access</a></li>
-        <li class=""><a data-toggle="tab" href="#div_create_port_access">Single Access</a></li>
+        <li class="active"><a data-toggle="tab" href="#group_tab">Group</a></li>
+        <li class=""><a data-toggle="tab" href="#network_tab">Network</a></li>
+        <li class=""><a data-toggle="tab" href="#vpc_tab">VPC</a></li>
+        <li class=""><a data-toggle="tab" href="#vpc_access_tab">VPC Access</a></li>
+        <li class=""><a data-toggle="tab" href="#port_access_tab">Single Access</a></li>
         <li class=""><a data-toggle="tab" href="#access_switch_tab">Access Switches</a></li>
     </ul>
     <div class="tab-content">
-        <div id="create_group_tab" class="tab-pane fade in active">
+        <div id="group_tab" class="tab-pane fade in active">
             <div id="div_create_group" name="div_create_group" class="panel panel-primary">
                 <div class="panel-heading">Create Management Group
                     <div id="create_group_response" style="float:right;font-size:16px"></div>
@@ -41,7 +41,7 @@
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
-                                  title="Network name"
+                                  title="Group name"
                                   data-content="Specify the name of the new group">
                             </span>
                         </label>
@@ -56,7 +56,7 @@
                     </button>
                 </div>
             </div>
-            <div id="div_delete_group" name="div_delete_group" class="panel panel-primary">
+            <div id="div_delete_group" name="div_delete_group" class="panel panel-danger">
                 <div class="panel-heading">Delete Management Group
                     <div id="delete_group_response" style="float:right;font-size:16px"></div>
                 </div>
@@ -77,13 +77,13 @@
                         </div>
                     </div>
                     <hr>
-                    <button id="btn_delete_group" type="button" class="btn btn-primary" onclick="delete_group()">
+                    <button id="btn_delete_group" type="button" class="btn btn-danger" onclick="delete_group()">
                         Delete
                     </button>
                 </div>
             </div>
         </div>
-        <div id="create_network_tab" class="tab-pane fade">
+        <div id="network_tab" class="tab-pane fade">
             <div id="div_create_network" name="div_create_network" class="panel panel-primary">
                 <div class="panel-heading">Create Network
                     <div id="create_network_response" style="float:right;font-size:16px"></div>
@@ -94,7 +94,7 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Network name"
+                                          title="Network"
                                           data-content="Specify the name of the new network">
                                     </span>
                         </label>
@@ -108,7 +108,7 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Encapsulation"
+                                          title="VLAN"
                                           data-content="Specify the VLAN of the new network">
                                     </span>
                         </label>
@@ -138,7 +138,7 @@
                     </button>
                 </div>
             </div>
-            <div id="div_delete_network" name="div_delete_network" class="panel panel-primary">
+            <div id="div_delete_network" name="div_delete_network" class="panel panel-danger">
                 <div class="panel-heading">Delete Network
                     <div id="delete_network_response" style="float:right;font-size:16px"></div>
                 </div>
@@ -163,7 +163,7 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Group"
+                                          title="Network"
                                           data-content="Select the network to be deleted">
                                     </span>
                         </label>
@@ -175,7 +175,7 @@
 
                     </div>
                     <hr>
-                    <button id="btn_delete_network" type="button" class="btn btn-primary" onclick="delete_network()">
+                    <button id="btn_delete_network" type="button" class="btn btn-danger" onclick="delete_network()">
                         Delete
                     </button>
                 </div>
@@ -256,8 +256,50 @@
                     <input type="hidden" name="create_network_profile_dns" id="create_network_profile_dns" value=""/>
                 </div>
             </div>
+            <div id="div_delete_network_profile" name="div_delete_network" class="panel panel-danger">
+                <div class="panel-heading">Delete VLAN Profile
+                    <div id="delete_network_profile_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> VLAN Profile
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="VLAN"
+                                          data-content="Select the vlan profile to delete">
+                                    </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_network_profile" name="sel_delete_network_profile"
+                                    class="form-control sel-net-profile"
+                                    onchange="get_delete_network_profile_networks();">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <table id="table_delete_network_profile" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Group</th>
+                                <th>Network</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_network_profile" type="button" class="btn btn-danger"
+                            onclick="delete_network_profile()">
+                        Delete
+                    </button>
+                    <input type="hidden" name="delete_network_profile_dns" id="delete_network_profile_dns" value=""/>
+                </div>
+            </div>
         </div>
-        <div id="create_vpc_tab" class="tab-pane fade">
+        <div id="vpc_tab" class="tab-pane fade">
             <div id="div_create_vpc" name="div_create_vpc" class="panel panel-primary">
                 <div class="panel-heading">Create Virtual Port Channel
                     <div id="create_vpc_response" style="float:right;font-size:16px"></div>
@@ -268,7 +310,7 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Network name"
+                                          title="VPC name"
                                           data-content="Specify the name of the new virtual port channel">
                                     </span>
                         </label>
@@ -297,11 +339,8 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Leaf"
-                                          data-content="Select the switch port to be assigned to the vpc. Note that
-                                          ports that have been assigned will not appear in the list. If you want
-                                          to assign those first, you first need to delete the vdc where they are
-                                          included">
+                                          title="Port"
+                                          data-content="Select the switch port to be assigned to the vpc.">
                                     </span>
                         </label>
                         <div class="{{ selectclass }}">
@@ -331,18 +370,18 @@
                     <input type="hidden" value="" id="port_dns" name="port_dns">
                 </div>
             </div>
-            <div id="div_delete_vpc" name="div_delete_vpc" class="panel panel-primary">
+            <div id="div_delete_vpc" name="div_delete_vpc" class="panel panel-danger">
                 <div class="panel-heading">Delete Virtual Port Channel
                     <div id="delete_vpc_response" style="float:right;font-size:16px"></div>
                 </div>
                 <div class="panel-body">
                     <div class="form-group">
-                        <label class="{{ labelclass }}"> VPC name
+                        <label class="{{ labelclass }}"> VPC
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Network name"
-                                          data-content="Specify the name of the new virtual port channel">
+                                          title="VPC name"
+                                          data-content="Select virtual port channel that will be deleted">
                                     </span>
                         </label>
                         <div class="{{ selectclass }}">
@@ -358,13 +397,13 @@
                         </table>
                     </div>
                     <hr>
-                    <button id="btn_delete_vpc" type="button" class="btn btn-primary" onclick="delete_vpc()">Delete
+                    <button id="btn_delete_vpc" type="button" class="btn btn-danger" onclick="delete_vpc()">Delete
                     </button>
                 </div>
             </div>
         </div>
-        <div id="div_create_vpc_access" class="tab-pane fade">
-            <div class="panel panel-primary">
+        <div id="vpc_access_tab" class="tab-pane fade">
+            <div id="div_create_vpc_access" class="panel panel-primary">
                 <div class="panel-heading">Create Virtual Port Channel Access
                     <div id="div_create_vpc_access_response" style="float:right;font-size:16px"></div>
                 </div>
@@ -423,7 +462,7 @@
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
-                                  title="Network"
+                                  title="VLAN Profile"
                                   data-content="Select the vlan profile to be assign to the virtual port channel">
                             </span>
                             </label>
@@ -439,7 +478,7 @@
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
-                                  title="Leaf"
+                                  title="VPC"
                                   data-content="Select the virtual port channel to be assigned to the network">
                             </span>
                         </label>
@@ -453,68 +492,121 @@
                     <button id="btn_create_vpc_access" type="button" class="btn btn-primary"
                             onclick="create_vpc_access()">Assign
                     </button>
-                    <input type="hidden" name="create_vpc_access_type" id="create_vpc_access_type" value=""/>
+                    <input type="hidden" name="create_vpc_access_type" id="create_vpc_access_type" value="single_vlan"/>
                 </div>
 
             </div>
-            <div id="div_delete_vpc_access" name="div_delete_vpc_access" class="panel panel-primary">
+            <div id="div_delete_vpc_access" name="div_delete_vpc_access" class="panel panel-danger">
                 <div class="panel-heading">Delete Virtual Port Channel Access
                     <div id="div_delete_vpc_access_response" style="float:right;font-size:16px"></div>
                 </div>
                 <div class="panel-body">
-                    <div class="form-group">
-                        <label class="{{ labelclass }}"> Group
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#"
+                               onclick="$('#vlan_profile_delete_vpc_access').css('display','none');
+                            $('#single_vlan_delete_vpc_access').css('display','');
+                            $('#delete_vpc_access_type').val('single_vlan')">
+                                Single VLAN</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="#"
+                                        onclick="$('#single_vlan_delete_vpc_access').css('display','none');
+                            $('#vlan_profile_delete_vpc_access').css('display','');
+                            $('#delete_vpc_access_type').val('vlan_profile')">
+                            VLAN Profile</a></li>
+                    </ul>
+                    <br/>
+                    <div id="single_vlan_delete_vpc_access">
+                        <div class="form-group">
+                            <label class="{{ labelclass }}"> Group
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Group"
+                                  data-content="Select the group to be removed from the virtual port channel">
+                            </span>
+                            </label>
+                            <div class="{{ selectclass }}">
+                                <select id="sel_group_delete_vpc_access" name="sel_group_delete_vpc_access"
+                                        class="form-control sel-group" onchange="get_delete_vpc_access_networks()">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="{{ labelclass }}"> Network
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
                                   title="Network"
-                                  data-content="Select the group to be assign to the virtual port channel">
+                                  data-content="Select the network to be removed from the virtual port channel">
                             </span>
-                        </label>
-                        <div class="{{ selectclass }}">
-                            <select id="sel_group_delete_vpc_access" name="sel_group_delete_vpc_access"
-                                    class="form-control sel-group" onchange="get_delete_vpc_access_networks()">
-                            </select>
+                            </label>
+                            <div class="{{ selectclass }}">
+                                <select id="sel_network_delete_vpc_access" name="sel_network_delete_vpc_access"
+                                        class="form-control" onchange="get_delete_vpc_access_assignments()">
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <label class="{{ labelclass }}"> Network
+                        <div class="form-group">
+                            <label class="{{ labelclass }}"> VPC
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
-                                  title="Network"
-                                  data-content="Select the network to be assign to the virtual port channel">
+                                  title="VPC"
+                                  data-content="Select the virtual port channel to be removed from the network
+                                  or profile">
                             </span>
-                        </label>
-                        <div class="{{ selectclass }}">
-                            <select id="sel_network_delete_vpc_access" name="sel_network_delete_vpc_access"
-                                    class="form-control" onchange="get_delete_vpc_access_assignments()">
-                            </select>
+                            </label>
+                            <div class="{{ selectclass }}">
+                                <select id="sel_vpc_delete_vpc_access" name="sel_vpc_delete_vpc_access"
+                                        class="form-control">
+                                </select>
+                            </div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="{{ labelclass }}"> VPC
+                    <div id="vlan_profile_delete_vpc_access" style="display:none">
+                        <div class="form-group">
+                            <label class="{{ labelclass }}"> VLAN Profile
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
-                                  title="Leaf"
-                                  data-content="Select the virtual port channel to be assigned to the network">
+                                  title="VLAN Profile"
+                                  data-content="Select the vlan profile to be removed from the virtual port channel">
                             </span>
-                        </label>
-                        <div class="{{ selectclass }}">
-                            <select id="sel_vpc_delete_vpc_access" name="sel_vpc_delete_vpc_access"
-                                    class="form-control sel-vpc">
-                            </select>
+                            </label>
+                            <div class="{{ selectclass }}">
+                                <select id="sel_profile_delete_vpc_access" name="sel_profile_delete_vpc_access"
+                                        class="form-control sel-net-profile">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="{{ labelclass }}"> VPC
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VPC"
+                                  data-content="Select the virtual port channel to be removed from the network
+                                  profile">
+                            </span>
+                            </label>
+                            <div class="{{ selectclass }}">
+                                <select id="sel_vpc_delete_vpc_access_profile" name="sel_vpc_delete_vpc_access_profile"
+                                        class="form-control sel-vpc">
+                                </select>
+                            </div>
                         </div>
                     </div>
+
                     <hr>
-                    <button id="btn_delete_network_vpc_assignments" type="button" class="btn btn-primary"
+                    <button id="btn_delete_network_vpc_assignments" type="button" class="btn btn-danger"
                             onclick="delete_network_vpc_assignments()">Remove assignment
                     </button>
+                    <input type="hidden" name="delete_vpc_access_type" id="delete_vpc_access_type" value="single_vlan"/>
                 </div>
             </div>
         </div>
-        <div id="div_create_port_access" class="tab-pane fade">
+        <div id="port_access_tab" class="tab-pane fade">
             <div class="panel panel-primary">
                 <div class="panel-heading"> Create Single Port Access
                     <div id="create_single_access_response" style="float:right;font-size:16px"></div>
@@ -526,13 +618,13 @@
                             <a data-toggle="tab" href="#"
                                onclick="$('#vlan_profile_port').css('display','none');
                             $('#single_vlan_port').css('display','');
-                            $('#create_port_access_type').val('single_vlan_port')">
+                            $('#create_port_access_type').val('single_vlan')">
                                 Single VLAN</a>
                         </li>
                         <li class=""><a data-toggle="tab" href="#"
                                         onclick="$('#single_vlan_port').css('display','none');
                             $('#vlan_profile_port').css('display','');
-                            $('#create_port_access_type').val('vlan_profile_port')">
+                            $('#create_port_access_type').val('vlan_profile')">
                             VLAN Profile</a></li>
                     </ul>
                     <br/>
@@ -619,16 +711,32 @@
                     <button id="btn_delete_single_access" type="button" class="btn btn-primary"
                             onclick="create_single_access()">Create
                     </button>
-                    <input type="hidden" name="create_port_access_type" id="create_port_access_type" value=""/>
+                    <input type="hidden" name="create_port_access_type" id="create_port_access_type"
+                           value="single_vlan"/>
                 </div>
 
             </div>
-            <div class="panel panel-primary">
+            <div class="panel panel-danger">
                 <div class="panel-heading">Delete Single Port Access
                     <div id="delete_single_access_response" style="float:right;font-size:16px"></div>
                 </div>
                 <div class="panel-body">
-                    <div class="panel-body">
+                    <ul class="nav nav-tabs">
+                        <li class="active">
+                            <a data-toggle="tab" href="#"
+                               onclick="$('#delete_vlan_profile_port').css('display','none');
+                            $('#delete_single_vlan_port').css('display','');
+                            $('#delete_port_access_type').val('single_vlan')">
+                                Single VLAN</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="#"
+                                        onclick="$('#delete_single_vlan_port').css('display','none');
+                            $('#delete_vlan_profile_port').css('display','');
+                            $('#delete_port_access_type').val('vlan_profile')">
+                            VLAN Profile</a></li>
+                    </ul>
+                    <br/>
+                    <div id="delete_single_vlan_port">
                         <div class="form-group">
                             <label class="{{ labelclass }}"> Group
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
@@ -661,42 +769,60 @@
                                 </select>
                             </div>
                         </div>
+                    </div>
+                    <div id="delete_vlan_profile_port" style="display:none">
                         <div class="form-group">
-                            <label class="{{ labelclass }}"> Leaf switch
+                            <label class="{{ labelclass }}"> VLAN Profile
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VLAN Profile"
+                                  data-content="Select the VLAN profile to be assign to the virtual port channel">
+                            </span>
+                            </label>
+                            <div class="{{ selectclass }}">
+                                <select id="sel_profile_delete_port_access" name="sel_profile_delete_port_access"
+                                        class="form-control sel-net-profile">
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Leaf switch
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
                                   title="Leaf"
                                   data-content="Select the leaf switch to be assigned to the network">
                             </span>
-                            </label>
-                            <div class="{{ selectclass }}">
-                                <select id="sel_delete_single_access_leaf" name="sel_delete_single_access_leaf"
-                                        class="form-control sel-leaf" onchange="get_delete_single_access_ports()">
-                                </select>
-                            </div>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_single_access_leaf" name="sel_delete_single_access_leaf"
+                                    class="form-control sel-leaf" onchange="get_delete_single_access_ports()">
+                            </select>
                         </div>
-                        <div class="form-group">
-                            <label class="{{ labelclass }}"> Port
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Port
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                   data-toggle="popover"
                                   data-trigger="hover"
-                                  title="Leaf"
+                                  title="Port"
                                   data-content="Select the switch port to be assigned to the network">
                             </span>
-                            </label>
-                            <div class="{{ selectclass }}">
-                                <select id="sel_delete_single_access_port" name="sel_delete_single_access_port"
-                                        class="form-control">
-                                </select>
-                            </div>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_single_access_port" name="sel_delete_single_access_port"
+                                    class="form-control">
+                            </select>
                         </div>
-
-                        <hr>
-                        <button id="btn_create_single_access" type="button" class="btn btn-primary"
-                                onclick="delete_single_access()">Remove Assignment
-                        </button>
                     </div>
+                    <hr>
+                    <button id="btn_create_single_access" type="button" class="btn btn-danger"
+                            onclick="delete_single_access()">Remove Assignment
+                    </button>
+                    <input type="hidden" name="delete_port_access_type" id="delete_port_access_type"
+                           value="single_vlan"/>
                 </div>
             </div>
         </div>
@@ -711,13 +837,13 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Group"
-                                          data-content="Select the group to be deleted">
+                                          title="IP"
+                                          data-content="Ingress the switch management IP">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
                             <input type="text" class="form-control" maxlength="50" id="ip_access_switch" value=""
-                                   name="ip_access_switch" placeholder="Name">
+                                   name="ip_access_switch" placeholder="x.x.x.x">
                         </div>
                     </div>
                     <div class="form-group">
@@ -725,14 +851,14 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Group"
-                                          data-content="Select the group to be deleted">
+                                          title="Interface"
+                                          data-content="Ingress the interface to be configured">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
                             <input type="text" class="form-control" maxlength="50" id="interface_access_switch"
                                    value=""
-                                   name="interface_access_switch" placeholder="Name">
+                                   name="interface_access_switch" placeholder="Ethernet x/x">
                         </div>
                     </div>
                     <div class="form-group">
@@ -740,13 +866,13 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Group"
-                                          data-content="Select the group to be deleted">
+                                          title="VLAN"
+                                          data-content="Specify the network to be configured inside the switch">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
                             <input type="text" class="form-control" maxlength="50" id="vlan_access_switch" value=""
-                                   name="vlan_access_switch" placeholder="Name">
+                                   name="vlan_access_switch" placeholder="Vlan number">
                         </div>
                     </div>
                     <hr>
@@ -1177,6 +1303,26 @@ function get_network_profiles(){
             $('#network_form').submit();
             $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
+}
+
+function get_delete_network_profile_networks(){
+    $('#sel_delete_network_profile').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('get_delete_network_profile_networks')
+            $('#network_form').submit();
+            $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_delete_network_profile').rules('remove','required')
+}
+
+function delete_network_profile(){
+    $('#sel_delete_network_profile').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('delete_network_profile')
+            $('#network_form').submit();
+            $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_delete_network_profile').rules('remove','required')
 }
 
 
