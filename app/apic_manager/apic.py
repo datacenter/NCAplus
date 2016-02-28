@@ -10,11 +10,30 @@ from cobra.mit.session import LoginSession
 from cobra.mit.request import ConfigRequest, CommitError
 from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
 from cobra.model.vmm import ProvP, DomP, UsrAccP, CtrlrP, RsAcc
-# from cobra.modelimpl.infra.nodep import NodeP
 from cobra.mit.request import DnQuery, ClassQuery
 from cobra.model.vz import Filter, BrCP, Subj, RsSubjFiltAtt
-from cobra.modelimpl.fvns.vlaninstp import VlanInstP
 from cobra.modelimpl.fvns.encapblk import EncapBlk
+from cobra.modelimpl.infra.accportp import AccPortP
+from cobra.modelimpl.infra.hports import HPortS
+from cobra.modelimpl.infra.rsaccbasegrp import RsAccBaseGrp
+from cobra.modelimpl.infra.rsaccportp import RsAccPortP
+from cobra.modelimpl.infra.portblk import PortBlk
+from cobra.modelimpl.infra.nodep import NodeP
+from cobra.modelimpl.infra.leafs import LeafS
+from cobra.modelimpl.infra.nodeblk import NodeBlk
+from cobra.modelimpl.infra.accbndlgrp import AccBndlGrp
+from cobra.modelimpl.infra.rsattentp import RsAttEntP
+from cobra.modelimpl.infra.rshifpol import RsHIfPol
+from cobra.modelimpl.infra.rsl2ifpol import RsL2IfPol
+from cobra.modelimpl.infra.rslacppol import RsLacpPol
+from cobra.modelimpl.lacp.lagpol import LagPol
+from cobra.modelimpl.infra.rslldpifpol import RsLldpIfPol
+from cobra.modelimpl.infra.rsmcpifpol import RsMcpIfPol
+from cobra.modelimpl.infra.rsmonifinfrapol import RsMonIfInfraPol
+from cobra.modelimpl.infra.rsstormctrlifpol import RsStormctrlIfPol
+from cobra.modelimpl.infra.rsstpifpol import RsStpIfPol
+from cobra.modelimpl.infra.rscdpifpol import RsCdpIfPol
+from cobra.modelimpl.vpc.dom import Dom
 import re
 
 
@@ -354,8 +373,8 @@ class Apic:
         result.append(port_ids)
         return result
 
-    def get_switch_by_port(self, port_o):
-        port_mo = self.moDir.lookupByDn(port_o.port_dn)
+    def get_switch_by_port(self, port_dn):
+        port_mo = self.moDir.lookupByDn(port_dn)
         switch_sys_mo = self.moDir.lookupByDn(port_mo.parentDn)
         switch_mo = self.moDir.lookupByDn(switch_sys_mo.parentDn)
         return switch_mo
@@ -412,3 +431,75 @@ class Apic:
                 self.commit(vlan)
                 break
 
+    def create_vpc_interface_profile(self, port_dn, if_group_profile_dn, name):
+        # Create interface profile
+        port_mo = self.moDir.lookupByDn(port_dn)
+        interface_p = AccPortP('uni/infra/', name + 'vpc_port_' + str(port_mo.id).split('/')[1])
+        self.commit(interface_p)
+        # Create interface selector
+        if_sel_mo = HPortS(interface_p.dn, 'port_' + str(port_mo.id).split('/')[1], 'range')
+        self.commit(if_sel_mo)
+        # Assign interface selector to interface policy group 3850-VPC
+        rs_access_base_group_mo = RsAccBaseGrp(if_sel_mo.dn, tDn=str(if_group_profile_dn))
+        self.commit(rs_access_base_group_mo)
+        # Create port block
+        port_blk_mo = PortBlk(if_sel_mo.dn, str(port_mo.id).replace('/', '-'),
+                              fromCard=str(port_mo.id).split('/')[0].replace('eth', ''),
+                              fromPort=str(port_mo.id).split('/')[1],
+                              toCard=str(port_mo.id).split('/')[0].replace('eth', ''),
+                              toPort=str(port_mo.id).split('/')[1])
+        self.commit(port_blk_mo)
+        return interface_p
+
+    def create_if_policy_group(self, name):
+        policy_group_mo = AccBndlGrp('uni/infra/funcprof/', name, lagT='node')
+        self.commit(policy_group_mo)
+        # Assign attached entity profile
+        self.commit(
+            RsAttEntP(policy_group_mo.dn, tDn='uni/infra/attentp-FEDEX_AEP')
+        )
+        # Assign interface policies
+        self.commit(
+            RsCdpIfPol(policy_group_mo.dn, tnCdpIfPolName='CDP-ON')
+        )
+        self.commit(
+            RsHIfPol(policy_group_mo.dn, tnFabricHIfPolName='1GB')
+        )
+        self.commit(
+            RsL2IfPol(policy_group_mo.dn, tnL2IfPolName='default')
+        )
+        self.commit(
+            RsLacpPol(policy_group_mo.dn, tnLacpLagPolName='LACP')
+        )
+        self.commit(
+            RsLldpIfPol(policy_group_mo.dn, tnLldpIfPolName='default')
+        )
+        self.commit(
+            RsMcpIfPol(policy_group_mo.dn, tnMcpIfPolName='default')
+        )
+        self.commit(
+            RsMonIfInfraPol(policy_group_mo.dn, tnMonInfraPolName='default')
+        )
+        self.commit(
+            RsStormctrlIfPol(policy_group_mo.dn, tnStormctrlIfPolName='default')
+        )
+        self.commit(
+            RsStpIfPol(policy_group_mo.dn, tnStpIfPolName='default')
+        )
+        return policy_group_mo
+
+    def create_vpc_switch_profile(self, switch_dn, if_profile_dn, switch_p_name):
+        # Create switch profile
+        switch_mo = self.moDir.lookupByDn(switch_dn)
+        switch_p_mo = NodeP('uni/infra/', switch_p_name + '_vpc_' + str(switch_mo.rn))
+        self.commit(switch_p_mo)
+
+        # Add switch selector
+        switch_selector_mo = LeafS(str(switch_p_mo.dn), str(switch_mo.rn), 'range')
+        self.commit(switch_selector_mo)
+        node_block_mo = NodeBlk(switch_selector_mo.dn, str(switch_mo.rn) + '_nb', from_=switch_mo.id, to_=switch_mo.id)
+        self.commit(node_block_mo)
+
+        # Add interface profile
+        rs_acc_port_p_mo = RsAccPortP(switch_p_mo.dn, if_profile_dn)
+        self.commit(rs_acc_port_p_mo)

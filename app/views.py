@@ -16,7 +16,6 @@ def create_network():
         apic_object.login(app.apic_url, app.apic_user, app.apic_password)
         g.db = model.database
         g.db.connect()
-
         if values['operation'] == 'get_groups':
             try:
                 tenants = apic_object.get_all_tenants()
@@ -166,18 +165,27 @@ def create_network():
 
         elif values['operation'] == 'create_vpc':
             try:
-                vpc_object = model.vpc.create(name=values['create_vpc_name'])
+                # vpc_object = model.vpc.create(name=values['create_vpc_name'])
                 selected_ports = str(values['port_dns']).split(';')
                 for port_dn in selected_ports:
                     if len(port_dn) > 0:
+                        # TODO: Check if vpc name has been used
                         # Check if port already exists
-                        port_list = model.port.select().where(model.port.port_dn == port_dn)
-                        if len(port_list) > 0:
-                            model.port.update(assigned_vpc=vpc_object.id).where(model.port.port_dn == port_dn).execute()
-                        else:
-                            model.port.create(port_dn=port_dn,
-                                              assigned_vpc=vpc_object.id)
-                # TODO: Create VPC in APIC
+                        # port_list = model.port.select().where(model.port.port_dn == port_dn)
+                        # if len(port_list) > 0:
+                        #    model.port.update(assigned_vpc=vpc_object.id).where(model.port.port_dn == port_dn).execute()
+                        # else:
+                        #    model.port.create(port_dn=port_dn,
+                        #                      assigned_vpc=vpc_object.id)
+                        switch_mo = apic_object.get_switch_by_port(port_dn)
+                        if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'])
+                        if_profile = apic_object.create_vpc_interface_profile(
+                            port_dn, if_policy_group_mo.dn, values['create_vpc_name']
+                        )
+                        apic_object.create_vpc_switch_profile(
+                            str(switch_mo.dn), str(if_profile.dn), values['create_vpc_name']
+                        )
+
                 vpc_list = model.vpc.select()
                 option_list = '<option value="">Select</option>'
                 for vpc in vpc_list:
@@ -194,7 +202,9 @@ def create_network():
                         '</tbody>'
                 obj_response.html("#vpc_ports", table)
                 obj_response.html("#sel_port_create_vpc", '')
+                obj_response.script('$("#create_vpc_name").val("")')
                 obj_response.script('$("#sel_leaf_create_vpc").val("")')
+                obj_response.script('get_vpcs()')
                 obj_response.html("#create_vpc_response", '<label class="label label-success" > '
                                                           '<i class="fa fa-check-circle"></i> Created </label>')
             except Exception as e:
@@ -218,7 +228,7 @@ def create_network():
                 for port in port_list:
                     if len(port.port_dn) > 0:
                         port_mo = apic_object.moDir.lookupByDn(port.port_dn)
-                        switch_mo = apic_object.get_switch_by_port(port)
+                        switch_mo = apic_object.get_switch_by_port(port.port_dn)
                         table += '<tr><td>' + str(switch_mo.rn) + '</td><td>' + port_mo.id + '</td></tr>'
 
                 table += '</tbody>'
