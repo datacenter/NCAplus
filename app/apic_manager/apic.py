@@ -33,6 +33,7 @@ from cobra.modelimpl.infra.rsmonifinfrapol import RsMonIfInfraPol
 from cobra.modelimpl.infra.rsstormctrlifpol import RsStormctrlIfPol
 from cobra.modelimpl.infra.rsstpifpol import RsStpIfPol
 from cobra.modelimpl.infra.rscdpifpol import RsCdpIfPol
+from cobra.modelimpl.pc.aggrif import AggrIf
 from cobra.modelimpl.vpc.dom import Dom
 import re
 
@@ -439,7 +440,7 @@ class Apic:
         # Create interface selector
         if_sel_mo = HPortS(interface_p.dn, 'port_' + str(port_mo.id).split('/')[1], 'range')
         self.commit(if_sel_mo)
-        # Assign interface selector to interface policy group 3850-VPC
+        # Assign interface selector to interface policy group
         rs_access_base_group_mo = RsAccBaseGrp(if_sel_mo.dn, tDn=str(if_group_profile_dn))
         self.commit(rs_access_base_group_mo)
         # Create port block
@@ -503,3 +504,46 @@ class Apic:
         # Add interface profile
         rs_acc_port_p_mo = RsAccPortP(switch_p_mo.dn, if_profile_dn)
         self.commit(rs_acc_port_p_mo)
+
+    def get_vpc_ports(self, vpc_dn):
+        result = []
+        fabric_path_ep_mo = self.moDir.lookupByDn(vpc_dn)
+        pc_aggr_vpc_mo_list = filter(
+            lambda x: x.name == fabric_path_ep_mo.name, self.moDir.query(ClassQuery('pcAggrIf'))
+        )
+        for pc_aggr_vpc_mo in pc_aggr_vpc_mo_list:
+            RsMbrIfs_mo_list = filter(
+                lambda x: type(x).__name__ == 'RsMbrIfs', self.query_child_objects(str(pc_aggr_vpc_mo.dn))
+            )
+            for RsMbrIfs_mo in RsMbrIfs_mo_list:
+                result.append(RsMbrIfs_mo)
+        return result
+
+    def get_switch_by_vpc_port(self, rsmbrifs_dn):
+        vpc_port_mo = self.moDir.lookupByDn(rsmbrifs_dn)
+        switch_vpc_mo = self.moDir.lookupByDn(vpc_port_mo.parentDn)
+        switch_sys_mo = self.moDir.lookupByDn(switch_vpc_mo.parentDn)
+        switch_mo = self.moDir.lookupByDn(switch_sys_mo.parentDn)
+        return switch_mo
+
+    def delete_vpc(self, vpc_dn):
+        # Delete interface profile
+        vpc_mo = self.moDir.lookupByDn(vpc_dn)
+        # Delete policy group
+        AccBndlGrp_mo = filter(lambda x: x.name == vpc_mo.name, self.moDir.query(ClassQuery('infraAccBndlGrp')))[0]
+        AccBndlGrp_mo.delete()
+        self.commit(AccBndlGrp_mo)
+        # Delete interface profiles
+        AccPortP_mo_list = filter(
+            lambda x: vpc_mo.name + 'vpc' in x.name, self.moDir.query(ClassQuery('infraAccPortP'))
+        )
+        for AccPortP_mo in AccPortP_mo_list:
+            AccPortP_mo.delete()
+            self.commit(AccPortP_mo)
+        # Delete switch profiles
+        NodeP_mo_list = filter(
+            lambda x: vpc_mo.name in x.name  + 'vpc', self.moDir.query(ClassQuery('infraNodeP'))
+        )
+        for NodeP_mo in NodeP_mo_list:
+            NodeP_mo.delete()
+            self.commit(NodeP_mo)

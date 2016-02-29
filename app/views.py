@@ -217,7 +217,7 @@ def create_network():
 
         elif values['operation'] == 'get_delete_vpc_assigned_ports':
             try:
-                port_list = model.port.select().where(model.port.assigned_vpc == values['sel_delete_vpc_name'])
+                port_list = apic_object.get_vpc_ports(values['sel_delete_vpc_name'])
                 table = '<thead>' \
                             '<tr>' \
                                 '<th>Switch</th>' \
@@ -225,12 +225,9 @@ def create_network():
                             '</tr>' \
                         '</thead>' \
                         '<tbody>'
-                for port in port_list:
-                    if len(port.port_dn) > 0:
-                        port_mo = apic_object.moDir.lookupByDn(port.port_dn)
-                        switch_mo = apic_object.get_switch_by_port(port.port_dn)
-                        table += '<tr><td>' + str(switch_mo.rn) + '</td><td>' + port_mo.id + '</td></tr>'
-
+                for vpc_port_mo in port_list:
+                    switch_mo = apic_object.get_switch_by_vpc_port(str(vpc_port_mo.dn))
+                    table += '<tr><td>' + str(switch_mo.rn) + '</td><td>' + str(vpc_port_mo.tSKey) + '</td></tr>'
                 table += '</tbody>'
                 obj_response.html("#delete_vpc_ports", table)
                 obj_response.html("#delete_vpc_response", '')
@@ -261,18 +258,11 @@ def create_network():
 
         elif values['operation'] == 'delete_vpc':
             try:
-                # TODO: Delete VPC from APIC
-                model.vpc.delete().where(model.vpc.id == int(values['sel_delete_vpc_name'])).execute()
-                model.port.update(assigned_vpc=None).where(
-                    model.port.assigned_vpc == int(values['sel_delete_vpc_name'])).execute()
-                vpc_list = model.vpc.select()
-                option_list = '<option value="">Select</option>'
-                for vpc in vpc_list:
-                    option_list += '<option value="' + str(vpc.id) + '">' + vpc.name + '</option>'
-                obj_response.html(".sel-vpc", option_list)
-                obj_response.html("#delete_vpc_ports", '')
+                apic_object.delete_vpc(values['sel_delete_vpc_name'])
+                obj_response.script('get_vpcs();')
+                obj_response.html("#delete_vpc_ports", "")
                 obj_response.html("#delete_vpc_response", '<label class="label label-success" > '
-                                                          '<i class="fa fa-check-circle"></i> Created </label>')
+                                                          '<i class="fa fa-check-circle"></i> Deleted </label>')
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.html("#delete_vpc_response", '<label class="label label-danger" > '
@@ -363,8 +353,9 @@ def create_network():
                 vpc_assignments = apic_object.get_vpc_assignments(values['sel_network_delete_vpc_access'])
                 option_list = '<option value="">Select</option>'
                 for vpc_assignment in vpc_assignments:
-                    vpc = apic_object.moDir.lookupByDn(str(vpc_assignment.tDn))
-                    option_list += '<option value="' + str(vpc_assignment.dn) + '">' + vpc.name + '</option>'
+
+                    option_list += '<option value="' + str(vpc_assignment.dn) + '">' + \
+                                   str(vpc_assignment.tDn).split('[')[1][:-1] + '</option>'
                 obj_response.html("#sel_vpc_delete_vpc_access", option_list)
                 obj_response.html("#div_delete_vpc_access_response", '')
             except Exception as e:
@@ -684,6 +675,18 @@ def create_network():
             obj_response.script('get_network_profiles()')
             obj_response.script('$("#sel_delete_network_profile").val("")')
 
+        elif values['operation'] == 'configure_access_switch':
+            try:
+                pass
+                obj_response.html("#access_switch_response", '<label class="label label-success" > '
+                                                                      '<i class="fa fa-check-circle"></i> '
+                                                                      'Configured</label>')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.html("#access_switch_response", '<label class="label label-danger" > '
+                                                                      '<i class="fa fa-times-circle"></i> '
+                                                                      'Can not configure: ' + e.message +
+                                                                      '</label>')
 
     if g.sijax.is_sijax_request:
         g.sijax.register_callback('network_form_handler', network_form_handler)

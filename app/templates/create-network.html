@@ -838,45 +838,74 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="IP"
-                                          data-content="Ingress the switch management IP">
+                                          data-content="Ingress the switch IP">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
-                            <input type="text" class="form-control" maxlength="50" id="ip_access_switch" value=""
-                                   name="ip_access_switch" placeholder="x.x.x.x">
+                            <input type="text" class="form-control" maxlength="50" id="access_switch_ip" value=""
+                                   name="access_switch_ip" placeholder="x.x.x.x">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="{{ labelclass }}"> Interface
+                        <label class="{{ labelclass }}"> User
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Interface"
-                                          data-content="Ingress the interface to be configured">
+                                          title="User"
+                                          data-content="Ingress the switch username to be configured">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
-                            <input type="text" class="form-control" maxlength="50" id="interface_access_switch"
+                            <input type="text" class="form-control" maxlength="50" id="access_switch_user"
                                    value=""
-                                   name="interface_access_switch" placeholder="Ethernet x/x">
+                                   name="access_switch_user" placeholder="Username">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="{{ labelclass }}"> VLAN
+                        <label class="{{ labelclass }}"> Password
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="VLAN"
+                                          title="Password"
                                           data-content="Specify the network to be configured inside the switch">
                                     </span>
                         </label>
                         <div class="{{ txtinputclassmd }}">
-                            <input type="text" class="form-control" maxlength="50" id="vlan_access_switch" value=""
-                                   name="vlan_access_switch" placeholder="Vlan number">
+                            <input type="password" class="form-control" maxlength="50" id="access_switch_password"
+                                   value="" name="access_switch_password" placeholder="*********">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Hostname
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Hostname"
+                                          data-content="Specify the switch hostname">
+                                    </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="access_switch_hostname"
+                                   value="" name="access_switch_hostname" placeholder="">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Commands
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="VLAN"
+                                          data-content="Commands to be executed within the access switch">
+                                    </span>
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <textarea class="form-control" maxlength="500" id="access_switch_commands"
+                                   value="" name="access_switch_password" placeholder="Enter commands, one per line"
+                            style="font-family: inherit;min-height: 150px;"></textarea>
                         </div>
                     </div>
                     <hr>
-                    <button id="btn_access_switch" type="button" class="btn btn-primary" onclick="access_switch()">
+                    <button id="btn_access_switch" type="button" class="btn btn-primary" onclick="configure_access_switch()">
                         Configure
                     </button>
                 </div>
@@ -1068,6 +1097,7 @@ function delete_group() {
 function get_delete_vpc_assigned_ports(){
     $('#sel_delete_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
+            $('#delete_vpc_ports').html('')
             $('#operation').val('get_delete_vpc_assigned_ports')
             $('#network_form').submit();
             $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -1325,8 +1355,23 @@ function delete_network_profile(){
     $('#sel_delete_network_profile').rules('remove','required')
 }
 
-
-
+function configure_access_switch(){
+    $('#access_switch_ip').rules('add','required')
+    $('#access_switch_user').rules('add','required')
+    $('#access_switch_password').rules('add','required')
+    $('#access_switch_commands').rules('add','required')
+    $('#access_switch_hostname').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('configure_access_switch')
+            $('#network_form').submit();
+            $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#access_switch_ip').rules('remove','required')
+    $('#access_switch_user').rules('remove','required')
+    $('#access_switch_password').rules('remove','required')
+    $('#access_switch_commands').rules('remove','required')
+    $('#access_switch_hostname').rules('remove','required')
+}
 
 
 
