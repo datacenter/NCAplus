@@ -5,7 +5,7 @@ from flask import render_template, g
 import flask_sijax
 import model
 import traceback
-
+from access_switch_manager import switch_controller
 
 @flask_sijax.route(app, '/')
 @flask_sijax.route(app, '/integration/create_network')
@@ -677,7 +677,13 @@ def create_network():
 
         elif values['operation'] == 'configure_access_switch':
             try:
-                pass
+                sc = switch_controller.switch_controller()
+                sc.send_commands(
+                    values['access_switch_ip'],
+                    values['access_switch_user'],
+                    values['access_switch_password'],
+                    values['access_switch_hostname'],
+                    values['access_switch_commands'].split('\n'))
                 obj_response.html("#access_switch_response", '<label class="label label-success" > '
                                                                       '<i class="fa fa-check-circle"></i> '
                                                                       'Configured</label>')
