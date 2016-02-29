@@ -9,7 +9,6 @@ from cobra.mit.access import MoDirectory
 from cobra.mit.session import LoginSession
 from cobra.mit.request import ConfigRequest, CommitError
 from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
-from cobra.model.vmm import ProvP, DomP, UsrAccP, CtrlrP, RsAcc
 from cobra.mit.request import DnQuery, ClassQuery
 from cobra.model.vz import Filter, BrCP, Subj, RsSubjFiltAtt
 from cobra.modelimpl.fvns.encapblk import EncapBlk
@@ -26,15 +25,17 @@ from cobra.modelimpl.infra.rsattentp import RsAttEntP
 from cobra.modelimpl.infra.rshifpol import RsHIfPol
 from cobra.modelimpl.infra.rsl2ifpol import RsL2IfPol
 from cobra.modelimpl.infra.rslacppol import RsLacpPol
-from cobra.modelimpl.lacp.lagpol import LagPol
 from cobra.modelimpl.infra.rslldpifpol import RsLldpIfPol
 from cobra.modelimpl.infra.rsmcpifpol import RsMcpIfPol
 from cobra.modelimpl.infra.rsmonifinfrapol import RsMonIfInfraPol
 from cobra.modelimpl.infra.rsstormctrlifpol import RsStormctrlIfPol
 from cobra.modelimpl.infra.rsstpifpol import RsStpIfPol
 from cobra.modelimpl.infra.rscdpifpol import RsCdpIfPol
-from cobra.modelimpl.pc.aggrif import AggrIf
-from cobra.modelimpl.vpc.dom import Dom
+from cobra.modelimpl.fvns.vlaninstp import VlanInstP
+from cobra.modelimpl.infra.rsvlanns import RsVlanNs
+from cobra.modelimpl.phys.domp import DomP
+from cobra.modelimpl.infra.attentityp import AttEntityP
+from cobra.modelimpl.infra.rsdomp import RsDomP
 import re
 
 
@@ -83,31 +84,12 @@ class Apic:
         tn_list = self.moDir.query(class_query)
         return tn_list
 
-    """
-    # Creates an access policy switch profile
-    def create_switch_profile(self, switch_profile_name):
-        infra = self.moDir.lookupByDn('uni/infra')
-        node = NodeP(infra, switch_profile_name)
-        self.commit(node)
-    """
     # Deletes an access policy switch profile
     def delete_switch_profile(self, switch_profile_name):
         switch_profile = self.moDir.lookupByDn('uni/infra/nprof-' + switch_profile_name)
         if switch_profile is not None:
             switch_profile.delete()
             self.commit(switch_profile)
-
-    # Creates a virtual machine manager profile
-    def create_vmmp(self, provider_name, vmmp_name):
-        vmmp_provider = self.moDir.lookupByDn('uni/vmmp-' + provider_name)
-        vmmp = DomP(vmmp_provider, vmmp_name)
-        self.commit(vmmp)
-
-    # Creates a virtual machine manager profile
-    def delete_vmmp(self, provider_name, vmmp_name):
-        vmmp_provider = self.moDir.lookupByDn('uni/vmmp-' + provider_name)
-        vmmp = DomP(vmmp_provider, vmmp_name)
-        self.commit(vmmp)
 
     def query_child_objects(self, dn_query_name):
         dn_query = DnQuery(dn_query_name)
@@ -119,7 +101,6 @@ class Apic:
         for dn_object in dn_object_list:
             if dn_pattern in str(dn_object.dn):
                 try:
-                    # if '[' not in str(dn_object.dn):
                     self.delete_by_dn(str(dn_object.dn))
                 except CommitError as e:
                     print 'Could not delete ' + str(dn_object.dn) + ' -> ' + str(e)
@@ -393,8 +374,18 @@ class Apic:
         rspath = RsPathAtt(epg_dn, vpc_dn, encap='vlan-' + str(vlan_number))
         self.commit(rspath)
 
-    def associate_epg_physical_domain(self, epg_dn, physicaldom_dn='uni/phys-FEDEX_PhysicalDomain'):
-        rsdom = RsDomAtt(epg_dn, physicaldom_dn)
+    def associate_epg_physical_domain(self, epg_dn, physical_domain_name):
+        class_query = ClassQuery('physDomP')
+        class_query.propFilter = 'eq(physDomP.name, "pd-' + physical_domain_name +'")'
+        pd_list = self.moDir.query(class_query)
+        # If the physical domain does not exists, create it with the vlan pool and the attachable entity profile
+        if len(pd_list) == 0:
+            vlan_pool_mo = self.create_vlan_pool('vlan-pool-' + physical_domain_name, 'static')
+            DomP_mo = self.create_physical_domain('pd-' + physical_domain_name, str(vlan_pool_mo.dn))
+            self.create_attachable_entity_profile('aep-' + physical_domain_name, str(DomP_mo.dn))
+        else:
+            DomP_mo = pd_list[0]
+        rsdom = RsDomAtt(epg_dn, str(DomP_mo.dn))
         self.commit(rsdom)
 
     def get_vpc_assignments(self, epg_dn):
@@ -419,18 +410,34 @@ class Apic:
             rspathatt_list[0].delete()
             self.commit(rspathatt_list[0])
 
-    def add_vlan(self, vlan_number, vlan_pool_dn='uni/infra/vlanns-[FEDEX_VLANPOOL]-static'):
-        encap_mo = EncapBlk(vlan_pool_dn, 'vlan-' + str(vlan_number),'vlan-' + str(vlan_number), allocMode='static')
+    def add_vlan(self, vlan_number, vlan_pool_name):
+        class_query = ClassQuery('fvnsVlanInstP')
+        class_query.propFilter = 'eq(fvnsVlanInstP.name, "vlan-pool-' + vlan_pool_name +'")'
+        vp_list = self.moDir.query(class_query)
+        # If the vlan pool does not exists, create it with the physical domain and the attachable entity profile
+        if len(vp_list) == 0:
+            VlanInstP_mo = self.create_vlan_pool('vlan-pool-' + vlan_pool_name, 'static')
+            DomP_mo = self.create_physical_domain('pd-' + vlan_pool_name, str(VlanInstP_mo.dn))
+            self.create_attachable_entity_profile('aep-' + vlan_pool_name,str(DomP_mo.dn))
+        else:
+            VlanInstP_mo = vp_list[0]
+        encap_mo = EncapBlk(str(VlanInstP_mo.dn), 'vlan-' + str(vlan_number),
+                            'vlan-' + str(vlan_number), allocMode='static')
         self.commit(encap_mo)
         pass
 
-    def remove_vlan(self, vlan_number, vlan_pool_dn='uni/infra/vlanns-[FEDEX_VLANPOOL]-static'):
-        vlan_pool_children = self.query_child_objects(vlan_pool_dn)
-        for vlan in vlan_pool_children:
-            if vlan.to == 'vlan-' + str(vlan_number):
-                vlan.delete()
-                self.commit(vlan)
-                break
+    def remove_vlan(self, vlan_number, vlan_pool_name):
+        class_query = ClassQuery('fvnsVlanInstP')
+        class_query.propFilter = 'eq(fvnsVlanInstP.name, "vlan-pool-' + vlan_pool_name +'")'
+        vp_list = self.moDir.query(class_query)
+        # Check if vlan pool exists
+        if len(vp_list) == 0:
+            vlan_pool_children = self.query_child_objects(str(vp_list[0].dn))
+            for vlan in vlan_pool_children:
+                if vlan.to == 'vlan-' + str(vlan_number):
+                    vlan.delete()
+                    self.commit(vlan)
+                    break
 
     def create_vpc_interface_profile(self, port_dn, if_group_profile_dn, name):
         # Create interface profile
@@ -452,12 +459,22 @@ class Apic:
         self.commit(port_blk_mo)
         return interface_p
 
-    def create_if_policy_group(self, name):
+    def create_if_policy_group(self, name, aep_name):
         policy_group_mo = AccBndlGrp('uni/infra/funcprof/', name, lagT='node')
         self.commit(policy_group_mo)
+        # if attachable entity profile does not exists, creates a new one
+        class_query = ClassQuery('infraAttEntityP')
+        class_query.propFilter = 'eq(infraAttEntityP.name, "aep-' + aep_name +'")'
+        pd_list = self.moDir.query(class_query)
+        if len(pd_list) == 0:
+            vlan_pool_mo = self.create_vlan_pool('vlan-pool-' + aep_name, 'static')
+            DomP_mo = self.create_physical_domain('pd-' + aep_name, str(vlan_pool_mo.dn))
+            AttEntityP_mo = self.create_attachable_entity_profile('aep-' + aep_name, str(DomP_mo.dn))
+        else:
+            AttEntityP_mo = pd_list[0]
         # Assign attached entity profile
         self.commit(
-            RsAttEntP(policy_group_mo.dn, tDn='uni/infra/attentp-FEDEX_AEP')
+            RsAttEntP(policy_group_mo.dn, tDn=str(AttEntityP_mo.dn))
         )
         # Assign interface policies
         self.commit(
@@ -547,3 +564,49 @@ class Apic:
         for NodeP_mo in NodeP_mo_list:
             NodeP_mo.delete()
             self.commit(NodeP_mo)
+
+    def get_available_ports(self, switch_dn):
+        """
+        Search ports that are not VPC bundled
+        :return:
+        """
+        # Get switch
+        switch_mo = self.moDir.lookupByDn(switch_dn)
+        # Get all switch ports
+        switch_port_list = self.get_ports(switch_dn)
+        # Get all VPCs
+        vpc_list = self.get_vpcs()
+        # Traverse the VPCs searching matches in VPCs' ports and switch's ports.
+        for vpc_mo in vpc_list:
+            vpc_port_list = self.get_vpc_ports(str(vpc_mo.dn))
+            for vpc_port_mo in vpc_port_list:
+                vpc_switch_mo = self.get_switch_by_vpc_port(str(vpc_port_mo.dn))
+                if str(vpc_switch_mo.rn) == str(switch_mo.rn):
+                    for i in range(0, len(switch_port_list[1]) - 1):
+                        if switch_port_list[1][i] == vpc_port_mo.tSKey:
+                            # removes the item from the two lists. See get_ports method
+                            del switch_port_list[1][i]
+                            del switch_port_list[0][i]
+        return switch_port_list
+
+    def create_vlan_pool(self, vlan_pool_name, allocation_mode):
+        VlanInstP_mo = VlanInstP('uni/infra/', vlan_pool_name, allocation_mode)
+        self.commit(VlanInstP_mo)
+        return VlanInstP_mo
+
+    def create_physical_domain(self, physical_domain_name, vlan_pool_dn):
+        DomP_mo = DomP('uni/', physical_domain_name)
+        self.commit(DomP_mo)
+        if vlan_pool_dn is not None:
+            RsVlanNs_mo = RsVlanNs(DomP_mo.dn)
+            RsVlanNs_mo.tDn = vlan_pool_dn
+            self.commit(RsVlanNs_mo)
+        return DomP_mo
+
+    def create_attachable_entity_profile(self, name, physical_domain_dn):
+        AttEntityP_mo = AttEntityP('uni/infra/', name)
+        self.commit(AttEntityP_mo)
+        if physical_domain_dn is not None:
+            RsDomP_mo = RsDomP(AttEntityP_mo.dn, physical_domain_dn)
+            self.commit(RsDomP_mo)
+        return AttEntityP_mo

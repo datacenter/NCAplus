@@ -67,9 +67,9 @@ def create_network():
                                                       encapsulation=int(values['create_network_encapsulation']),
                                                       group=values['sel_create_network_group'],
                                                       epg_dn='')
-                apic_object.add_vlan(network_object.encapsulation)
+                apic_object.add_vlan(network_object.encapsulation, 'fedex')
                 epg = apic_object.create_network(network_object)
-                apic_object.associate_epg_physical_domain(str(epg.dn))
+                apic_object.associate_epg_physical_domain(str(epg.dn), 'fedex')
                 network_object.update(epg_dn=str(epg.dn)).where(
                     model.network.id == network_object.id).execute()
 
@@ -108,10 +108,10 @@ def create_network():
                 if len(network_list) > 0:
                     # Delete the network from any network profile
                     model.network_profilexnetwork.delete().where(
-                        model.network_profilexnetwork.network.id == network_list[0].id).execute()
+                        model.network_profilexnetwork.network == network_list[0].id).execute()
                     # Delete network from database
                     model.network.delete().where(model.network.id == network_list[0].id).execute()
-                    apic_object.remove_vlan(network_list[0].encapsulation)
+                    apic_object.remove_vlan(network_list[0].encapsulation, 'fedex')
                     apic_object.delete_epg(values['sel_delete_network_name'])
                     obj_response.script('get_sel_delete_networks()')
                     obj_response.html("#delete_network_response", '<label class="label label-success" > '
@@ -140,7 +140,7 @@ def create_network():
             # """ Returns only available ports """
             try:
                 option_list = '<option value="">Select</option>'
-                ports = apic_object.get_ports(values['sel_leaf_create_vpc'])
+                ports = apic_object.get_available_ports(values['sel_leaf_create_vpc'])
                 for i in range(0, len(ports[0])):
                     port_list = model.port.select().where(model.port.port_dn == ports[0][i])
                     if len(port_list) > 0:
@@ -178,7 +178,7 @@ def create_network():
                         #    model.port.create(port_dn=port_dn,
                         #                      assigned_vpc=vpc_object.id)
                         switch_mo = apic_object.get_switch_by_port(port_dn)
-                        if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'])
+                        if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'], 'fedex')
                         if_profile = apic_object.create_vpc_interface_profile(
                             port_dn, if_policy_group_mo.dn, values['create_vpc_name']
                         )
@@ -419,7 +419,7 @@ def create_network():
 
         elif values['operation'] == 'get_create_single_access_ports':
             try:
-                ports = apic_object.get_ports(values['sel_create_single_access_leaf'])
+                ports = apic_object.get_available_ports(values['sel_create_single_access_leaf'])
                 option_list = '<option value="">Select</option>'
                 for i in range(0, len(ports[0])):
                     option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
@@ -496,7 +496,7 @@ def create_network():
 
         elif values['operation'] == 'get_delete_single_access_ports':
             try:
-                ports = apic_object.get_ports(values['sel_delete_single_access_leaf'])
+                ports = apic_object.get_available_ports(values['sel_delete_single_access_leaf'])
                 option_list = '<option value="">Select</option>'
                 for i in range(0, len(ports[0])):
                     option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
