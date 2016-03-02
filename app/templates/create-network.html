@@ -300,6 +300,72 @@
             </div>
         </div>
         <div id="vpc_tab" class="tab-pane fade">
+            <div id="div_create_vpc_group" name="div_create_vpc_group" class="panel panel-primary">
+                <div class="panel-heading">Create VPC Switch Pair
+                    <div id="div_create_vpc_group_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> First leaf switch
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Second Leaf"
+                                          data-content="Select the first leaf switch to be bundled">
+                                    </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_create_vpc_group_leaf_1" name="sel_create_vpc_group_leaf_1"
+                                    class="form-control sel-leaf">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> Second leaf switch
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Second Leaf"
+                                          data-content="Select the second leaf switch to be bundled">
+                                    </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_create_vpc_group_leaf_2" name="sel_create_vpc_group_leaf_2"
+                                    class="form-control sel-leaf">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_create_vpc_group" type="button" class="btn btn-primary"
+                            onclick="create_vpc_group()">Create</button>
+                </div>
+            </div>
+            <div id="div_delete_vpc_group" name="div_delete_vpc" class="panel panel-danger">
+                <div class="panel-heading">Delete VPC switch pair
+                    <div id="delete_vpc_group_response" style="float:right;font-size:16px"></div>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="{{ labelclass }}"> VPC
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="VPC name"
+                                          data-content="Select virtual port channel that will be deleted">
+                                    </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_delete_vpc_group_name" name="sel_delete_vpc_group_name"
+                                    class="form-control sel-vpc-group"">
+                            </select>
+                        </div>
+                    </div>
+                    <hr>
+                    <button id="btn_delete_vpc_group" type="button" class="btn btn-danger" onclick="delete_vpc_group()">Delete
+                    </button>
+                </div>
+            </div>
             <div id="div_create_vpc" name="div_create_vpc" class="panel panel-primary">
                 <div class="panel-heading">Create Virtual Port Channel
                     <div id="create_vpc_response" style="float:right;font-size:16px"></div>
@@ -320,6 +386,21 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label class="{{ labelclass }}"> VPC group
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Leaf"
+                                          data-content="Select the virtual portchannel group to be used">
+                                    </span>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_vpc_group_create_vpc" name="sel_vpc_group_create_vpc"
+                                    class="form-control sel-vpc-group" onchange="get_leafs_by_vpc_group()">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label class="{{ labelclass }}"> Leaf switch
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
@@ -330,7 +411,7 @@
                         </label>
                         <div class="{{ selectclass }}">
                             <select id="sel_leaf_create_vpc" name="sel_leaf_create_vpc"
-                                    class="form-control sel-leaf" onchange="get_ports()">
+                                    class="form-control" onchange="get_ports()">
                             </select>
                         </div>
                     </div>
@@ -901,12 +982,13 @@
                         </label>
                         <div class="{{ txtinputclassmd }}">
                             <textarea class="form-control" maxlength="500" id="access_switch_commands"
-                                   value="" name="access_switch_commands" placeholder="Enter commands, one per line"
-                            style="font-family: inherit;min-height: 150px;"></textarea>
+                                      value="" name="access_switch_commands" placeholder="Enter commands, one per line"
+                                      style="font-family: inherit;min-height: 150px;"></textarea>
                         </div>
                     </div>
                     <hr>
-                    <button id="btn_access_switch" type="button" class="btn btn-primary" onclick="configure_access_switch()">
+                    <button id="btn_access_switch" type="button" class="btn btn-primary"
+                            onclick="configure_access_switch()">
                         Configure
                     </button>
                 </div>
@@ -939,6 +1021,7 @@
 		get_leafs();
 		get_vpcs();
 		get_network_profiles();
+		get_vpc_groups();
 	});
 
 function submit_network_form() {
@@ -989,6 +1072,7 @@ function get_leafs(){
 
 function get_ports(){
     $('#sel_leaf_create_vpc').rules("add", "required");
+    $('#sel_port_create_vpc').html("");
     if($('#network_form').valid()){
             $('#operation').val('get_ports')
             $('#network_form').submit();
@@ -1002,7 +1086,10 @@ function add_port(){
     $('#sel_port_create_vpc').rules("add", "required");
     $('#sel_leaf_create_vpc').rules("add", "required");
     if($('#network_form').valid()){
-        is_added = false;
+        add_to_list = true;
+        // Check if port has been added and if there is no more than two switches selected
+        var switch_selection = $('#sel_leaf_create_vpc option:selected').text()
+        var switch_selected_list = []
         $("#vpc_ports tr").each(function(index) {
             if (index != 0) {
 
@@ -1014,11 +1101,12 @@ function add_port(){
                        $('#create_vpc_response').html(
                        '<label class="label label-danger" > <i class="fa fa-times-circle"></i> Port already added</label>'
                        );
-                       is_added = true;
+                       add_to_list = false;
+                       return;
                 }
             }
         });
-        if (!is_added){
+        if (add_to_list){
             tr_id = ($('#sel_leaf_create_vpc option:selected').text() + $('#sel_port_create_vpc option:selected').text()).
             replace('-','').replace('/','');
             $('#vpc_ports > tbody > tr').eq(0).after(
@@ -1040,9 +1128,34 @@ function add_port(){
 }
 
 function create_vpc(){
-    if($("#vpc_ports tr").length - 2 <= 0){
+    switch_selected_list = []
+    $("#vpc_ports tr").each(function(index) {
+            if (index != 0) {
+                $row = $(this);
+                var switch_id = $row.find("td:nth-child(2)").text()
+                var is_selected = false;
+                if (switch_id != '') {
+                    for (i = 0; i < switch_selected_list.length; i++) {
+                        if (switch_selected_list[i] === switch_id){
+                            is_selected = true;
+                        }
+                    }
+
+                    if (!is_selected){
+                        switch_selected_list.push(switch_id)
+                    }
+                }
+            }
+        });
+    if($("#vpc_ports tr").length - 3 <= 0){
         $('#create_vpc_response').html(
                    '<label class="label label-danger" > <i class="fa fa-times-circle"></i> Must assign at least two ports</label>'
+                   );
+        return;
+    }
+    if(switch_selected_list.length != 2){
+         $('#create_vpc_response').html(
+                   '<label class="label label-danger" > <i class="fa fa-times-circle"></i> Must assign exactly two different switches</label>'
                    );
         return;
     }
@@ -1274,7 +1387,7 @@ function add_create_network_profile(){
 
                 $row = $(this);
 
-                var id = $row.find("td:first").text();
+                var id = $row.find("td:first").text().replace(/-/g,'').replace(/\//g,'');
 
                 if (id.indexOf(tr_id) == 0) {
                        $('#create_network_profile_response').html(
@@ -1375,7 +1488,51 @@ function configure_access_switch(){
 }
 
 
+function create_vpc_group() {
+    if ($('#sel_create_vpc_group_leaf_1').val() == $('#sel_create_vpc_group_leaf_2').val()) {
+        $('#div_create_vpc_group_response').html(
+        '<label class="label label-danger" > <i class="fa fa-times-circle">' +
+        '</i>You must choose two different leaf switches</label>');
+        return;
+    }
+    $('#sel_create_vpc_group_leaf_1').rules('add','required')
+    $('#sel_create_vpc_group_leaf_2').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('create_vpc_group')
+            $('#network_form').submit();
+            $('#div_create_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_create_vpc_group_leaf_1').rules('remove','required')
+    $('#sel_create_vpc_group_leaf_2').rules('remove','required')
+}
 
+function get_vpc_groups(){
+    if($('#network_form').valid()){
+            $('#operation').val('get_vpc_groups')
+            $('#network_form').submit();
+            $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function get_leafs_by_vpc_group() {
+    $('#sel_vpc_group_create_vpc').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('get_leafs_by_vpc_group')
+            $('#network_form').submit();
+            $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_vpc_group_create_vpc').rules('remove','required')
+}
+
+function delete_vpc_group(){
+    $('#sel_delete_vpc_group_name').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('delete_vpc_group')
+            $('#network_form').submit();
+            $('#delete_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_delete_vpc_group_name').rules('remove','required')
+}
 
 
 </script>

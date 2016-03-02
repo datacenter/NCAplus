@@ -11,6 +11,7 @@ from cobra.mit.request import ConfigRequest, CommitError
 from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
 from cobra.mit.request import DnQuery, ClassQuery
 from cobra.model.vz import Filter, BrCP, Subj, RsSubjFiltAtt
+from cobra.modelimpl.fabric.protpol import ProtPol
 from cobra.modelimpl.fvns.encapblk import EncapBlk
 from cobra.modelimpl.infra.accportp import AccPortP
 from cobra.modelimpl.infra.hports import HPortS
@@ -36,10 +37,16 @@ from cobra.modelimpl.infra.rsvlanns import RsVlanNs
 from cobra.modelimpl.phys.domp import DomP
 from cobra.modelimpl.infra.attentityp import AttEntityP
 from cobra.modelimpl.infra.rsdomp import RsDomP
-import re
+from cobra.modelimpl.fabric.explicitgep import ExplicitGEp
+from cobra.modelimpl.fabric.nodepep import NodePEp
+from cobra.modelimpl.fabric.rsvpcinstpol import RsVpcInstPol
 
+import re
+import requests
+import json
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
+
 
 def natural_keys(text):
     '''
@@ -51,13 +58,14 @@ def natural_keys(text):
 def atoi(text):
     return int(text) if text.isdigit() else text
 
-class Apic:
 
+class Apic:
     def __init__(self):
         self.session = None
         self.moDir = None
         self.configReq = None
         self.uniMo = None
+
     # Commits object changes to controller
 
     def commit(self, commit_object):
@@ -116,7 +124,8 @@ class Apic:
             self.commit(dn_object)
             print 'Deleted ---> ' + dn_name
 
-# Init the session, MoDirectory, ConfigRequest and uniMo objects.
+            # Init the session, MoDirectory, ConfigRequest and uniMo objects.
+
     def login(self, url, user, password):
         self.session = LoginSession(url, user, password)
         self.moDir = MoDirectory(self.session)
@@ -149,7 +158,7 @@ class Apic:
         bd_list = self.moDir.query(class_query)
         return bd_list
 
-    def create_filter(self,tenant_dn, filter_name):
+    def create_filter(self, tenant_dn, filter_name):
         vz_filter_mo = Filter(tenant_dn, filter_name)
         self.commit(vz_filter_mo)
 
@@ -266,28 +275,28 @@ class Apic:
             vlan_epg = epg_list[0]
 
     def create_network(self, network_o):
-            tenant_mo = self.moDir.lookupByDn(network_o.group)
-            tenant_children = self.query_child_objects(network_o.group)
-            ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
-                             tenant_children)
-            if len(ap_list) == 0:
-                network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
-            else:
-                network_ap = ap_list[0]
-            bd_list = filter(lambda x: type(x).__name__ == 'BD',
-                             tenant_children)
-            if len(bd_list) > 0:
-                bd_cxts = filter(lambda x: type(x).__name__ == 'RsCtx',
-                                     self.query_child_objects(str(bd_list[0].dn)))
-                if len(bd_cxts) > 0:
-                    if bd_cxts[0].tnFvCtxName == '':
-                        bd_cxts[0].tnFvCtxName = 'default'
-                        self.commit(bd_cxts[0])
-                return self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name + '-vlan' +
-                                       str(network_o.encapsulation))
-            else:
-                return self.create_epg(str(network_ap.dn), None, network_o.name + '-vlan' +
-                                       str(network_o.encapsulation))
+        tenant_mo = self.moDir.lookupByDn(network_o.group)
+        tenant_children = self.query_child_objects(network_o.group)
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
+                         tenant_children)
+        if len(ap_list) == 0:
+            network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
+        else:
+            network_ap = ap_list[0]
+        bd_list = filter(lambda x: type(x).__name__ == 'BD',
+                         tenant_children)
+        if len(bd_list) > 0:
+            bd_cxts = filter(lambda x: type(x).__name__ == 'RsCtx',
+                             self.query_child_objects(str(bd_list[0].dn)))
+            if len(bd_cxts) > 0:
+                if bd_cxts[0].tnFvCtxName == '':
+                    bd_cxts[0].tnFvCtxName = 'default'
+                    self.commit(bd_cxts[0])
+            return self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name + '-vlan' +
+                                   str(network_o.encapsulation))
+        else:
+            return self.create_epg(str(network_ap.dn), None, network_o.name + '-vlan' +
+                                   str(network_o.encapsulation))
 
     def delete_network(self, network_o):
         class_query = ClassQuery('fvTenant')
@@ -370,13 +379,13 @@ class Apic:
                 vpc_list.append(vdc)
         return vpc_list
 
-    def associate_epg_vpc(self,epg_dn, vpc_dn, vlan_number):
+    def associate_epg_vpc(self, epg_dn, vpc_dn, vlan_number):
         rspath = RsPathAtt(epg_dn, vpc_dn, encap='vlan-' + str(vlan_number))
         self.commit(rspath)
 
     def associate_epg_physical_domain(self, epg_dn, physical_domain_name):
         class_query = ClassQuery('physDomP')
-        class_query.propFilter = 'eq(physDomP.name, "pd-' + physical_domain_name +'")'
+        class_query.propFilter = 'eq(physDomP.name, "pd-' + physical_domain_name + '")'
         pd_list = self.moDir.query(class_query)
         # If the physical domain does not exists, create it with the vlan pool and the attachable entity profile
         if len(pd_list) == 0:
@@ -389,7 +398,8 @@ class Apic:
         self.commit(rsdom)
 
     def get_vpc_assignments(self, epg_dn):
-        return filter(lambda x: type(x).__name__ == 'RsPathAtt', self.query_child_objects(epg_dn))
+        return filter(lambda x: type(x).__name__ == 'RsPathAtt' and 'topology/pod-1/protpaths' in str(x.tDn),
+                      self.query_child_objects(epg_dn))
 
     def delete_vpc_assignment(self, rspathattr_dn):
         fv_rspathattr_mo = self.moDir.lookupByDn(rspathattr_dn)
@@ -398,7 +408,7 @@ class Apic:
             self.commit(fv_rspathattr_mo)
 
     def create_single_access(self, epg_dn, port_dn, vlan_number):
-        fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys','pathep')
+        fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys', 'pathep')
         rspathatt_mo = RsPathAtt(epg_dn, fabric_path_dn, encap='vlan-' + str(vlan_number))
         self.commit(rspathatt_mo)
 
@@ -412,13 +422,13 @@ class Apic:
 
     def add_vlan(self, vlan_number, vlan_pool_name):
         class_query = ClassQuery('fvnsVlanInstP')
-        class_query.propFilter = 'eq(fvnsVlanInstP.name, "vlan-pool-' + vlan_pool_name +'")'
+        class_query.propFilter = 'eq(fvnsVlanInstP.name, "vlan-pool-' + vlan_pool_name + '")'
         vp_list = self.moDir.query(class_query)
         # If the vlan pool does not exists, create it with the physical domain and the attachable entity profile
         if len(vp_list) == 0:
             VlanInstP_mo = self.create_vlan_pool('vlan-pool-' + vlan_pool_name, 'static')
             DomP_mo = self.create_physical_domain('pd-' + vlan_pool_name, str(VlanInstP_mo.dn))
-            self.create_attachable_entity_profile('aep-' + vlan_pool_name,str(DomP_mo.dn))
+            self.create_attachable_entity_profile('aep-' + vlan_pool_name, str(DomP_mo.dn))
         else:
             VlanInstP_mo = vp_list[0]
         encap_mo = EncapBlk(str(VlanInstP_mo.dn), 'vlan-' + str(vlan_number),
@@ -428,7 +438,7 @@ class Apic:
 
     def remove_vlan(self, vlan_number, vlan_pool_name):
         class_query = ClassQuery('fvnsVlanInstP')
-        class_query.propFilter = 'eq(fvnsVlanInstP.name, "vlan-pool-' + vlan_pool_name +'")'
+        class_query.propFilter = 'eq(fvnsVlanInstP.name, "vlan-pool-' + vlan_pool_name + '")'
         vp_list = self.moDir.query(class_query)
         # Check if vlan pool exists
         if len(vp_list) == 0:
@@ -464,7 +474,7 @@ class Apic:
         self.commit(policy_group_mo)
         # if attachable entity profile does not exists, creates a new one
         class_query = ClassQuery('infraAttEntityP')
-        class_query.propFilter = 'eq(infraAttEntityP.name, "aep-' + aep_name +'")'
+        class_query.propFilter = 'eq(infraAttEntityP.name, "aep-' + aep_name + '")'
         pd_list = self.moDir.query(class_query)
         if len(pd_list) == 0:
             vlan_pool_mo = self.create_vlan_pool('vlan-pool-' + aep_name, 'static')
@@ -559,7 +569,7 @@ class Apic:
             self.commit(AccPortP_mo)
         # Delete switch profiles
         NodeP_mo_list = filter(
-            lambda x: vpc_mo.name in x.name  + 'vpc', self.moDir.query(ClassQuery('infraNodeP'))
+            lambda x: vpc_mo.name in x.name + 'vpc', self.moDir.query(ClassQuery('infraNodeP'))
         )
         for NodeP_mo in NodeP_mo_list:
             NodeP_mo.delete()
@@ -610,3 +620,44 @@ class Apic:
             RsDomP_mo = RsDomP(AttEntityP_mo.dn, physical_domain_dn)
             self.commit(RsDomP_mo)
         return AttEntityP_mo
+
+    def create_explicit_vpc_pgroup(self, pgroup_name, leaf_1_dn, leaf_2_dn):
+        # Creates vpc group
+        fabric = self.moDir.lookupByDn('uni/fabric')
+        fabricProtPol = ProtPol(fabric, pairT='explicit')
+        fabricExplicitGEp = ExplicitGEp(fabricProtPol, name=pgroup_name, id=1)
+        NodePEp(fabricExplicitGEp, id=self.moDir.lookupByDn(leaf_1_dn).id)
+        NodePEp(fabricExplicitGEp, id=self.moDir.lookupByDn(leaf_2_dn).id)
+        self.commit(fabricProtPol)
+        RsVpcInstPol_mo = filter(
+            lambda x: type(x).__name__ == 'RsVpcInstPol',
+            self.query_child_objects(str(fabricExplicitGEp.dn))
+        )[0]
+        RsVpcInstPol_mo.stateQual = None
+        RsVpcInstPol_mo.tnVpcInstPolName = 'default'
+        self.commit(RsVpcInstPol_mo)
+        return fabricProtPol
+
+    def get_vpc_explicit_groups(self):
+        class_query = ClassQuery('fabricExplicitGEp')
+        return self.moDir.query(class_query)
+
+    def get_leaf_by_explicit_group(self, fabricExplicitGEp_dn):
+        result = []
+        dns = []
+        rns = []
+        leafs = self.get_leafs()
+        NodePEp_list = filter(lambda x: type(x).__name__ == 'NodePEp', self.query_child_objects(fabricExplicitGEp_dn))
+        for NodePEp_mo in NodePEp_list:
+            for i in range(0, len(leafs[0])):
+                if leafs[1][i].split('-')[1] == NodePEp_mo.id:
+                    dns.append(leafs[0][i])
+                    rns.append(leafs[1][i])
+        result.append(dns)
+        result.append(rns)
+        return result
+
+    def remove_vpc_group(self, fabricExplicitGEp_dn):
+        fabricExplicitGEp_mo = self.moDir.lookupByDn(fabricExplicitGEp_dn)
+        fabricExplicitGEp_mo.delete()
+        self.commit(fabricExplicitGEp_mo)

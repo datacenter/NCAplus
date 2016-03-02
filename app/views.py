@@ -7,15 +7,21 @@ import model
 import traceback
 from access_switch_manager import switch_controller
 
+
 @flask_sijax.route(app, '/')
-@flask_sijax.route(app, '/integration/create_network')
 def create_network():
     def network_form_handler(obj_response, formvalues):
-        values = get_values(formvalues)
-        apic_object = apic.Apic()
-        apic_object.login(app.apic_url, app.apic_user, app.apic_password)
-        g.db = model.database
-        g.db.connect()
+        try:
+            values = get_values(formvalues)
+            apic_object = apic.Apic()
+            apic_object.login(app.apic_url, app.apic_user, app.apic_password)
+            g.db = model.database
+            g.db.connect()
+        except Exception as e:
+            print traceback.print_exc()
+            obj_response.script("create_notification('Connection problem', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
         if values['operation'] == 'get_groups':
             try:
                 tenants = apic_object.get_all_tenants()
@@ -23,43 +29,39 @@ def create_network():
                 for tenant in tenants:
                     option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
                 obj_response.html(".sel-group", option_list)
-                obj_response.html("#create_network_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_network_response", '<label class="label label-danger" > '
-                                                              '<i class="fa fa-times-circle"></i> '
-                                                              'Can not create network: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve groups', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_network_response", '')
 
         elif values['operation'] == 'create_group':
             try:
                 apic_object.create_group(values['create_group_name'])
-                obj_response.html("#create_group_response", '<label class="label label-success" > '
-                                                            '<i class="fa fa-check-circle"></i> Created </label>')
-
+                obj_response.script("create_notification('Created', '', 'success', 5000)")
                 obj_response.script('get_groups();')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_group_response", '<label class="label label-danger" > '
-                                                              '<i class="fa fa-times-circle">'
-                                                              '</i> Can not create group: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not create group', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_group_response", '')
 
         elif values['operation'] == 'delete_group':
             try:
                 apic_object.delete_tenant(values['sel_delete_group_name'])
                 obj_response.script("get_groups();")
-                obj_response.html("#delete_group_response", '<label class="label label-success" > '
-                                                            '<i class="fa fa-check-circle"></i> Deleted </label>')
+                obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_group_response", '<label class="label label-danger" > '
-                                                              '<i class="fa fa-times-circle">'
-                                                              '</i> Can not create network: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not delete group', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_group_response", '')
 
         elif values['operation'] == 'create_network':
             try:
@@ -73,15 +75,14 @@ def create_network():
                 network_object.update(epg_dn=str(epg.dn)).where(
                     model.network.id == network_object.id).execute()
 
-                obj_response.html("#create_network_response", '<label class="label label-success" > '
-                                                              '<i class="fa fa-check-circle"></i> Created </label>')
+                obj_response.script("create_notification('Created', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_network_response", '<label class="label label-danger" > '
-                                                              '<i class="fa fa-times-circle"></i> '
-                                                              'Can not create network: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not create network', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_network_response", '')
 
         elif values['operation'] == 'get_sel_delete_networks':
             try:
@@ -92,14 +93,13 @@ def create_network():
                     for network in networks:
                         option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
                     obj_response.html("#sel_delete_network_name", option_list)
-                obj_response.html("#delete_network_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_network_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_network_response", '')
 
         elif values['operation'] == 'delete_network':
             try:
@@ -114,27 +114,33 @@ def create_network():
                     apic_object.remove_vlan(network_list[0].encapsulation, 'fedex')
                     apic_object.delete_epg(values['sel_delete_network_name'])
                     obj_response.script('get_sel_delete_networks()')
-                    obj_response.html("#delete_network_response", '<label class="label label-success" > '
-                                                                  '<i class="fa fa-check-circle"></i> Deleted </label>')
+                    obj_response.script("create_notification('Deleted', '', 'success', 5000)")
                 else:
-                    obj_response.html("#delete_network_response", '<label class="label label-danger" > '
-                                                                  '<i class="fa fa-times-circle"></i> '
-                                                                  'Network not found in local database</label>')
+                    obj_response.script(
+                        "create_notification('Can not delete network', "
+                        "'Network not found in local database', 'danger', 0)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_network_response", '<label class="label label-danger" > '
-                                                              '<i class="fa fa-times-circle"></i> '
-                                                              'Can not delete network: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not delete network', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_network_response", '')
 
         elif values['operation'] == 'get_leafs':
-            option_list = '<option value="">Select</option>'
-            leafs = apic_object.get_leafs()
-            for i in range(0, len(leafs[0])):
-                option_list += '<option value="' + leafs[0][i] + '">' + leafs[1][i] + '</option>'
-            obj_response.html(".sel-leaf", option_list)
-            obj_response.html("#create_vpc_response", '')
+            try:
+                option_list = '<option value="">Select</option>'
+                leafs = apic_object.get_leafs()
+                for i in range(0, len(leafs[0])):
+                    option_list += '<option value="' + leafs[0][i] + '">' + leafs[1][i] + '</option>'
+                obj_response.html(".sel-leaf", option_list)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve leafs', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_ports':
             # """ Returns only available ports """
@@ -154,30 +160,29 @@ def create_network():
                         # Port does not exist, it is available
                         option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
                 obj_response.html("#sel_port_create_vpc", option_list)
-                obj_response.html("#create_vpc_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_vpc_response", '<label class="label label-danger" > '
-                                                          '<i class="fa fa-times-circle"></i> '
-                                                          'Can not retrieve ports: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve ports', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'create_vpc':
             try:
-                # vpc_object = model.vpc.create(name=values['create_vpc_name'])
+                # check if vpc has a unique name
+                vpc_list = apic_object.get_vpcs()
+                for vpc in vpc_list:
+                    if vpc.name.lower() == values['create_vpc_name'].lower():
+                        ex = Exception()
+                        ex.message = 'That name has been used before'
+                        raise ex
                 selected_ports = str(values['port_dns']).split(';')
+                switch_mo_list = []
                 for port_dn in selected_ports:
                     if len(port_dn) > 0:
-                        # TODO: Check if vpc name has been used
-                        # Check if port already exists
-                        # port_list = model.port.select().where(model.port.port_dn == port_dn)
-                        # if len(port_list) > 0:
-                        #    model.port.update(assigned_vpc=vpc_object.id).where(model.port.port_dn == port_dn).execute()
-                        # else:
-                        #    model.port.create(port_dn=port_dn,
-                        #                      assigned_vpc=vpc_object.id)
                         switch_mo = apic_object.get_switch_by_port(port_dn)
+                        switch_mo_list.append(switch_mo)
                         if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'], 'fedex')
                         if_profile = apic_object.create_vpc_interface_profile(
                             port_dn, if_policy_group_mo.dn, values['create_vpc_name']
@@ -205,15 +210,14 @@ def create_network():
                 obj_response.script('$("#create_vpc_name").val("")')
                 obj_response.script('$("#sel_leaf_create_vpc").val("")')
                 obj_response.script('get_vpcs()')
-                obj_response.html("#create_vpc_response", '<label class="label label-success" > '
-                                                          '<i class="fa fa-check-circle"></i> Created </label>')
+                obj_response.script("create_notification('Created', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_vpc_response", '<label class="label label-danger" > '
-                                                          '<i class="fa fa-times-circle"></i> '
-                                                          'Can not create vpc: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not create VPC', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_delete_vpc_assigned_ports':
             try:
@@ -230,15 +234,13 @@ def create_network():
                     table += '<tr><td>' + str(switch_mo.rn) + '</td><td>' + str(vpc_port_mo.tSKey) + '</td></tr>'
                 table += '</tbody>'
                 obj_response.html("#delete_vpc_ports", table)
-                obj_response.html("#delete_vpc_response", '')
-
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_vpc_response", '<label class="label label-danger" > '
-                                                          '<i class="fa fa-times-circle"></i> '
-                                                          'Can not create retrieve ports: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve ports', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_vpc_response", '')
 
         elif values['operation'] == 'get_vpcs':
             try:
@@ -247,29 +249,27 @@ def create_network():
                 for vpc in vpc_list:
                    option_list += '<option value="' + str(vpc.dn) + '">' + vpc.name + '</option>'
                 obj_response.html(".sel-vpc", option_list)
-                obj_response.html("#delete_vpc_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_vpc_response", '<label class="label label-danger" > '
-                                                          '<i class="fa fa-times-circle"></i> '
-                                                          'Can not create retrieve ports: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve VPCs', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_vpc_response", '')
 
         elif values['operation'] == 'delete_vpc':
             try:
                 apic_object.delete_vpc(values['sel_delete_vpc_name'])
                 obj_response.script('get_vpcs();')
                 obj_response.html("#delete_vpc_ports", "")
-                obj_response.html("#delete_vpc_response", '<label class="label label-success" > '
-                                                          '<i class="fa fa-check-circle"></i> Deleted </label>')
+                obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_vpc_response", '<label class="label label-danger" > '
-                                                          '<i class="fa fa-times-circle"></i> '
-                                                          'Can not delete vpc: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not delete VPC', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_vpc_response", '')
 
         elif values['operation'] == 'create_vpc_access':
             try:
@@ -279,14 +279,12 @@ def create_network():
                     if len(network_o) > 0:
                         apic_object.associate_epg_vpc(values['sel_network_create_vpc_access'],
                                                       values['sel_vpc_create_vpc_access'], network_o[0].encapsulation)
-                        obj_response.html("#div_create_vpc_access_response",
-                                          '<label class="label label-success" > '
-                                          '<i class="fa fa-check-circle"></i> Assigned </label>')
+                        obj_response.script("create_notification('Assigned', '', 'success', 5000)")
                     else:
-                        obj_response.html("#div_create_vpc_access_response",
-                                          '<label class="label label-danger" > '
-                                          '<i class="fa fa-times-circle"></i> Network not found in '
-                                          'local database </label>')
+                        obj_response.script(
+                                "create_notification('Can not create VPC access', "
+                                "'Network not found in local database', 'danger', 0)"
+                            )
                 elif values['create_vpc_access_type'] == 'vlan_profile':
                     network_profilexnetworks = model.network_profilexnetwork.select().where(
                         model.network_profilexnetwork.network_profile == int(values['sel_profile_create_vpc_access']))
@@ -296,21 +294,18 @@ def create_network():
                             apic_object.associate_epg_vpc(network_o[0].epg_dn,
                                                           values['sel_vpc_create_vpc_access'],
                                                           network_o[0].encapsulation)
-                            obj_response.html("#div_create_vpc_access_response",
-                                              '<label class="label label-success" > '
-                                              '<i class="fa fa-check-circle"></i> Assigned </label>')
                         else:
-                            obj_response.html("#div_create_vpc_access_response",
-                                              '<label class="label label-danger" > '
-                                              '<i class="fa fa-times-circle"></i> Network not found in '
-                                              'local database </label>')
+                            ex = Exception()
+                            ex.message = 'Some networks where not assigned because they are not in the local database'
+                            raise ex
+                    obj_response.script("create_notification('Assigned', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not delete vpc: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not create VPC access', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#div_create_vpc_access_response", '')
 
         elif values['operation'] == 'get_create_vpc_access_networks':
             try:
@@ -321,14 +316,13 @@ def create_network():
                     for network in networks:
                         option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
                     obj_response.html("#sel_network_create_vpc_access", option_list)
-                obj_response.html("#div_create_vpc_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve VPCs: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#div_create_vpc_access_response", '')
 
         elif values['operation'] == 'get_delete_vpc_access_networks':
             try:
@@ -339,14 +333,13 @@ def create_network():
                     for network in networks:
                         option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
                     obj_response.html("#sel_network_delete_vpc_access", option_list)
-                obj_response.html("#div_delete_vpc_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#div_delete_vpc_access_response", '')
 
         elif values['operation'] == 'get_delete_vpc_access_assignments':
             try:
@@ -357,22 +350,19 @@ def create_network():
                     option_list += '<option value="' + str(vpc_assignment.dn) + '">' + \
                                    str(vpc_assignment.tDn).split('[')[1][:-1] + '</option>'
                 obj_response.html("#sel_vpc_delete_vpc_access", option_list)
-                obj_response.html("#div_delete_vpc_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#div_delete_vpc_access_response", '')
 
         elif values['operation'] == 'delete_vpc_access':
             try:
                 if values['delete_vpc_access_type'] == 'single_vlan':
                     apic_object.delete_vpc_assignment(values['sel_vpc_delete_vpc_access'])
-                    obj_response.html("#div_delete_vpc_access_response", '<label class="label label-success" > '
-                                                                     '<i class="fa fa-check-circle"></i> '
-                                                                     'Removed</label>')
+                    obj_response.script("create_notification('Removed', '', 'success', 5000)")
                     obj_response.script('get_delete_vpc_access_assignments()')
                 elif values['delete_vpc_access_type'] == 'vlan_profile':
                     network_profile_o = model.network_profile.select().where(
@@ -386,18 +376,14 @@ def create_network():
                         for vpc_assignment in vpc_assignments:
                             if str(vpc_assignment.tDn) == values['sel_vpc_delete_vpc_access_profile']:
                                 apic_object.delete_vpc_assignment(str(vpc_assignment.dn))
-                    obj_response.html("#div_delete_vpc_access_response",
-                                      '<label class="label label-success" > '
-                                      '<i class="fa fa-check-circle"></i> Removed </label>')
-
+                    obj_response.script("create_notification('Removed', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#div_delete_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not remove assignment: ' + e.message +
-                                                                     '</label>')
+                obj_response.script("create_notification('Can not delete VPC access', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#div_delete_vpc_access_response", '')
 
         elif values['operation'] == 'get_create_single_access_networks':
             try:
@@ -408,14 +394,13 @@ def create_network():
                     for network in networks:
                         option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
                     obj_response.html("#sel_create_single_access_network", option_list)
-                obj_response.html("#create_single_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_single_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_single_access_response", '')
 
         elif values['operation'] == 'get_create_single_access_ports':
             try:
@@ -424,14 +409,13 @@ def create_network():
                 for i in range(0, len(ports[0])):
                     option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
                 obj_response.html("#sel_create_single_access_port", option_list)
-                obj_response.html("#create_single_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_single_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve ports: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve ports', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_single_access_response", '')
 
         elif values['operation'] == 'create_single_access':
             try:
@@ -442,14 +426,10 @@ def create_network():
                         apic_object.create_single_access(values['sel_create_single_access_network'],
                                                          values['sel_create_single_access_port'],
                                                          network_o[0].encapsulation)
-                        obj_response.html("#create_single_access_response",
-                                          '<label class="label label-success" > '
-                                          '<i class="fa fa-check-circle"></i> Assigned </label>')
+                        obj_response.script("create_notification('Assigned', '', 'success', 5000)")
                     else:
-                        obj_response.html("#create_single_access_response",
-                                          '<label class="label label-danger" > '
-                                          '<i class="fa fa-times-circle"></i> Network not found in '
-                                          'local database </label>')
+                        obj_response.script(
+                                "create_notification('Network not found in local database', '', 'danger', 0)")
                 elif values['create_port_access_type'] == 'vlan_profile':
                     network_profilexnetworks = model.network_profilexnetwork.select().where(
                         model.network_profilexnetwork.network_profile == int(values['sel_profile_create_port_access']))
@@ -459,22 +439,17 @@ def create_network():
                             apic_object.create_single_access(network_o[0].epg_dn,
                                                              values['sel_create_single_access_port'],
                                                              network_o[0].encapsulation)
-                            obj_response.html("#create_single_access_response",
-                                              '<label class="label label-success" > '
-                                              '<i class="fa fa-check-circle"></i> Assigned </label>')
+                            obj_response.script("create_notification('Assigned', '', 'success', 5000)")
                         else:
-                            obj_response.html("#create_single_access_response",
-                                              '<label class="label label-danger" > '
-                                              '<i class="fa fa-times-circle"></i> Network not found in '
-                                              'local database </label>')
+                            obj_response.script(
+                                "create_notification('Network not found in local database', '', 'danger', 0)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_single_access_response", '<label class="label label-danger" > '
-                                                                    '<i class="fa fa-times-circle"></i> '
-                                                                    'Can not create single access: ' + e.message +
-                                                                    '</label>')
+                obj_response.script("create_notification('Can not create single access', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_single_access_response", '')
 
         elif values['operation'] == 'get_delete_single_access_networks':
             try:
@@ -485,14 +460,13 @@ def create_network():
                     for network in networks:
                         option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
                     obj_response.html("#sel_delete_single_access_network", option_list)
-                obj_response.html("#delete_single_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_single_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_single_access_response", '')
 
         elif values['operation'] == 'get_delete_single_access_ports':
             try:
@@ -501,15 +475,13 @@ def create_network():
                 for i in range(0, len(ports[0])):
                     option_list += '<option value="' + ports[0][i] + '">' + ports[1][i] + '</option>'
                 obj_response.html("#sel_delete_single_access_port", option_list)
-                obj_response.html("#delete_single_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_single_access_response", '<label class="label label-danger" > '
-                                                                    '<i class="fa fa-times-circle"></i> '
-                                                                    'Can not retrieve ports: ' + e.message +
-                                                                    '</label>')
+                obj_response.script("create_notification('Can not retrieve ports', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_single_access_response", '')
 
         elif values['operation'] == 'delete_single_access':
             try:
@@ -519,14 +491,10 @@ def create_network():
                     if len(network_o) > 0:
                         apic_object.delete_single_access(values['sel_delete_single_access_network'],
                                                          values['sel_delete_single_access_port'])
-                        obj_response.html("#delete_single_access_response",
-                                          '<label class="label label-success" > '
-                                          '<i class="fa fa-check-circle"></i> Removed </label>')
+                        obj_response.script("create_notification('Removed', '', 'success', 5000)")
                     else:
-                        obj_response.html("#delete_single_access_response",
-                                          '<label class="label label-danger" > '
-                                          '<i class="fa fa-times-circle"></i> Network not found in '
-                                          'local database </label>')
+                        obj_response.script(
+                            "create_notification('Network not found in local database', '', 'danger', 0)")
                 elif values['delete_port_access_type'] == 'vlan_profile':
                     network_profilexnetworks = model.network_profilexnetwork.select().where(
                         model.network_profilexnetwork.network_profile == int(values['sel_profile_delete_port_access']))
@@ -535,16 +503,15 @@ def create_network():
                         if len(network_o) > 0:
                             apic_object.delete_single_access(network_o[0].epg_dn,
                                                              values['sel_delete_single_access_port'])
-                    obj_response.html("#delete_single_access_response",
-                                      '<label class="label label-success" > '
-                                      '<i class="fa fa-check-circle"></i> Removed </label>')
+                    obj_response.script("create_notification('Removed', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_single_access_response", '<label class="label label-danger" > '
-                                                                    '<i class="fa fa-times-circle"></i> '
-                                                                    'Can not remove single access: ' + e.message + '</label>')
+                obj_response.script(
+                    "create_notification('Can not delete single access', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#delete_single_access_response", '')
 
         elif values['operation'] == 'get_create_network_profile_networks':
             try:
@@ -555,14 +522,14 @@ def create_network():
                     for network in networks:
                         option_list += '<option value="' + str(network.dn) + '">' + network.name + '</option>'
                     obj_response.html("#sel_create_network_profile_network", option_list)
-                obj_response.html("#create_network_profile_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_network_profile_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve networks: ' + e.message + '</label>')
+                obj_response.script(
+                    "create_notification('Can not retrieve networks', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_network_profile_response", '')
 
         elif values['operation'] == 'create_network_profile':
             try:
@@ -574,6 +541,12 @@ def create_network():
                         if len(network_list) > 0:
                             model.network_profilexnetwork.create(network=network_list[0],
                                                                  network_profile=network_profile_o)
+                        else:
+                            obj_response.script(
+                                "create_notification('VLAN " + epg_dn + " not added to profile',"
+                                                                        "'Not founded in local database',"
+                                                                        "'warning', 0)")
+
                 table = '<thead>' \
                             '<tr>' \
                                 '<th>Group</th>' \
@@ -587,17 +560,15 @@ def create_network():
                 obj_response.html("#sel_create_network_profile_network", '')
                 obj_response.script('get_network_profiles()')
                 obj_response.script('$("#sel_create_network_profile_group").val("")')
-                obj_response.html("#create_network_profile_response", '<label class="label label-success" > '
-                                                                      '<i class="fa fa-check-circle"></i> '
-                                                                      'Created</label>')
+                obj_response.script("create_notification('Created', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#create_network_profile_response", '<label class="label label-danger" > '
-                                                                      '<i class="fa fa-times-circle"></i> '
-                                                                      'Can not create: ' + e.message +
-                                                                      '</label>')
+                obj_response.script(
+                    "create_notification('Can not create VLAN profile', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#create_network_profile_response", '')
 
         elif values['operation'] == 'get_network_profiles':
             try:
@@ -606,14 +577,15 @@ def create_network():
                 for network_p in network_profiles:
                     option_list += '<option value="' + str(network_p.id) + '">' + network_p.name + '</option>'
                 obj_response.html(".sel-net-profile", option_list)
-                obj_response.html("#div_create_vpc_access_response",'')
+                obj_response.html("#div_create_vpc_access_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#div_create_vpc_access_response", '<label class="label label-danger" > '
-                                                                     '<i class="fa fa-times-circle"></i> '
-                                                                     'Can not retrieve vlan profiles: ' + e.message + '</label>')
+                obj_response.script(
+                    "create_notification('Can not retrieve VLAN profile', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
+                obj_response.html("#div_create_vpc_access_response", '')
 
         elif values['operation'] == 'get_delete_network_profile_networks':
             try:
@@ -638,18 +610,23 @@ def create_network():
                              '</td></tr>'
                 table +='</tbody>'
                 obj_response.html("#table_delete_network_profile", table)
-                obj_response.html("#delete_network_profile_response", '')
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_network_profile_response", '<label class="label label-danger" > '
-                                                                      '<i class="fa fa-times-circle"></i> '
-                                                                      'Can not delete: ' + e.message +
-                                                                      '</label>')
+                obj_response.script(
+                    "create_notification('Can not retrieve networks', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#delete_network_profile_response", '')
 
         elif values['operation'] == 'delete_network_profile':
             try:
+                network_profile_o = model.network_profile.select().where(
+                model.network_profile.id == int(values['sel_delete_network_profile']))[0]
+                model.network_profilexnetwork.delete().where(
+                    model.network_profilexnetwork.network_profile == network_profile_o).execute()
                 model.network_profile.delete().where(
-                model.network_profile.id == int(values['sel_delete_network_profile'])).execute()
+                    model.network_profile.id == int(values['sel_delete_network_profile'])).execute()
                 table = '<thead>' \
                             '<tr>' \
                                 '<th>Group</th>' \
@@ -660,20 +637,20 @@ def create_network():
                 table += '<tr><td>' \
                              '</td><td>' \
                              '</td></tr>'
-                table +='</tbody>'
+                table += '</tbody>'
                 obj_response.html("#table_delete_network_profile", table)
-                obj_response.html("#delete_network_profile_response", '<label class="label label-success" > '
-                                                                      '<i class="fa fa-check-circle"></i> '
-                                                                      'Deleted</label>')
+                obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#delete_network_profile_response", '<label class="label label-danger" > '
-                                                                      '<i class="fa fa-times-circle"></i> '
-                                                                      'Can not delete: ' + e.message +
-                                                                      '</label>')
-            obj_response.html("#sel_create_network_profile_network", '')
-            obj_response.script('get_network_profiles()')
-            obj_response.script('$("#sel_delete_network_profile").val("")')
+                obj_response.script(
+                    "create_notification('Can not delete VLAN profile', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#delete_network_profile_response", '')
+                obj_response.html("#sel_create_network_profile_network", '')
+                obj_response.script('get_network_profiles()')
+                obj_response.script('$("#sel_delete_network_profile").val("")')
 
         elif values['operation'] == 'configure_access_switch':
             try:
@@ -684,15 +661,79 @@ def create_network():
                     values['access_switch_password'],
                     values['access_switch_hostname'],
                     values['access_switch_commands'].split('\n'))
-                obj_response.html("#access_switch_response", '<label class="label label-success" > '
-                                                                      '<i class="fa fa-check-circle"></i> '
-                                                                      'Configured</label>')
+                obj_response.script("create_notification('Configured', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
-                obj_response.html("#access_switch_response", '<label class="label label-danger" > '
-                                                                      '<i class="fa fa-times-circle"></i> '
-                                                                      'Can not configure: ' + e.message +
-                                                                      '</label>')
+                obj_response.script(
+                    "create_notification('Can not configure access switch', '" + str(e).replace("'", "").
+                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#access_switch_response", '')
+
+        elif values['operation'] == 'create_vpc_group':
+            try:
+                switch_mo_1 = apic_object.moDir.lookupByDn(values['sel_create_vpc_group_leaf_1'])
+                switch_mo_2 = apic_object.moDir.lookupByDn(values['sel_create_vpc_group_leaf_2'])
+                apic_object.create_explicit_vpc_pgroup(
+                    str(switch_mo_1.id) + '_' + str(switch_mo_2.id),
+                    str(switch_mo_1.dn),
+                    str(switch_mo_2.dn)
+                )
+                obj_response.script("get_vpc_groups()")
+                obj_response.script("create_notification('Created', '', 'success', 5000)")
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not create vpc group', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#div_create_vpc_group_response", '')
+
+        elif values['operation'] == 'get_vpc_groups':
+            try:
+                option_list = '<option value="">Select</option>'
+                vpc_groups = apic_object.get_vpc_explicit_groups()
+                for group in vpc_groups:
+                    option_list += '<option value="' + str(group.dn) + '">' + group.name + '</option>'
+                obj_response.html(".sel-vpc-group", option_list)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve VPC groups', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#create_vpc_response", '')
+
+        elif values['operation'] == 'get_leafs_by_vpc_group':
+            try:
+                option_list = '<option value="">Select</option>'
+                leafs = apic_object.get_leaf_by_explicit_group(values['sel_vpc_group_create_vpc'])
+                for i in range(0, len(leafs[0])):
+                    option_list += '<option value="' + leafs[0][i] + '">' + leafs[1][i] + '</option>'
+                obj_response.html("#sel_leaf_create_vpc", option_list)
+                obj_response.html("#delete_vpc_group_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve leafs', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#create_vpc_response", '')
+
+        elif values['operation'] == 'delete_vpc_group':
+            try:
+                apic_object.remove_vpc_group(values['sel_delete_vpc_group_name'])
+                obj_response.script("get_vpc_groups()")
+                obj_response.script("get_vpcs()")
+                obj_response.script("create_notification('Deleted', '', 'success', 5000)")
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not delete VPC group', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#delete_vpc_group_response", '')
 
     if g.sijax.is_sijax_request:
         g.sijax.register_callback('network_form_handler', network_form_handler)
@@ -700,6 +741,7 @@ def create_network():
 
     section_info = base_section_files()
     return render_template('create-network.html', title='Create network', data=ordered_menu_list(section_info))
+
 
 @app.before_request
 def before_request():
