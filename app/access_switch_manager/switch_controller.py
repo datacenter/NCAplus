@@ -1,5 +1,16 @@
+"""
+*************************************************************************
+ Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
+*************************************************************************
+Main point of entry for the web application
+
+"""
+
 import pexpect
 import time
+
+__author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
+
 COMMAND_WAIT_TIME = 0.5
 PEXPECT_TIME_OUT = 3
 

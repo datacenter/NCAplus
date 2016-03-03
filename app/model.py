@@ -1,10 +1,15 @@
-from peewee import *
+"""
+*************************************************************************
+ Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
+*************************************************************************
+Model and database definition
 
+"""
+from peewee import *
+__author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 database = SqliteDatabase('fedex-hub.db')
 
-# model definitions -- the standard "pattern" is to define a base model class
-# that specifies which database to use.  then, any subclasses will automatically
-# use the correct storage.
+
 class base(Model):
     class Meta:
         database = database
@@ -19,11 +24,6 @@ class network(base):
 
 class vpc(base):
     name = CharField(unique=True)
-
-
-class vpcxnetwork(base):
-    network = ForeignKeyField(network)
-    vpc = ForeignKeyField(vpc)
 
 
 class port(base):
@@ -47,7 +47,7 @@ class network_profilexnetwork(base):
 
 def create_tables():
     database.connect()
-    database.create_tables([network, vpc, vpcxnetwork, port, portxnetwork, network_profile, network_profilexnetwork])
+    database.create_tables([network, vpc, port, portxnetwork, network_profile, network_profilexnetwork])
 
 
 

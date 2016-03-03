@@ -1,127 +1,123 @@
 {% block doc -%}
 <!DOCTYPE html>
-<html {% block html_attribs %}{% endblock html_attribs %} >
+<html {% block html_attribs %}{% endblock html_attribs %}>
 {%- block html %}
-  <head>
-	{%- block head %}
+<head>
+    <link rel="icon" href="static/images/fedex-icon.png">
+    {%- block head %}
 
-	    {%- block metas %}
-		    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	    {%- endblock metas %}
+    {%- block metas %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%- endblock metas %}
 
-		{%- block styles %}
-			<link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet" media="screen">
-			<link href="/static/css/github.css" rel="stylesheet">
-            <link href="/static/css/animate.css" rel="stylesheet">
-			<link href="/static/css/style.css" rel="stylesheet">
-	  		<link rel="stylesheet" href="/static/css/font-awesome.min.css">
-	    {%- endblock styles %}
-		<script src="/static/js/skulpt.min.js"></script>
-		<script src="/static/js/skulpt-stdlib.js"></script>
-	{%- endblock head %}
+    {%- block styles %}
+    <link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet" media="screen">
+    <link href="/static/css/github.css" rel="stylesheet">
+    <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
+    {%- endblock styles %}
+    <script src="/static/js/skulpt.min.js"></script>
+    <script src="/static/js/skulpt-stdlib.js"></script>
+    {%- endblock head %}
 
-  </head>
-  <body {% block body_attribs %}{% endblock body_attribs %} >
-    {% block body -%}
-        {% block navbar %}
+</head>
+<body {% block body_attribs %}{% endblock body_attribs %}>
+{% block body -%}
+{% block navbar %}
 
-	<div class="container">
-		<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-		  <div class="container-fluid">
-		    <!-- Brand and toggle get grouped for better mobile display -->
-		    <div class="navbar-header">
-			<a href = "/" class = "navbar-brand"><div class="pn-noncollapse">FedEx migration tool</div></a>
-		      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-		        <span class="sr-only">Toggle navigation</span>
-		        <span class="icon-bar navbar-inverse"></span>
-		        <span class="icon-bar"></span>
-		        <span class="icon-bar"></span>
-		      </button>
-		    </div>
-		    <!-- Collect the nav links, forms, and other content for toggling -->
-		    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-		      <ul class="nav navbar-nav">
-		       <!-- <li class="dropdown">
-		          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Menu<span class="caret"></span></a>
-		          <ul class="dropdown-menu multi-column columns-2" role="menu" style="font-size:.8em;">
-			          <div class="row">
-				          <div class="col-sm-4">
-					          <ul class="multi-column-dropdown">
-								  {% for section_info in data['integration'] %}
-									  {% if section_info.line == "sep" %}
-										<li class="divider"></li>
-									  {% elif section_info.line == "head" %}
-										<li class="dropdown-header">{{ section_info.title }}</li>
-									  {% elif section_info.line == "data" %}
-										  <li><a href="/integration/{{ section_info.weburl }}">{{ section_info.title }}</a></li>
-									  {% endif  %}
-								  {% endfor %}
-					          </ul>
-				          </div>
-			          </div>
-		          </ul>
-		        </li>-->
-				<li class="ciscoliveitem"><a target="blank" data-toggle="modal" data-target="#ABOUT" href="#">About</a></li>
-		      </ul>
-		      <ul class="nav navbar-nav navbar-right navHeaderCollapse">
-					<img  width="35px" style="margin:6px;" src="/static/images/CiscoLogoWhite.png">
-		      </ul>
-		    </div><!-- /.navbar-collapse -->
-		  </div><!-- /.container-fluid -->
-		</nav>
-		</div>
-		{%- endblock navbar %}
-		
-		<div class="container">
-			<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-				{% block content %}
-				{% endblock %}
-			</div>
-    	</div>
-        <div class="modal fade" id="ABOUT" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<div class="container">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">
+                    <div class="pn-noncollapse">ACI migration tool</div>
+                </a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar navbar-inverse"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="ciscoliveitem"><a target="blank" data-toggle="modal" data-target="#ABOUT"
+                                                 href="#">About</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right navHeaderCollapse">
+                    <img width="35px" style="margin:6px;" src="/static/images/CiscoLogoWhite.png">
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+{%- endblock navbar %}
+
+<div class="container">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        {% block content %}
+        {% endblock %}
+    </div>
+</div>
+<div class="modal fade" id="ABOUT" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
                 <h3 class="modal-title" id="myModalLabel">FedEx Hub</h3>
-              </div>
-              <div class="modal-body">
+            </div>
+            <div class="modal-body">
                 <div class="row">
-                    <p>The purpose of this tool is to provide VLANs inside an ACI fabric.</p>
-                  </div>
-                  <hr>
+                    <p>This has been made to simplify the creation of VLANs and their access to the ACI fabric.
+                        It is able to create groups, VLANs, virtual port channels, VLAN profiles and provide
+                    access to the ACI with just few clicks. Besides, it is able to send commands to other devices
+                    that are not part of the ACI fabric.</p>
+                </div>
+                <hr>
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
-                        <p>Page built on Python Flask for</p>
-                        <img src="/static/images/fedex.png" class="img-responsive"  style="max-width: 300px;margin: 0 auto;">
+                        <p style="margin-bottom:40px">Page built on Python Flask for</p>
+                        <img src="/static/images/fedex.png" class="img-responsive"
+                             style="max-width: 300px;margin: 0 auto;">
+                        <span style="float:right;margin:0px 20px 0px 0px;">© Copyright Cisco Systems 2016</span>
                     </div>
                 </div>
-              </div>
-              <div class="modal-footer">
+            </div>
+            <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-              </div>
             </div>
-          </div>
         </div>
-        <!-- Modal for window of XML code -->
-        <div class="modal fade" id="xml-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-              <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">XML</h4>
-              </div>
-              <div class="modal-body ciscohl" id="xml-modal-content">
-              </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal" onclick="$('#xml-modal-content').empty()">Close</button>
-              </div>
-            </div>
-          </div>
-        </div>
-	{%- endblock body %}
-  </body>
+    </div>
+</div>
+<span style="float:right;margin:30px 20px 0px 0px;">© Copyright Cisco Systems 2016</span>
 
+<!-- Modal for window of XML code -->
+<div class="modal fade" id="xml-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">XML</h4>
+            </div>
+            <div class="modal-body ciscohl" id="xml-modal-content">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"
+                        onclick="$('#xml-modal-content').empty()">Close
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{%- endblock body %}
+</body>
 {% block scripts %}
 <script src="{{bootstrap_find_resource('jquery.js', cdn='jquery')}}"></script>
 <script src="{{bootstrap_find_resource('js/bootstrap.js', cdn='bootstrap')}}"></script>
@@ -131,41 +127,9 @@
 <script type="text/javascript" src="/static/js/sijax/sijax.js"></script>
 <script src="/static/js/jquery-validator/jquery.validate.min.js"></script>
 <script src="/static/js/bootstrap-notify.min.js"></script>
+<script src="/static/js/site-functions.js"></script>
 <script type="text/javascript">
     {{ g.sijax.get_js()|safe }}
-</script>
-
-
-<script type="text/javascript">
-function create_notification(title, message, type, delay) {
-    $.notify({
-        // options
-        title: '<strong>' + title + '</strong>',
-        message: '<p>' + message + '</p>'
-    },{
-        // settings
-        type: type,
-        placement: {
-            from: "top",
-            align: "right"
-        },
-        animate: {
-            enter: 'animated fadeInRight',
-            exit: 'animated fadeOutRight'
-        },
-        delay: delay,
-        template: '<div data-notify="container" class="col-xs-11 col-sm-2 alert alert-{0}" role="alert">' +
-            '<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-            '<span data-notify="icon"></span> ' +
-            '<span data-notify="title">{1}</span> ' +
-            '<span data-notify="message">{2}</span>' +
-            '<div class="progress" data-notify="progressbar">' +
-                '<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-            '</div>' +
-            '<a href="{3}" target="{4}" data-notify="url"></a>' +
-	    '</div>'
-    });
-}
 
 </script>
 {%- endblock scripts %}

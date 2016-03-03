@@ -16,8 +16,6 @@ app.application_profile_name = 'Fedex-Hub-Campus'
 app.apic_url = 'https://dp6-apic1.cisco.com'
 app.apic_user = 'admin'
 app.apic_password = 'cisco.123'
-
 from app import views
-
 Bootstrap(app)
 flask_sijax.Sijax(app)

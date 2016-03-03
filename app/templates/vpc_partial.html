@@ -1,0 +1,185 @@
+<div id="vpc_tab" class="tab-pane fade">
+    <div id="div_create_vpc_group" name="div_create_vpc_group" class="panel panel-primary">
+        <div class="panel-heading">Create VPC Switch Pair
+            <div id="div_create_vpc_group_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="{{ labelclass }}"> First leaf switch
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Second Leaf"
+                                          data-content="Select the first leaf switch to be bundled">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_create_vpc_group_leaf_1" name="sel_create_vpc_group_leaf_1"
+                            class="form-control sel-leaf">
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="{{ labelclass }}"> Second leaf switch
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Second Leaf"
+                                          data-content="Select the second leaf switch to be bundled">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_create_vpc_group_leaf_2" name="sel_create_vpc_group_leaf_2"
+                            class="form-control sel-leaf">
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <button id="btn_create_vpc_group" type="button" class="btn btn-primary"
+                    onclick="create_vpc_group()">Create
+            </button>
+        </div>
+    </div>
+    <div id="div_delete_vpc_group" name="div_delete_vpc" class="panel panel-danger">
+        <div class="panel-heading">Delete VPC switch pair
+            <div id="delete_vpc_group_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="{{ labelclass }}"> VPC
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="VPC name"
+                                          data-content="Select virtual port channel that will be deleted">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_delete_vpc_group_name" name="sel_delete_vpc_group_name"
+                            class="form-control sel-vpc-group"">
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <button id="btn_delete_vpc_group" type="button" class="btn btn-danger" onclick="delete_vpc_group()">Delete
+            </button>
+        </div>
+    </div>
+    <div id="div_create_vpc" name="div_create_vpc" class="panel panel-primary">
+        <div class="panel-heading">Create Virtual Port Channel
+            <div id="create_vpc_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="{{ labelclass }}"> VPC name
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="VPC name"
+                                          data-content="Specify the name of the new virtual port channel">
+                                    </span>
+                </label>
+                <div class="{{ txtinputclassmd }}">
+                    <input type="text" class="form-control" maxlength="50" id="create_vpc_name" value=""
+                           name="create_vpc_name" placeholder="Name">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="{{ labelclass }}"> VPC group
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Leaf"
+                                          data-content="Select the virtual portchannel group to be used">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_vpc_group_create_vpc" name="sel_vpc_group_create_vpc"
+                            class="form-control sel-vpc-group" onchange="get_leafs_by_vpc_group()">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="{{ labelclass }}"> Leaf switch
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Leaf"
+                                          data-content="Select the leaf switch to be assigned to the vpc">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_leaf_create_vpc" name="sel_leaf_create_vpc"
+                            class="form-control" onchange="get_ports()">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="{{ labelclass }}"> Port
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Port"
+                                          data-content="Select the switch port to be assigned to the vpc.">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_port_create_vpc" name="sel_port_create_vpc" class="form-control">
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <button id="btn_add_port_vpc" type="button" class="btn btn-primary" onclick="add_port()">Add
+            </button>
+            <div class="form-group">
+                <table id="vpc_ports" class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Switch</th>
+                        <th>Port</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+            <button id="btn_create_vpc" type="button" class="btn btn-primary" onclick="create_vpc()">Create
+            </button>
+            <input type="hidden" value="" id="port_dns" name="port_dns">
+        </div>
+    </div>
+    <div id="div_delete_vpc" name="div_delete_vpc" class="panel panel-danger">
+        <div class="panel-heading">Delete Virtual Port Channel
+            <div id="delete_vpc_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="{{ labelclass }}"> VPC
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="VPC name"
+                                          data-content="Select virtual port channel that will be deleted">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_delete_vpc_name" name="sel_delete_vpc_name"
+                            class="form-control sel-vpc" onchange="get_delete_vpc_assigned_ports()">
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <div class="form-group">
+                <table id="delete_vpc_ports" class="table table-striped">
+
+                </table>
+            </div>
+            <hr>
+            <button id="btn_delete_vpc" type="button" class="btn btn-danger" onclick="delete_vpc()">Delete
+            </button>
+        </div>
+    </div>
+</div>

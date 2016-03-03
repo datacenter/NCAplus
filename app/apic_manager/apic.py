@@ -1,6 +1,8 @@
 """
-
-Sets connections with APIC controller for creation and deletion of object such as Tenants, VMMs and switch profiles
+*************************************************************************
+ Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
+*************************************************************************
+Sets connections with APIC controller for creation and deletion of object
 
 """
 

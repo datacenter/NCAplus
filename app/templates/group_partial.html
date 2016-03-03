@@ -1,0 +1,53 @@
+<div id="group_tab" class="tab-pane fade in active">
+    <div id="div_create_group" name="div_create_group" class="panel panel-primary">
+        <div class="panel-heading">Create Management Group
+            <div id="create_group_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="{{ labelclass }}"> Group name
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Group name"
+                                  data-content="Specify the name of the new group">
+                            </span>
+                </label>
+                <div class="{{ txtinputclassmd }}">
+                    <input type="text" class="form-control" maxlength="50" id="create_group_name" value=""
+                           name="create_group_name" placeholder="Name">
+                </div>
+            </div>
+            <hr>
+            <button id="btn_create_group" type="button" class="btn btn-primary" onclick="create_group()">
+                Create
+            </button>
+        </div>
+    </div>
+    <div id="div_delete_group" name="div_delete_group" class="panel panel-danger">
+        <div class="panel-heading">Delete Management Group
+            <div id="delete_group_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="{{ labelclass }}"> Group
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Group"
+                                          data-content="Select the group to be deleted">
+                                    </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_delete_group_name" name="sel_delete_group_name"
+                            class="form-control sel-group">
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <button id="btn_delete_group" type="button" class="btn btn-danger" onclick="delete_group()">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
