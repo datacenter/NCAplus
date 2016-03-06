@@ -14,9 +14,9 @@ import sijax_handler
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
-@flask_sijax.route(app, '/')
-def create_network():
 
+@flask_sijax.route(app, '/')
+def main():
     if g.sijax.is_sijax_request:
         g.sijax.register_object(sijax_handler.handler)
         sijax_handler.handler_app = app
