@@ -3,5 +3,3 @@ Flask-Bootstrap=3.3.5.7
 Flask-Sijax=0.4.1
 peewee=2.8.0
 pexpect=4.0.1
-acicobra=1.2-1k
-acimodel=1.2-1k

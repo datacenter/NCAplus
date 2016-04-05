@@ -7,12 +7,15 @@ Helper for views.py
 """
 import traceback
 import model
+import time
+
 from apic_manager import apic
 from routefunc import get_values
-from flask import g
+from flask import g, session
 from access_switch_manager import switch_controller
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
+COMMAND_WAIT_TIME = 0.5
 handler_app = None
 
 
@@ -22,7 +25,11 @@ class handler:
     def init_connections(formvalues):
         values = get_values(formvalues)
         apic_object = apic.Apic()
-        apic_object.login(handler_app.apic_url, handler_app.apic_user, handler_app.apic_password)
+        apic_object.login(
+            session['login_apic_url'],
+            session['username'],
+            session['password'],
+        )
         g.db = model.database
         g.db.connect()
         return apic_object, values
@@ -92,9 +99,9 @@ class handler:
                                                       encapsulation=int(values['create_network_encapsulation']),
                                                       group=values['sel_create_network_group'],
                                                       epg_dn='')
-                apic_object.add_vlan(network_object.encapsulation, 'fedex')
+                apic_object.add_vlan(network_object.encapsulation, 'migration-tool')
                 epg = apic_object.create_network(network_object)
-                apic_object.associate_epg_physical_domain(str(epg.dn), 'fedex')
+                apic_object.associate_epg_physical_domain(str(epg.dn), 'migration-tool')
                 network_object.update(epg_dn=str(epg.dn)).where(
                     model.network.id == network_object.id).execute()
 
@@ -134,7 +141,7 @@ class handler:
                         model.network_profilexnetwork.network == network_list[0].id).execute()
                     # Delete network from database
                     model.network.delete().where(model.network.id == network_list[0].id).execute()
-                    apic_object.remove_vlan(network_list[0].encapsulation, 'fedex')
+                    apic_object.remove_vlan(network_list[0].encapsulation, 'migration-tool')
                     apic_object.delete_epg(values['sel_delete_network_name'])
                     obj_response.script('get_sel_delete_networks()')
                     obj_response.script("create_notification('Deleted', '', 'success', 5000)")
@@ -363,7 +370,7 @@ class handler:
                     if len(port_dn) > 0:
                         switch_mo = apic_object.get_switch_by_port(port_dn)
                         switch_mo_list.append(switch_mo)
-                        if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'], 'fedex')
+                        if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'], 'migration-tool')
                         if_profile = apic_object.create_vpc_interface_profile(
                             port_dn, if_policy_group_mo.dn, values['create_vpc_name']
                         )
@@ -542,6 +549,7 @@ class handler:
                     network_profilexnetworks = model.network_profilexnetwork.select().where(
                         model.network_profilexnetwork.network_profile == int(values['sel_profile_create_vpc_access']))
                     for network_profile in network_profilexnetworks:
+                        time.sleep(COMMAND_WAIT_TIME)
                         network_o = model.network.select().where(model.network.id == network_profile.network.id)
                         if len(network_o) > 0:
                             apic_object.associate_epg_vpc(network_o[0].epg_dn,
@@ -785,16 +793,25 @@ class handler:
             obj_response.script("create_notification('Connection problem', '" + str(e).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
-        if values['operation'] == 'configure_access_switch':
+        if values['operation'] == 'configure_access_switches':
             try:
+                switch_list = values['hd_configure_access_switches'].split(';')
                 sc = switch_controller.switch_controller()
-                sc.send_commands(
-                    values['access_switch_ip'],
-                    values['access_switch_user'],
-                    values['access_switch_password'],
-                    values['access_switch_hostname'],
-                    values['access_switch_commands'].split('\n'))
+                log_messages = ''
+                for switch in switch_list:
+                    if len(switch) > 0:
+                        switch_ip = switch.split('(')[0].replace(' ', '')
+                        switch_model = model.access_switch.select().where(model.access_switch.ip == switch_ip)[0]
+                        log_messages += "\n*** " + switch + " ***\n\n"
+                        log_messages += sc.send_commands(
+                            switch_model.ip,
+                            switch_model.user,
+                            values['access_switch_password'],
+                            switch_model.hostname,
+                            values['access_switch_commands'].split('\n'))
                 obj_response.script("create_notification('Configured', '', 'success', 5000)")
+                obj_response.html('#access_switch_result', str(log_messages))
+                obj_response.script('$("#access_switch_result").val($("#access_switch_result").html())')
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
@@ -804,3 +821,50 @@ class handler:
                 g.db.close()
                 obj_response.html("#access_switch_response", '')
 
+        elif values['operation'] == 'create_access_switch':
+            try:
+                model.access_switch.create(ip=values['access_switch_ip'],
+                                           user=values['access_switch_user'],
+                                           hostname=values['access_switch_hostname'])
+                obj_response.script("create_notification('Created', '', 'success', 5000)")
+                obj_response.script("get_access_switches();")
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script(
+                    "create_notification('Can not create access switch', '" + str(e).replace("'", "").
+                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#access_switch_response", '')
+
+        elif values['operation'] == 'delete_access_switch':
+            try:
+                model.access_switch.delete().where(
+                    model.access_switch.ip == values['sel_delete_access_switch']).execute()
+                obj_response.script("create_notification('Deleted', '', 'success', 5000)")
+                obj_response.script("get_access_switches();")
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script(
+                    "create_notification('Can not create access switch', '" + str(e).replace("'", "").
+                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#access_switch_response", '')
+
+        elif values['operation'] == 'get_access_switches':
+            try:
+                access_switches = model.access_switch.select()
+                option_list = '<option value="">Select</option>'
+                for switch in access_switches:
+                    option_list += '<option value="' + str(switch.ip) + '">' + switch.ip + \
+                                   ' (' + switch.hostname + ')</option>'
+                obj_response.html(".sel-access-switch", option_list)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script(
+                    "create_notification('Can not retrieve access switches', '" + str(e).replace("'", "").
+                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#access_switch_response", '')

@@ -2,25 +2,6 @@
 // Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
 // *************************************************************************
 
-$().ready(function() {
-
-		// validations
-		$("#network_form").validate({
-		    errorClass: "error",
-            errorElement: "label",
-            rules: {
-
-			},
-			highlight: function(element, errorClass) {
-                $(element).removeClass(errorClass);
-            }
-		});
-		get_groups();
-		get_leafs();
-		get_vpcs();
-		get_network_profiles();
-		get_vpc_groups();
-});
 
 function create_group(){
     $('#create_group_name').rules("add", "required");
@@ -475,24 +456,105 @@ function delete_network_profile(){
     $('#sel_delete_network_profile').rules('remove','required')
 }
 
-function configure_access_switch(){
+function create_access_switch(){
+    $('#access_switch_hostname').rules('add','required')
     $('#access_switch_ip').rules('add','required')
     $('#access_switch_user').rules('add','required')
-    $('#access_switch_password').rules('add','required')
-    $('#access_switch_commands').rules('add','required')
-    $('#access_switch_hostname').rules('add','required')
     if($('#network_form').valid()){
-            $('#operation').val('configure_access_switch')
+            $('#operation').val('create_access_switch')
             submit_form('access_switch_handler')
             $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
+    $('#access_switch_hostname').rules('remove','required')
     $('#access_switch_ip').rules('remove','required')
     $('#access_switch_user').rules('remove','required')
-    $('#access_switch_password').rules('remove','required')
-    $('#access_switch_commands').rules('remove','required')
-    $('#access_switch_hostname').rules('remove','required')
 }
 
+
+function configure_access_switches(){
+    if ($("#table_access_switches tr").length < 3){
+        $('#access_switch_response').html(
+            '<label class="label label-danger">' +
+            '<i class="fa fa-times-circle"></i> You must add at least one switch</label>'
+        );
+        return;
+    }
+    $('#access_switch_password').rules('add','required')
+    $('#access_switch_commands').rules('add','required')
+    if($('#network_form').valid()){
+        switches_info = '';
+        $("#table_access_switches tr").each(function(index) {
+            if (index != 0) {
+                $row = $(this);
+                switches_info += $row.find("td:first").text() + ";";
+            }
+        });
+        $('#hd_configure_access_switches').val(switches_info)
+        $('#operation').val('configure_access_switches')
+        submit_form('access_switch_handler')
+        $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#access_switch_password').rules('remove','required')
+    $('#access_switch_commands').rules('remove','required')
+}
+
+function get_access_switches(){
+    if($('#network_form').valid()){
+            $('#operation').val('get_access_switches')
+            submit_form('access_switch_handler')
+            $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+}
+
+function delete_access_switch(){
+    $('#sel_delete_access_switch').rules('add','required')
+    if($('#network_form').valid()){
+            $('#operation').val('delete_access_switch')
+            submit_form('access_switch_handler')
+            $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    $('#sel_delete_access_switch').rules('remove','required')
+}
+
+function add_switch(){
+    $('#access_switch_response').html('')
+    $('#sel_access_switch').rules("add", "required");
+    if($('#network_form').valid()){
+        add_to_list = true;
+        // Check if switch has been added
+        var switch_selected_list = []
+        $("#table_access_switches tr").each(function(index) {
+            if (index != 0) {
+
+                $row = $(this);
+
+                var id = $row.find("td:first").text();
+
+                if (id.indexOf($('#sel_access_switch').val()) == 0) {
+                       $('#access_switch_response').html(
+                       '<label class="label label-danger" > <i class="fa fa-times-circle"></i> Switch already added</label>'
+                       );
+                       add_to_list = false;
+                       return;
+                }
+            }
+        });
+        if (add_to_list){
+            tr_id = $('#sel_access_switch').val().replace(/\./g,'')
+            $('#table_access_switches > tbody > tr').eq(0).after(
+                '<tr id=' +
+                tr_id +
+                '><td>' +
+                $('#sel_access_switch option:selected').text() +
+                '</td><td><i class="fa fa-times-circle" onclick="$(\'#' +
+                tr_id +
+                '\').remove();"></i>' +
+                '</td></tr>'
+            );
+        }
+    }
+    $('#sel_access_switch').rules("remove", "required");
+}
 
 function create_vpc_group() {
     if ($('#sel_create_vpc_group_leaf_1').val() == $('#sel_create_vpc_group_leaf_2').val()) {
@@ -576,3 +638,6 @@ function clean_inputs(){
     $('.label-danger').remove();
     $('.error').remove();
 }
+
+
+

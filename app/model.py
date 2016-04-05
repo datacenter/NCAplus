@@ -44,10 +44,14 @@ class network_profilexnetwork(base):
     network_profile = ForeignKeyField(network_profile)
     network = ForeignKeyField(network)
 
+class access_switch(base):
+    ip = CharField(unique=True)
+    user = CharField()
+    hostname = CharField()
 
 def create_tables():
     database.connect()
-    database.create_tables([network, vpc, port, portxnetwork, network_profile, network_profilexnetwork])
+    database.create_tables([network, vpc, port, portxnetwork, network_profile, network_profilexnetwork, access_switch])
 
 
 

@@ -41,11 +41,10 @@ from cobra.modelimpl.infra.attentityp import AttEntityP
 from cobra.modelimpl.infra.rsdomp import RsDomP
 from cobra.modelimpl.fabric.explicitgep import ExplicitGEp
 from cobra.modelimpl.fabric.nodepep import NodePEp
-from cobra.modelimpl.fabric.rsvpcinstpol import RsVpcInstPol
-
+from cobra.modelimpl.fabric.hifpol import HIfPol
+from cobra.modelimpl.lacp.lagpol import LagPol
+from cobra.modelimpl.cdp.ifpol import IfPol
 import re
-import requests
-import json
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
@@ -488,18 +487,30 @@ class Apic:
         self.commit(
             RsAttEntP(policy_group_mo.dn, tDn=str(AttEntityP_mo.dn))
         )
-        # Assign interface policies
+        # Assign interface policies. For non-defaults, check if is already created. If not, the system will create them
+        IfPolmo = self.moDir.lookupByDn('uni/infra/cdpIfP-CDP-ON')
+        if not IfPolmo:
+            IfPolmo = IfPol('uni/infra','CDP-ON',adminSt='enabled')
+            self.commit(IfPolmo)
         self.commit(
-            RsCdpIfPol(policy_group_mo.dn, tnCdpIfPolName='CDP-ON')
+            RsCdpIfPol(policy_group_mo.dn, tnCdpIfPolName=IfPolmo.name)
         )
+        HIfPolmo = self.moDir.lookupByDn('uni/infra/hintfpol-1GB')
+        if not HIfPolmo:
+            HIfPolmo = HIfPol('uni/infra', '1GB', speed='1G')
+            self.commit(HIfPolmo)
         self.commit(
-            RsHIfPol(policy_group_mo.dn, tnFabricHIfPolName='1GB')
+            RsHIfPol(policy_group_mo.dn, tnFabricHIfPolName=HIfPolmo.name)
         )
         self.commit(
             RsL2IfPol(policy_group_mo.dn, tnL2IfPolName='default')
         )
+        LagPolmo = self.moDir.lookupByDn('uni/infra/lacplagp-LACP')
+        if not LagPolmo:
+            LagPolmo = LagPol('uni/infra', 'LACP', mode='active')
+            self.commit(LagPolmo)
         self.commit(
-            RsLacpPol(policy_group_mo.dn, tnLacpLagPolName='LACP')
+            RsLacpPol(policy_group_mo.dn, tnLacpLagPolName=LagPolmo.name)
         )
         self.commit(
             RsLldpIfPol(policy_group_mo.dn, tnLldpIfPolName='default')

@@ -5,6 +5,40 @@
 {{ super() }}
 <title>ACI Migration Tool</title>
 {% endblock head %}
+{% block navbar %}
+
+<div class="container">
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">
+                    <div class="pn-noncollapse">ACI migration tool</div>
+                </a>
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar navbar-inverse"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="ciscoliveitem"><a target="blank" data-toggle="modal" data-target="#ABOUT"
+                                                 href="#">About</a></li>
+                    <li class="ciscoliveitem"><a href="/logout">Logout</a></li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right navHeaderCollapse">
+                    <img width="35px" style="margin:6px;" src="/static/images/CiscoLogoWhite.png">
+
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</div>
+{% endblock navbar %}
 {% block content %}
 {% set labelclass = "col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label" %}
 {% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
@@ -15,27 +49,58 @@
 {% set ipinputclasssm = "col-lg-2 col-md-2 col-sm-3 col-xs-6" %}
 {% set apiclabels = "col-lg-1 col-md-1 col-sm-1 col-xs-6 control-label" %}
 {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
-<form action="javascript:void(null);"
-      onsubmit="submit_network_form()"
-      id="network_form"
-      class="form-horizontal">
-    <input type="hidden" id="operation" name="operation" value="">
-    <input type="hidden" id="sub_operation" name="sub_operation" value="">
-    <ul style="margin: 20px 0px 22px; visibility: visible;" class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#group_tab" onclick="clean_inputs();">Group</a></li>
-        <li class=""><a data-toggle="tab" href="#network_tab" onclick="clean_inputs();">Network</a></li>
-        <li class=""><a data-toggle="tab" href="#vpc_tab" onclick="clean_inputs();">VPC</a></li>
-        <li class=""><a data-toggle="tab" href="#vpc_access_tab" onclick="clean_inputs();">VPC Access</a></li>
-        <li class=""><a data-toggle="tab" href="#port_access_tab" onclick="clean_inputs();">Single Access</a></li>
-        <li class=""><a data-toggle="tab" href="#access_switch_tab" onclick="clean_inputs();">Access Switches</a></li>
-    </ul>
-    <div class="tab-content">
-        {% include 'group_partial.html' %}
-        {% include 'network_partial.html' %}
-        {% include 'vpc_partial.html' %}
-        {% include 'vpc_access_partial.html' %}
-        {% include 'port_access_partial.html' %}
-        {% include 'access_switch_partial.html' %}
+
+<div class="container">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <form action="javascript:void(null);"
+              onsubmit="submit_network_form()"
+              id="network_form"
+              class="form-horizontal">
+            <input type="hidden" id="operation" name="operation" value="">
+            <input type="hidden" id="sub_operation" name="sub_operation" value="">
+            <ul style="margin: 20px 0px 22px; visibility: visible;" class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#group_tab" onclick="clean_inputs();">Group</a></li>
+                <li class=""><a data-toggle="tab" href="#network_tab" onclick="clean_inputs();">Network</a></li>
+                <li class=""><a data-toggle="tab" href="#vpc_tab" onclick="clean_inputs();">VPC</a></li>
+                <li class=""><a data-toggle="tab" href="#vpc_access_tab" onclick="clean_inputs();">VPC Access</a></li>
+                <li class=""><a data-toggle="tab" href="#port_access_tab" onclick="clean_inputs();">Single Access</a>
+                </li>
+                <li class=""><a data-toggle="tab" href="#access_switch_tab" onclick="clean_inputs();">Access
+                    Switches</a></li>
+            </ul>
+            <div class="tab-content">
+                {% include 'group_partial.html' %}
+                {% include 'network_partial.html' %}
+                {% include 'vpc_partial.html' %}
+                {% include 'vpc_access_partial.html' %}
+                {% include 'port_access_partial.html' %}
+                {% include 'access_switch_partial.html' %}
+            </div>
+        </form>
     </div>
-</form>
+</div>
 {% endblock content %}
+{% block scripts %}
+{{ super() }}
+<script>
+$().ready(function() {
+		// validations
+		$("#network_form").validate({
+		    errorClass: "error",
+            errorElement: "label",
+            rules: {
+
+			},
+			highlight: function(element, errorClass) {
+                $(element).removeClass(errorClass);
+            }
+		});
+		get_groups();
+		get_leafs();
+		get_vpcs();
+		get_network_profiles();
+		get_vpc_groups();
+		get_access_switches();
+});
+</script>
+{% endblock scripts %}
