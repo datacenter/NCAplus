@@ -479,7 +479,8 @@ function configure_access_switches(){
         );
         return;
     }
-    $('#access_switch_password').rules('add','required')
+    $('#access_switch_login_password').rules('add','required')
+    $('#access_switch_enable_password').rules('add','required')
     $('#access_switch_commands').rules('add','required')
     if($('#network_form').valid()){
         switches_info = '';
@@ -494,7 +495,8 @@ function configure_access_switches(){
         submit_form('access_switch_handler')
         $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
-    $('#access_switch_password').rules('remove','required')
+    $('#access_switch_login_password').rules('remove','required')
+    $('#access_switch_enable_password').rules('remove','required')
     $('#access_switch_commands').rules('remove','required')
 }
 

@@ -44,6 +44,7 @@ from cobra.modelimpl.fabric.nodepep import NodePEp
 from cobra.modelimpl.fabric.hifpol import HIfPol
 from cobra.modelimpl.lacp.lagpol import LagPol
 from cobra.modelimpl.cdp.ifpol import IfPol
+from cobra.modelimpl.fv.ctx import Ctx
 import re
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
@@ -278,52 +279,65 @@ class Apic:
     def create_network(self, network_o):
         tenant_mo = self.moDir.lookupByDn(network_o.group)
         tenant_children = self.query_child_objects(network_o.group)
+        # Check if Application profile exists, if not creates one
         ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
                          tenant_children)
         if len(ap_list) == 0:
             network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + "-ap")
         else:
             network_ap = ap_list[0]
-        bd_list = filter(lambda x: type(x).__name__ == 'BD',
-                         tenant_children)
-        if len(bd_list) > 0:
-            bd_cxts = filter(lambda x: type(x).__name__ == 'RsCtx',
-                             self.query_child_objects(str(bd_list[0].dn)))
-            if len(bd_cxts) > 0:
-                if bd_cxts[0].tnFvCtxName == '':
-                    bd_cxts[0].tnFvCtxName = 'default'
-                    self.commit(bd_cxts[0])
-            return self.create_epg(str(network_ap.dn), str(bd_list[0].dn), network_o.name + '-vlan' +
-                                   str(network_o.encapsulation))
-        else:
-            return self.create_epg(str(network_ap.dn), None, network_o.name + '-vlan' +
-                                   str(network_o.encapsulation))
 
-    def delete_network(self, network_o):
-        class_query = ClassQuery('fvTenant')
-        class_query.propFilter = 'eq(fvTenant.name, "' + network_o.group.name + '")'
-        tenant_list = self.moDir.query(class_query)
-        if len(tenant_list) > 0:
-            tenant_mo = tenant_list[0]
-            ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
-                             self.query_child_objects(str(tenant_mo.dn)))
-            if len(ap_list) > 0:
-                network_ap = ap_list[0]
-                network_epgs = filter(lambda x: type(x).__name__ == 'AEPg' and x.name == network_o.name,
-                                      self.query_child_objects(str(network_ap.dn)))
-                if len(network_epgs) > 0:
-                    network_epgs[0].delete()
-                    self.commit(network_epgs[0])
+        # Creates bridge domain
+        bd_mo = self.create_bd('vlan' + str(network_o.encapsulation), tenant_mo, None)
 
-    def create_group(self, group_name):
-        tenant_mo = self.create_tenant(group_name)
-        bd_mo = self.create_bd(group_name + '-BD', tenant_mo, None)
+        # Set BD parameters
         bd_mo.arpFlood = 'yes'
         bd_mo.multiDstPktAct = 'bd-flood'
         bd_mo.unicastRoute = 'no'
         bd_mo.unkMacUcastAct = 'flood'
         bd_mo.unkMcastAct = 'flood'
         self.commit(bd_mo)
+
+        # check if vrf exists, if not creates one
+        tenant_ctxs = filter(lambda x: type(x).__name__ == 'Ctx' and x.name == 'vrf-migration-tool',
+                             self.query_child_objects(str(tenant_mo.dn)))
+        if len(tenant_ctxs) == 0:
+            bd_ctx = self.create_vrf(tenant_mo.dn, 'vrf-migration-tool')
+        else:
+            bd_ctx = tenant_ctxs[0]
+
+        bd_cxts = filter(lambda x: type(x).__name__ == 'RsCtx',
+                             self.query_child_objects(str(bd_mo.dn)))
+        if len(bd_cxts) > 0:
+            bd_cxts[0].tnFvCtxName = bd_ctx.name
+            self.commit(bd_cxts[0])
+
+        return self.create_epg(str(network_ap.dn), str(bd_mo.dn), network_o.name + '-vlan' +
+                               str(network_o.encapsulation))
+
+    def delete_network(self, network_o):
+            tenant_mo = self.moDir.lookupByDn(network_o.group)
+            # Removes EPG
+            ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + "-ap",
+                             self.query_child_objects(str(tenant_mo.dn)))
+            if len(ap_list) > 0:
+                network_ap = ap_list[0]
+                network_epgs = filter(lambda x: type(x).__name__ == 'AEPg' and x.name == network_o.name + "-vlan" +
+                                      str(network_o.encapsulation),
+                                      self.query_child_objects(str(network_ap.dn)))
+                if len(network_epgs) > 0:
+                    network_epgs[0].delete()
+                    self.commit(network_epgs[0])
+
+            # Removes bridge domain
+            bd_list = filter(lambda x: type(x).__name__ == 'BD' and x.name == 'vlan' + str(network_o.encapsulation),
+                             self.query_child_objects(str(tenant_mo.dn)))
+            if len(bd_list) > 0:
+                bd_list[0].delete()
+                self.commit(bd_list[0])
+
+    def create_group(self, group_name):
+        tenant_mo = self.create_tenant(group_name)
 
     def delete_group(self, group_o):
         class_query = ClassQuery('fvTenant')
@@ -674,3 +688,8 @@ class Apic:
         fabricExplicitGEp_mo = self.moDir.lookupByDn(fabricExplicitGEp_dn)
         fabricExplicitGEp_mo.delete()
         self.commit(fabricExplicitGEp_mo)
+
+    def create_vrf(self, parent_dn, vrf_name):
+        Ctx_mo = Ctx(parent_dn, vrf_name)
+        self.commit(Ctx_mo)
+        return Ctx_mo

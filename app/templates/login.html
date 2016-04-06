@@ -53,7 +53,13 @@
                 <div class="panel-body">
                     <div class="form-group">
                         <label class="col-xs-12"> APIC-URL
-
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="APIC URL"
+                                          data-content="Write the URL that you configured for the APIC. Do not
+                                          forget to add 'http' or 'https' at the beginning">
+                            </span>
                         </label>
                         <div class="col-xs-12">
                             <input type="text" class="form-control" maxlength="50" id="login_apic_url" value="{{ login_apic_url }}"
@@ -63,7 +69,12 @@
 
                     <div class="form-group">
                         <label class="col-xs-12"> Username
-
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Username"
+                                          data-content="The username must be valid APIC user">
+                            </span>
                         </label>
                         <div class="col-xs-12">
                             <input type="text" class="form-control" maxlength="50" id="login_username" value="{{ login_username }}"
@@ -73,7 +84,12 @@
 
                     <div class="form-group">
                         <label class="col-xs-12"> Password
-
+                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Username"
+                                          data-content="Password for the above username">
+                            </span>
                         </label>
                         <div class="col-xs-12">
                             <input type="password" class="form-control" maxlength="50" id="login_password" value=""

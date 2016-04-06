@@ -1,6 +1,15 @@
 <div id="network_tab" class="tab-pane fade">
     <div id="div_create_network" name="div_create_network" class="panel panel-primary">
         <div class="panel-heading">Create Network
+             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Create Network"
+                                          data-content="The tool creates a new End Point Group and a new
+                                           Bridge domain per VLAN in the APIC.
+                                           Also, if there is none VRF within the tenant, it will create one. Only one
+                                           VRF is needed for all the VLANs within a tenant">
+                                    </span>
             <div id="create_network_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -10,7 +19,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Network"
-                                          data-content="Specify the name of the new network">
+                                          data-content="Specify the name of the new network.">
                                     </span>
                 </label>
                 <div class="{{ txtinputclassmd }}">
@@ -24,7 +33,8 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="VLAN"
-                                          data-content="Specify the VLAN of the new network">
+                                          data-content="Specify the VLAN of the new network. This VLAN will be added
+                                          to a VLAN pool in the APIC">
                                     </span>
                 </label>
                 <div class="{{ txtinputclassmd }}">
@@ -38,7 +48,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
-                                          data-content="Select the group to assign the network">
+                                          data-content="Select the group or tenant to assign the network">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
@@ -55,6 +65,13 @@
     </div>
     <div id="div_delete_network" name="div_delete_network" class="panel panel-danger">
         <div class="panel-heading">Delete Network
+             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Delete Network"
+                                          data-content="This will remove an End Point Group and a Bridge Domain in
+                                          the APIC">
+                                    </span>
             <div id="delete_network_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -64,7 +81,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
-                                          data-content="Select the group to search the network">
+                                          data-content="Select the group or tenant to search for the network">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
@@ -79,7 +96,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Network"
-                                          data-content="Select the network to be deleted">
+                                          data-content="Select the network to be deleted.">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
@@ -97,6 +114,14 @@
     </div>
     <div id="div_create_network_profile" name="div_create_network" class="panel panel-primary">
         <div class="panel-heading">Create VLAN Profile
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Create VLAN Profile"
+                                          data-content="A VLAN profile is just an group of networks that you want to
+                                           apply the same configurations. Nothing is created in the APIC when you add
+                                           a new VLAN profile, it is saved in the tool's database">
+                                    </span>
             <div id="create_network_profile_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -121,7 +146,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
-                                          data-content="Select the group to search the network">
+                                          data-content="Select the group or tenant to search for the network">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
@@ -173,6 +198,14 @@
     </div>
     <div id="div_delete_network_profile" name="div_delete_network" class="panel panel-danger">
         <div class="panel-heading">Delete VLAN Profile
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Delete VLAN profile"
+                                          data-content="This will remove the VLAN profile from the tool's database.
+                                          The network configuration will not change because nothing is removed in the
+                                          APIC">
+                                    </span>
             <div id="delete_network_profile_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -182,7 +215,8 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="VLAN"
-                                          data-content="Select the vlan profile to delete">
+                                          data-content="Select the vlan profile to delete. This will not delete the
+                                          networks, just the VLAN profile.">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">

@@ -1,6 +1,17 @@
 <div id="port_access_tab" class="tab-pane fade">
     <div class="panel panel-primary">
         <div class="panel-heading"> Create Single Port Access
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Create Single Port Access"
+                                          data-content="A single port access is basically a way to allow VLANs
+                                          to go trough the port, it is like a regular trunk port.
+                                          You can do it selecting the VLAN that
+                                          you want and the port, or also using VLAN profiles to save some time
+                                          for those VLANs that need the same configuration. You can create VLAN
+                                          profiles under the 'Network' section">
+                                    </span>
             <div id="create_single_access_response" style="float:right;font-size:16px"></div>
         </div>
 
@@ -110,6 +121,16 @@
     </div>
     <div class="panel panel-danger">
         <div class="panel-heading">Delete Single Port Access
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Delete Single Port Access"
+                                          data-content="This will remove the VLANs from the port, and packets from those
+                                          VLANs will not be able to go through the link. You can do it selecting the VLAN
+                                          that you want to remove and the port, or also using VLAN profiles to save some time
+                                          for those VLANs that need the same configuration. You can create VLAN
+                                          profiles under the 'Network' section">
+                                    </span>
             <div id="delete_single_access_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">

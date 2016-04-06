@@ -7,7 +7,6 @@ Helper for views.py
 """
 import traceback
 import model
-import time
 
 from apic_manager import apic
 from routefunc import get_values
@@ -15,7 +14,7 @@ from flask import g, session
 from access_switch_manager import switch_controller
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
-COMMAND_WAIT_TIME = 0.5
+COMMAND_WAIT_TIME = 1
 handler_app = None
 
 
@@ -136,15 +135,15 @@ class handler:
                 # Get the network from local database
                 network_list = model.network.select().where(model.network.epg_dn == values['sel_delete_network_name'])
                 if len(network_list) > 0:
+                    apic_object.remove_vlan(network_list[0].encapsulation, 'migration-tool')
+                    apic_object.delete_network(network_list[0])
+                    obj_response.script('get_sel_delete_networks()')
+                    obj_response.script("create_notification('Deleted', '', 'success', 5000)")
                     # Delete the network from any network profile
                     model.network_profilexnetwork.delete().where(
                         model.network_profilexnetwork.network == network_list[0].id).execute()
                     # Delete network from database
                     model.network.delete().where(model.network.id == network_list[0].id).execute()
-                    apic_object.remove_vlan(network_list[0].encapsulation, 'migration-tool')
-                    apic_object.delete_epg(values['sel_delete_network_name'])
-                    obj_response.script('get_sel_delete_networks()')
-                    obj_response.script("create_notification('Deleted', '', 'success', 5000)")
                 else:
                     obj_response.script(
                         "create_notification('Can not delete network', "
@@ -549,7 +548,6 @@ class handler:
                     network_profilexnetworks = model.network_profilexnetwork.select().where(
                         model.network_profilexnetwork.network_profile == int(values['sel_profile_create_vpc_access']))
                     for network_profile in network_profilexnetworks:
-                        time.sleep(COMMAND_WAIT_TIME)
                         network_o = model.network.select().where(model.network.id == network_profile.network.id)
                         if len(network_o) > 0:
                             apic_object.associate_epg_vpc(network_o[0].epg_dn,
@@ -806,16 +804,17 @@ class handler:
                         log_messages += sc.send_commands(
                             switch_model.ip,
                             switch_model.user,
-                            values['access_switch_password'],
+                            values['access_switch_login_password'],
+                            values['access_switch_enable_password'],
                             switch_model.hostname,
                             values['access_switch_commands'].split('\n'))
-                obj_response.script("create_notification('Configured', '', 'success', 5000)")
+                obj_response.script("create_notification('Commands sent!', '', 'success', 5000)")
                 obj_response.html('#access_switch_result', str(log_messages))
                 obj_response.script('$("#access_switch_result").val($("#access_switch_result").html())')
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
-                    "create_notification('Can not configure access switch', '" + str(e).replace("'", "").
+                    "create_notification('Cannot send the commands', '" + str(e).replace("'", "").
                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
@@ -831,7 +830,7 @@ class handler:
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
-                    "create_notification('Can not create access switch', '" + str(e).replace("'", "").
+                    "create_notification('Cannot not create access switch', '" + str(e).replace("'", "").
                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
@@ -846,7 +845,7 @@ class handler:
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
-                    "create_notification('Can not create access switch', '" + str(e).replace("'", "").
+                    "create_notification('Cannot create access switch', '" + str(e).replace("'", "").
                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
@@ -863,7 +862,7 @@ class handler:
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
-                    "create_notification('Can not retrieve access switches', '" + str(e).replace("'", "").
+                    "create_notification('Cannot retrieve access switches', '" + str(e).replace("'", "").
                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()

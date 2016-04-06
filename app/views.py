@@ -22,6 +22,9 @@ def before_request():
     if not model.network.table_exists():
         model.create_tables()
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect('/')
 
 @flask_sijax.route(app, '/')
 def main():
@@ -77,3 +80,4 @@ def logout():
     session['username'] = None
     session['password'] = None
     return redirect('/login')
+

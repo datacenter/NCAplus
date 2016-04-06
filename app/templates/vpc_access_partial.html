@@ -1,6 +1,16 @@
 <div id="vpc_access_tab" class="tab-pane fade">
     <div id="div_create_vpc_access" class="panel panel-primary">
         <div class="panel-heading">Create Virtual Port Channel Access
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Create Virtual Port Channel Access"
+                                          data-content="A virtual port channel access is basically a way to allow VLANs
+                                          to go trough the port channel. You can do it selecting the VLAN that
+                                          you want and the VPC, or also using VLAN profiles to save some time
+                                          for those VLANs that need the same configuration. You can create VLAN
+                                          profiles under the 'Network' section">
+                                    </span>
             <div id="div_create_vpc_access_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -94,6 +104,16 @@
     </div>
     <div id="div_delete_vpc_access" name="div_delete_vpc_access" class="panel panel-danger">
         <div class="panel-heading">Delete Virtual Port Channel Access
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Delete Virtual Port Channel Access"
+                                          data-content="This will remove the VLANs from the link, and packets from those
+                                          VLANs will not be able to go through the VPC. You can do it selecting the VLAN
+                                          that you want to remove and the VPC, or also using VLAN profiles to save some time
+                                          for those VLANs that need the same configuration. You can create VLAN
+                                          profiles under the 'Network' section">
+                                    </span>
             <div id="div_delete_vpc_access_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">

@@ -1,6 +1,14 @@
 <div id="access_switch_tab" class="tab-pane fade">
     <div id="div_access_switch" name="div_access_switch" class="panel panel-primary">
         <div class="panel-heading">Access Switch
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Access switch"
+                                          data-content="This section allows you to create and remove switches that
+                                          are not controlled by the APIC. Once you have created a switch, you can start
+                                          sending commands to it, just like if you were connected using a ssh connection.">
+                                    </span>
             <div id="access_switch_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -54,7 +62,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="User"
-                                          data-content="Ingress the switch username to be configured">
+                                          data-content="Ingress the switch username">
                                     </span>
                     </label>
                     <div class="{{ txtinputclassmd }}">
@@ -77,7 +85,10 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Access switch"
-                                          data-content="Select the switch port to be assigned to the vpc.">
+                                          data-content="Select the switch where the commands are going to be executed.
+                                          You can add several switches to configure them with the same commands if you
+                                          want, be aware that the tool will try to use the same passwords for all
+                                          the switches in the list.">
                                     </span>
                     </label>
                     <div class="{{ selectclass }}">
@@ -102,18 +113,31 @@
                 </div>
                 <hr>
                 <div class="form-group">
-                    <label class="{{ labelclass }}"> Password
+                    <label class="{{ labelclass }}">Login Password
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Password"
-                                          data-content="Specify the password to be use. This one will be used for
-                                          login and for the enable mode if required">
+                                          title="Login Password"
+                                          data-content="Specify the login password to be used.">
                                     </span>
                     </label>
                     <div class="{{ txtinputclassmd }}">
-                        <input type="password" class="form-control" maxlength="50" id="access_switch_password"
-                               value="" name="access_switch_password" placeholder="*********">
+                        <input type="password" class="form-control" maxlength="50" id="access_switch_login_password"
+                               value="" name="access_switch_login_password" placeholder="*********">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="{{ labelclass }}">Enable Password
+                                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Enable Password"
+                                          data-content="Specify the enable password to be used.">
+                                    </span>
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="password" class="form-control" maxlength="50" id="access_switch_enable_password"
+                               value="" name="access_switch_enable_password" placeholder="*********">
                     </div>
                 </div>
                 <div class="form-group">
@@ -145,15 +169,15 @@
                                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
-                                          title="Commands"
-                                          data-content="Commands to be executed within the access switch">
+                                          title="Result"
+                                          data-content="Text returned from the access switches">
                                     </span>
                     </label>
                     <div class="{{ txtinputclassmd }}">
                             <textarea class="form-control" id="access_switch_result"
                                       value="" name="access_switch_result"
                                       placeholder="Send the commands to see the output"
-                                      style="font-family: inherit;min-height: 150px;" readonly></textarea>
+                                      style="font-family: inherit;min-height: 150px;" disabled></textarea>
                     </div>
 
                 </div>
@@ -172,7 +196,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
-                                          data-content="Select the switch IP to be deleted">
+                                          data-content="Select the switch to be deleted">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">

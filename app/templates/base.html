@@ -100,6 +100,12 @@
 <script type="text/javascript">
     {{ g.sijax.get_js()|safe }}
 
+$(function () {
+  $('[data-toggle="popover"]').popover({
+      container: 'body',
+      html: true
+  })
+})
 </script>
 {%- endblock scripts %}
 {%- endblock html %}

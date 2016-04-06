@@ -1,6 +1,12 @@
 <div id="group_tab" class="tab-pane fade in active">
     <div id="div_create_group" name="div_create_group" class="panel panel-primary">
         <div class="panel-heading">Create Management Group
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Create Management Group"
+                                          data-content="This will create a tenant in ACI">
+                                    </span>
             <div id="create_group_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -10,7 +16,7 @@
                                   data-toggle="popover"
                                   data-trigger="hover"
                                   title="Group name"
-                                  data-content="Specify the name of the new group">
+                                  data-content="Specify the name of the new group.">
                             </span>
                 </label>
                 <div class="{{ txtinputclassmd }}">
@@ -26,6 +32,13 @@
     </div>
     <div id="div_delete_group" name="div_delete_group" class="panel panel-danger">
         <div class="panel-heading">Delete Management Group
+             <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="Delete Management Group"
+                                          data-content="This will delete a tenant in ACI. All the networks within the
+                                          tenant will be removed and they can not be recovered">
+                                    </span>
             <div id="delete_group_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -35,7 +48,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
-                                          data-content="Select the group to be deleted">
+                                          data-content="Select the group to be deleted.">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">

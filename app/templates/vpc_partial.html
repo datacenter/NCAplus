@@ -1,6 +1,14 @@
 <div id="vpc_tab" class="tab-pane fade">
     <div id="div_create_vpc_group" name="div_create_vpc_group" class="panel panel-primary">
-        <div class="panel-heading">Create VPC Switch Pair
+        <div class="panel-heading">Create VPC Switch Bundle
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Create VPC Switch Bundle"
+                  data-content="A switch bundle is a pair of switches that are used to create
+                                          a VPC. If you want to create a VPC, you first need to create a switch bundle.
+                                          This will create an explicit protection group in the APIC">
+                                    </span>
             <div id="div_create_vpc_group_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -43,6 +51,13 @@
     </div>
     <div id="div_delete_vpc_group" name="div_delete_vpc" class="panel panel-danger">
         <div class="panel-heading">Delete VPC switch pair
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Delete VPC switch pair"
+                  data-content="This will delete an explicit protection group in the APIC. All
+                                          the VPCs using this bundle will stop working">
+                                    </span>
             <div id="delete_vpc_group_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -52,12 +67,12 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="VPC name"
-                                          data-content="Select virtual port channel that will be deleted">
+                                          data-content="Select the switch bundle that will be deleted">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
                     <select id="sel_delete_vpc_group_name" name="sel_delete_vpc_group_name"
-                            class="form-control sel-vpc-group"">
+                            class="form-control sel-vpc-group">
                     </select>
                 </div>
             </div>
@@ -68,6 +83,14 @@
     </div>
     <div id="div_create_vpc" name="div_create_vpc" class="panel panel-primary">
         <div class="panel-heading">Create Virtual Port Channel
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Create Virtual Port Channel"
+                  data-content="Several things need to be created in APIC to create a VPC, but
+                                          do not worry, this tool creates the interface profiles, switch profiles and
+                                          interface policy groups that are needed in the APIC">
+            </span>
             <div id="create_vpc_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -77,7 +100,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="VPC name"
-                                          data-content="Specify the name of the new virtual port channel">
+                                          data-content="Specify the name of the new virtual port channel.">
                                     </span>
                 </label>
                 <div class="{{ txtinputclassmd }}">
@@ -91,7 +114,8 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Leaf"
-                                          data-content="Select the virtual portchannel group to be used">
+                                          data-content="Select the switch bundle to be used. VPC switch bundles can be
+                                          create above">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
@@ -121,7 +145,10 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Port"
-                                          data-content="Select the switch port to be assigned to the vpc.">
+                                          data-content="Select the switch port to be assigned to the vpc. Ports that
+                                          are used for other VPC created with this tool are not shown, but ports that
+                                          are used to connect other devices, like the APIC, are shown. Do not assume that
+                                          is a free port just because it is shown in the list">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
@@ -153,6 +180,15 @@
     </div>
     <div id="div_delete_vpc" name="div_delete_vpc" class="panel panel-danger">
         <div class="panel-heading">Delete Virtual Port Channel
+            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Delete Virtual Port Channel"
+                  data-content="Several things need to be removed in the APIC when you delete a VPC.
+                  This tool will remove the interface profiles, switch profiles and
+                                          interface policy groups that are associated to the VPC to keep the APIC clean
+                                           of things that you do not need anymore">
+            </span>
             <div id="delete_vpc_response" style="float:right;font-size:16px"></div>
         </div>
         <div class="panel-body">
@@ -162,7 +198,7 @@
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="VPC name"
-                                          data-content="Select virtual port channel that will be deleted">
+                                          data-content="Select virtual port channel that will be deleted.">
                                     </span>
                 </label>
                 <div class="{{ selectclass }}">
