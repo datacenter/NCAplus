@@ -13,6 +13,6 @@ app.config['BOOTSTRAP_USE_MINIFIED'] = True
 app.secret_key = 'A0Zr4FcD2K1LFmw0918jHH!jm84$#ssaWQsif!1'
 from app import views
 Bootstrap(app)
-flask_sijax.Sijax(app)
 
+flask_sijax.Sijax(app)
 
