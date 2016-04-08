@@ -697,18 +697,6 @@ class Apic:
         self.commit(Ctx_mo)
         return Ctx_mo
 
-    def get_health_scores(self):
-        """ Returns a dictionary with fabric health and each leaf health """
-        HealthTotal_mo = self.moDir.lookupByDn('topology/health')
-        result = {}
-        result['HealthTotal'] = HealthTotal_mo.cur
-        fabric_switches_dns, fabric_switches_rns = self.get_fabric_switches()
-        for fabric_switch in fabric_switches_rns:
-            Health_Inst_mo = self.moDir.lookupByDn('topology/pod-1/' + fabric_switch + '/sys/health')
-            if Health_Inst_mo is not None:
-                result[fabric_switch] = Health_Inst_mo.cur
-        return result
-
     def get_fabric_switches(self):
         # Leafs
         class_query = ClassQuery('fabricNode')
@@ -731,6 +719,31 @@ class Apic:
         rns.sort(key=natural_keys)
         return dns, rns
 
-    def get_policy_cam_usage(self):
-        class_query = ClassQuery('eqptcapacityPolUsage5min')
-        return self.moDir.query(class_query)
+    def get_health_dashboard(self):
+        result = {}
+        fabric_switches_dns, fabric_switches_rns = self.get_fabric_switches()
+        for fabric_switch in fabric_switches_rns:
+            result[fabric_switch] = {}
+             # Switch health
+            Health_Inst_mo = self.moDir.lookupByDn('topology/pod-1/' + fabric_switch + '/sys/health')
+            result[fabric_switch]['Health'] = Health_Inst_mo.cur
+
+            # Switch Policy CAM table
+            cam_usage_mo = self.moDir.lookupByDn('topology/pod-1/' + str(fabric_switch) +
+                                                  '/sys/eqptcapacity/CDeqptcapacityPolUsage5min')
+            result[fabric_switch]['Policy CAM table'] = cam_usage_mo.polUsageCum + ' of ' + cam_usage_mo.polUsageCapCum
+
+            # Switch MAC table
+            multicast_usage_mo = self.moDir.lookupByDn('topology/pod-1/' + str(fabric_switch) +
+                                                  '/sys/eqptcapacity/CDeqptcapacityMcastUsage5min')
+            result[fabric_switch]['Multicast'] = multicast_usage_mo.localEpCum + ' of ' + multicast_usage_mo.localEpCapCum
+
+            # VLAN
+            vlan_usage_mo = self.moDir.lookupByDn('topology/pod-1/' + str(fabric_switch) +
+                                                  '/sys/eqptcapacity/CDeqptcapacityVlanUsage5min')
+            result[fabric_switch]['VLAN'] = vlan_usage_mo.totalCum + ' of ' + vlan_usage_mo.totalCapCum
+        return result
+
+    def get_system_health(self):
+        HealthTotal_mo = self.moDir.lookupByDn('topology/health')
+        return HealthTotal_mo.cur

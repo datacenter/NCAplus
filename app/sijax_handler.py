@@ -345,28 +345,54 @@ class handler:
                 g.db.close()
                 obj_response.html("#create_vpc_response", '')
 
-        elif values['operation'] == 'get_health_scores':
+        elif values['operation'] == 'get_health_dashboard':
             # """ Returns only available ports """
             try:
-                html_response = ''
-                scores = apic_object.get_health_scores()
-
-                for i in range(0, len(scores)):
-                    if int(scores.values()[i]) < 90:
-                        color = '#d9534f'
-                    else:
-                        color = '#5cb85c'
-                    html_response += '<div class="form-group">' \
-                                        '<label class="col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label"> ' \
-                                        + str(scores.keys()[i]) + \
-                                        '</label>' \
-                                        '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">' \
-                                             '<label class="col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label"' \
-                                        'style="color:' + color + '">' + str(scores.values()[i]) + \
-                                        '</label>' \
+                system_health = apic_object.get_system_health()
+                if int(system_health) < 90:
+                    html_class = 'panel-danger'
+                else:
+                    html_class = 'panel-success'
+                html_response = '<div id="system_health" class="panel ' + html_class + '">' \
+                                        '<div class="panel-heading"> System' \
                                         '</div>' \
-                                      '</div>'
-                obj_response.html('#health_data', html_response)
+                                        '<div class="panel-body">'\
+                                    '<div class="form-group">' \
+                                            '<label class="col-lg-6 col-md-6 col-sm-6 col-xs-12">Health' \
+                                            '</label>' \
+                                            '<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">' \
+                                                '<label class="col-lg-6 col-md-6 col-sm-6 col-xs-12">' \
+                                                + system_health + \
+                                                '</label>' \
+                                            '</div>' \
+                                        '</div>' \
+                                        '<hr>'
+                html_response += '</div></div>'
+                dashboard = apic_object.get_health_dashboard()
+                for item in dashboard.keys():
+                    for sub_item in dashboard[item].keys():
+                        if sub_item == 'Health':
+                            if int(dashboard[item][sub_item]) < 90:
+                                html_class = 'panel-danger'
+                            else:
+                                html_class = 'panel-success'
+                    html_response += '<div id="' + item.replace(' ','_') + '" class="panel ' + html_class + '">' \
+                                        '<div class="panel-heading">' + item + \
+                                        '</div>' \
+                                        '<div class="panel-body">'
+                    for sub_item in dashboard[item].keys():
+                        html_response +='<div class="form-group">' \
+                                            '<label class="col-lg-6 col-md-6 col-sm-6 col-xs-12">' + sub_item + \
+                                            '</label>' \
+                                            '<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">' \
+                                                '<label class="col-lg-6 col-md-6 col-sm-6 col-xs-12">' \
+                                                + dashboard[item][sub_item] + \
+                                                '</label>' \
+                                            '</div>' \
+                                        '</div>' \
+                                        '<hr>'
+                    html_response += '</div></div>'
+                obj_response.html('#noc_monitor_tab', html_response)
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not retrieve health scores', '" + str(e).replace("'", "").
@@ -374,7 +400,7 @@ class handler:
             finally:
                 g.db.close()
                 obj_response.html("#noc_monitor_response", '')
-        
+
     @staticmethod
     def vpc_handler(obj_response, formvalues):
         try:

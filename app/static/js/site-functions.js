@@ -642,13 +642,13 @@ function clean_inputs(){
     $('tbody').html('<tr></tr>')
 }
 
-function get_health_scores(){
+function get_health_dashboard(){
     if($('#network_form').valid()){
-            $('#operation').val('get_health_scores')
+            $('#operation').val('get_health_dashboard')
             submit_form('fabric_handler')
             $('#noc_monitor_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     // Refresh the health scores each 10 seconds
-    setTimeout(get_health_scores,10000)
+    setTimeout(get_health_dashboard,10000)
 }
 
