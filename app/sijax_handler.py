@@ -345,6 +345,36 @@ class handler:
                 g.db.close()
                 obj_response.html("#create_vpc_response", '')
 
+        elif values['operation'] == 'get_health_scores':
+            # """ Returns only available ports """
+            try:
+                html_response = ''
+                scores = apic_object.get_health_scores()
+
+                for i in range(0, len(scores)):
+                    if int(scores.values()[i]) < 90:
+                        color = '#d9534f'
+                    else:
+                        color = '#5cb85c'
+                    html_response += '<div class="form-group">' \
+                                        '<label class="col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label"> ' \
+                                        + str(scores.keys()[i]) + \
+                                        '</label>' \
+                                        '<div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">' \
+                                             '<label class="col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label"' \
+                                        'style="color:' + color + '">' + str(scores.values()[i]) + \
+                                        '</label>' \
+                                        '</div>' \
+                                      '</div>'
+                obj_response.html('#health_data', html_response)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve health scores', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#noc_monitor_response", '')
+        
     @staticmethod
     def vpc_handler(obj_response, formvalues):
         try:

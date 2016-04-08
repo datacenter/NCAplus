@@ -67,6 +67,8 @@
                 </li>
                 <li class=""><a data-toggle="tab" href="#access_switch_tab" onclick="clean_inputs();">Access
                     Switches</a></li>
+                <li class=""><a data-toggle="tab" href="#noc_monitor_tab" onclick="clean_inputs();">
+                    Noc monitor</a></li>
             </ul>
             <div class="tab-content">
                 {% include 'group_partial.html' %}
@@ -75,6 +77,7 @@
                 {% include 'vpc_access_partial.html' %}
                 {% include 'port_access_partial.html' %}
                 {% include 'access_switch_partial.html' %}
+                {% include 'noc_monitor_partial.html' %}
             </div>
         </form>
     </div>
@@ -101,6 +104,7 @@ $().ready(function() {
 		get_network_profiles();
 		get_vpc_groups();
 		get_access_switches();
+		get_health_scores();
 });
 </script>
 {% endblock scripts %}

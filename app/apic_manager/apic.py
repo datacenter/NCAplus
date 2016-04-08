@@ -45,6 +45,9 @@ from cobra.modelimpl.fabric.hifpol import HIfPol
 from cobra.modelimpl.lacp.lagpol import LagPol
 from cobra.modelimpl.cdp.ifpol import IfPol
 from cobra.modelimpl.fv.ctx import Ctx
+from cobra.modelimpl.fabric.healthtotal import HealthTotal
+from cobra.modelimpl.health.inst import Inst
+from cobra.modelimpl.eqptcapacity.polusage5min import PolUsage5min
 import re
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
@@ -693,3 +696,41 @@ class Apic:
         Ctx_mo = Ctx(parent_dn, vrf_name)
         self.commit(Ctx_mo)
         return Ctx_mo
+
+    def get_health_scores(self):
+        """ Returns a dictionary with fabric health and each leaf health """
+        HealthTotal_mo = self.moDir.lookupByDn('topology/health')
+        result = {}
+        result['HealthTotal'] = HealthTotal_mo.cur
+        fabric_switches_dns, fabric_switches_rns = self.get_fabric_switches()
+        for fabric_switch in fabric_switches_rns:
+            Health_Inst_mo = self.moDir.lookupByDn('topology/pod-1/' + fabric_switch + '/sys/health')
+            if Health_Inst_mo is not None:
+                result[fabric_switch] = Health_Inst_mo.cur
+        return result
+
+    def get_fabric_switches(self):
+        # Leafs
+        class_query = ClassQuery('fabricNode')
+        class_query.propFilter = 'eq(fabricNode.role, "leaf")'
+        leafs = self.moDir.query(class_query)
+        dns = []
+        rns = []
+        for leaf in leafs:
+            dns.append(str(leaf.dn))
+            rns.append(str(leaf.rn))
+        # Spines
+        class_query = ClassQuery('fabricNode')
+        class_query.propFilter = 'eq(fabricNode.role, "spine")'
+        spines = self.moDir.query(class_query)
+        for spine in spines:
+            dns.append(str(spine.dn))
+            rns.append(str(spine.rn))
+        # Need to be human sorted
+        dns.sort(key=natural_keys)
+        rns.sort(key=natural_keys)
+        return dns, rns
+
+    def get_policy_cam_usage(self):
+        class_query = ClassQuery('eqptcapacityPolUsage5min')
+        return self.moDir.query(class_query)

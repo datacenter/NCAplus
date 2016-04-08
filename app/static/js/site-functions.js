@@ -639,7 +639,16 @@ function clean_inputs(){
     $('input[type=password]').val('');
     $('.label-danger').remove();
     $('.error').remove();
+    $('tbody').html('<tr></tr>')
 }
 
-
+function get_health_scores(){
+    if($('#network_form').valid()){
+            $('#operation').val('get_health_scores')
+            submit_form('fabric_handler')
+            $('#noc_monitor_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+    }
+    // Refresh the health scores each 10 seconds
+    setTimeout(get_health_scores,10000)
+}
 
