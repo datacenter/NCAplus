@@ -11,26 +11,22 @@
     {%- endblock metas %}
 
     {%- block styles %}
-    <link href="{{bootstrap_find_resource('css/bootstrap.css', cdn='bootstrap')}}" rel="stylesheet" media="screen">
     <link href="/static/css/github.css" rel="stylesheet">
     <link href="/static/css/animate.css" rel="stylesheet">
+    <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/css/flatly.css" rel="stylesheet" media="screen">
     <link href="/static/css/style.css" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/font-awesome.min.css">
     {%- endblock styles %}
-    <script src="/static/js/skulpt.min.js"></script>
-    <script src="/static/js/skulpt-stdlib.js"></script>
     {%- endblock head %}
 
 </head>
 <body {% block body_attribs %}{% endblock body_attribs %}>
-{% block body -%}
-{% block navbar %}
-
-{%- endblock navbar %}
-
-        {% block content %}
-        {% endblock %}
-    </div>
+    {% block body -%}
+    {% block navbar %}
+    {%- endblock navbar %}
+    {% block content %}
+    {% endblock %}
+</div>
 </div>
 <div class="modal fade" id="ABOUT" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">

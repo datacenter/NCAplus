@@ -51,7 +51,10 @@
 {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
 
 <div class="container">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+    <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
+        <div style='' id="sidefedexlogo">&nbsp;</div>
+    </div>
+    <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
         <form action="javascript:void(null);"
               onsubmit="submit_network_form()"
               id="network_form"
@@ -59,16 +62,21 @@
             <input type="hidden" id="operation" name="operation" value="">
             <input type="hidden" id="sub_operation" name="sub_operation" value="">
             <ul style="margin: 20px 0px 22px; visibility: visible;" class="nav nav-tabs">
-                <li class="active"><a data-toggle="tab" href="#group_tab" onclick="clean_inputs();">Group</a></li>
-                <li class=""><a data-toggle="tab" href="#network_tab" onclick="clean_inputs();">Network</a></li>
-                <li class=""><a data-toggle="tab" href="#vpc_tab" onclick="clean_inputs();">VPC</a></li>
-                <li class=""><a data-toggle="tab" href="#vpc_access_tab" onclick="clean_inputs();">VPC Access</a></li>
-                <li class=""><a data-toggle="tab" href="#port_access_tab" onclick="clean_inputs();">Single Access</a>
+                <li class="active">
+                    <a data-toggle="tab" href="#group_tab" onclick="clean_inputs();">Group</a></li>
+                    <li class=""><a data-toggle="tab" href="#network_tab" onclick="clean_inputs();">Network</a></li>
+                    <li class=""><a data-toggle="tab" href="#vpc_tab" onclick="clean_inputs();">VPC</a></li>
+                    <li class=""><a data-toggle="tab" href="#vpc_access_tab" onclick="clean_inputs();">VPC Access</a></li>
+                    <li class=""><a data-toggle="tab" href="#port_access_tab" onclick="clean_inputs();">Single Access</a>
                 </li>
-                <li class=""><a data-toggle="tab" href="#access_switch_tab" onclick="clean_inputs();">Access
-                    Switches</a></li>
-                <li class=""><a data-toggle="tab" href="#noc_monitor_tab" onclick="clean_inputs();">
-                    AFWH Noc monitor</a></li>
+                <li class="">
+                    <a data-toggle="tab" href="#access_switch_tab" onclick="clean_inputs();">Access
+                    Switches</a>
+                </li>
+                <li class="">
+                    <a data-toggle="tab" href="#noc_monitor_tab" onclick="clean_inputs();">
+                    AFWH Noc monitor</a>
+                </li>
             </ul>
             <div class="tab-content">
                 {% include 'group_partial.html' %}
