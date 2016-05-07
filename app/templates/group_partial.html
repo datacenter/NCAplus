@@ -1,66 +1,83 @@
 <div id="group_tab" class="tab-pane fade in active">
-    <div id="div_create_group" name="div_create_group" class="panel panel-primary">
-        <div class="panel-heading">Create Management Group&nbsp;
-            <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Create Management Group"
-                                          data-content="This will create a tenant in ACI">
-                                    </span>
-            <div id="create_group_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}">Group name&nbsp;
-                            <span class="fa fa-info-circle" aria-hidden="true"
-                                  data-toggle="popover"
-                                  data-trigger="hover"
-                                  title="Group name"
-                                  data-content="Specify the name of the new group.">
-                            </span>
-                </label>
-                <div class="{{ txtinputclassmd }}">
-                    <input type="text" class="form-control" maxlength="50" id="create_group_name" value=""
-                           name="create_group_name" placeholder="Name">
-                </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+        <div id="div_create_group" name="div_create_group" class="panel panel-primary">
+            <div class="panel-heading">Group List&nbsp;
+                <span class="fa fa-info-circle" aria-hidden="true"
+                                              data-toggle="popover"
+                                              data-trigger="hover"
+                                              title="Group List"
+                                              data-content="List of group Tenants in the ACI Fabric">
+                                        </span>
             </div>
-            <hr>
-            <button id="btn_create_group" type="button" class="btn btn-primary" onclick="create_group()">
-                Create
-            </button>
+            <div class="panel-body">
+                <div id="tenant_list" name ="tenant_list" style="float:right;font-size:16px"></div>
+            </div>
         </div>
     </div>
-    <div id="div_delete_group" name="div_delete_group" class="panel panel-default">
-        <div class="panel-heading">Delete Management Group&nbsp;
-             <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Delete Management Group"
-                                          data-content="This will delete a tenant in ACI. All the networks within the
-                                          tenant will be removed and they can not be recovered">
-                                    </span>
-            <div id="delete_group_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}">Group&nbsp;
-                                    <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Group"
-                                          data-content="Select the group to be deleted.">
-                                    </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_delete_group_name" name="sel_delete_group_name"
-                            class="form-control sel-group">
-                    </select>
-                </div>
+    <div class="col-lg-9 col-md-9 col-sm-9 col-xs-9">
+        <div id="div_create_group" name="div_create_group" class="panel panel-primary">
+            <div class="panel-heading">Create Management Group&nbsp;
+                <span class="fa fa-info-circle" aria-hidden="true"
+                                              data-toggle="popover"
+                                              data-trigger="hover"
+                                              title="Create Management Group"
+                                              data-content="This will create a tenant in ACI">
+                                        </span>
+                <div id="create_group_response" style="float:right;font-size:16px"></div>
             </div>
-            <hr>
-            <button id="btn_delete_group" type="button" class="btn btn-danger" onclick="delete_group()">
-                Delete
-            </button>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}">Group name&nbsp;
+                                <span class="fa fa-info-circle" aria-hidden="true"
+                                      data-toggle="popover"
+                                      data-trigger="hover"
+                                      title="Group name"
+                                      data-content="Specify the name of the new group.">
+                                </span>
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="text" class="form-control" maxlength="50" id="create_group_name" value=""
+                               name="create_group_name" placeholder="Name">
+                    </div>
+                </div>
+                <hr>
+                <button id="btn_create_group" type="button" class="btn btn-primary" onclick="create_group()">
+                    Create
+                </button>
+            </div>
+        </div>
+        <div id="div_delete_group" name="div_delete_group" class="panel panel-default">
+            <div class="panel-heading">Delete Management Group&nbsp;
+                 <span class="fa fa-info-circle" aria-hidden="true"
+                                              data-toggle="popover"
+                                              data-trigger="hover"
+                                              title="Delete Management Group"
+                                              data-content="This will delete a tenant in ACI. All the networks within the
+                                              tenant will be removed and they can not be recovered">
+                                        </span>
+                <div id="delete_group_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}">Group&nbsp;
+                                        <span class="fa fa-info-circle" aria-hidden="true"
+                                              data-toggle="popover"
+                                              data-trigger="hover"
+                                              title="Group"
+                                              data-content="Select the group to be deleted.">
+                                        </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_delete_group_name" name="sel_delete_group_name"
+                                class="form-control sel-group">
+                        </select>
+                    </div>
+                </div>
+                <hr>
+                <button id="btn_delete_group" type="button" class="btn btn-danger" onclick="delete_group()">
+                    Delete
+                </button>
+            </div>
         </div>
     </div>
 </div>

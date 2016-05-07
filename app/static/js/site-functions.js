@@ -19,6 +19,12 @@ function get_groups(){
     $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+function get_tenants(){
+    $('#operation').val('tenant_list');
+    submit_form('group_handler')
+    $('#tenant_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
+}
+
 function delete_group() {
     $('#sel_delete_group_name').rules("add", "required");
     if($('#network_form').valid()){

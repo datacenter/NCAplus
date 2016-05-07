@@ -57,6 +57,22 @@ class handler:
                 g.db.close()
                 obj_response.html("#create_network_response", '')
 
+        elif values['operation'] == 'tenant_list':
+            try:
+                tenants = apic_object.get_all_tenants()
+                all_tenants_list = '<div style="font-size:.8em;">'
+                for tenant in tenants:
+                    all_tenants_list += str(tenant.name) + '</br>'
+                obj_response.html("#tenant_list", all_tenants_list)
+                all_tenants_list += "</div>"
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve group list', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                #obj_response.html("#get_group_list", '')
+
         elif values['operation'] == 'create_group':
             try:
                 apic_object.create_group(values['create_group_name'])

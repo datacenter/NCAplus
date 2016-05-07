@@ -13,7 +13,7 @@
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <a href="/" class="navbar-brand">
-                    <div class="pn-noncollapse">ACI migration tool</div>
+                    <div class="pn-noncollapse">L2 Integration Tool</div>
                 </a>
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
                         data-target="#bs-example-navbar-collapse-1">
@@ -42,7 +42,7 @@
 {% block content %}
 {% set labelclass = "col-lg-2 col-md-2 col-sm-2 col-xs-6 control-label" %}
 {% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
-{% set selectclass = "col-lg-3 col-md-3 col-sm-2 col-xs-6" %}
+{% set selectclass = "col-lg-4 col-md-4 col-sm-4 col-xs-4" %}
 {% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
 {% set txtinputclasssm = "col-lg-3 col-md-3 col-sm-6 col-xs-12" %}
 {% set ipinputclass = "col-lg-3 col-md-3 col-sm-3 col-xs-12" %}
@@ -107,6 +107,7 @@ $().ready(function() {
             }
 		});
 		get_groups();
+        get_tenants();
 		get_leafs();
 		get_vpcs();
 		get_network_profiles();

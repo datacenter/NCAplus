@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="2963416320">
+    <data-source source="LOCAL" name="Sqlite (Xerial) - fedex-hub.db" uuid="2f9d8201-98b5-491b-a472-35c649340efd">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:fedex-hub.db</jdbc-url>
+    </data-source>
+  </component>
+</project>
