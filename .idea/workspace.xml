@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="59034775-fc62-449f-a93b-587783da81d0" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/sijax_handler.py" afterPath="$PROJECT_DIR$/app/sijax_handler.py" />
     </list>
     <ignored path="fedex-hub.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -16,7 +17,7 @@
   </component>
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/fedex-hub$run.coverage" NAME="run Coverage Results" MODIFIED="1462831897708" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/fedex-hub$run.coverage" NAME="run Coverage Results" MODIFIED="1462834363396" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="CreatePatchCommitExecutor">
     <option name="PATCH_PATH" value="" />
@@ -39,7 +40,7 @@
     <favorites_list name="fedex-hub" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.36864406">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
@@ -57,7 +58,7 @@
           <file leaf-file-name="main.html" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/templates/main.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="20">
+                <state relative-caret-position="236">
                   <caret line="19" column="66" selection-start-line="19" selection-start-column="66" selection-end-line="19" selection-end-column="66" />
                   <folding />
                 </state>
@@ -87,51 +88,10 @@
           <file leaf-file-name="site-functions.js" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/app/static/js/site-functions.js">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="198">
+                <state relative-caret-position="234">
                   <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
                   <folding>
                     <element signature="n#!!doc" expanded="true" />
-                    <marker date="1462582906000" expanded="true" signature="503:514" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="767:778" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="959:970" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="1281:1292" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="1789:1800" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="2338:2349" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="2801:2812" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="3515:3526" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="3873:3884" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="5299:5311" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="7601:7612" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="8057:8068" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="8373:8384" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="8690:8701" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="9133:9144" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="9685:9696" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="10269:10280" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="10791:10802" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="11425:11436" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="12021:12032" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="12479:12490" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="13116:13127" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="13791:13802" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="14249:14260" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="14886:14897" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="15560:15571" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="16812:16824" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="18356:18367" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="18720:18731" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="19108:19119" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="19534:19545" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="20053:20064" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="21278:21289" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="21763:21774" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="22116:22127" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="24303:24314" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="24702:24713" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="25047:25058" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="25448:25459" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="26571:26581" placeholder="..." />
-                    <marker date="1462582906000" expanded="true" signature="27182:27193" placeholder="..." />
                   </folding>
                 </state>
               </provider>
@@ -151,7 +111,7 @@
             <entry file="file://$PROJECT_DIR$/app/apic_manager/apic.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="13464">
-                  <caret line="748" column="33" selection-start-line="748" selection-start-column="33" selection-end-line="748" selection-end-column="33" />
+                  <caret line="748" column="11" selection-start-line="748" selection-start-column="11" selection-end-line="748" selection-end-column="11" />
                   <folding>
                     <element signature="e#294#316#0" expanded="true" />
                   </folding>
@@ -165,7 +125,6 @@
                 <state relative-caret-position="1098">
                   <caret line="61" column="49" selection-start-line="61" selection-start-column="49" selection-end-line="61" selection-end-column="49" />
                   <folding>
-                    <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                     <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
                   </folding>
                 </state>
@@ -189,8 +148,8 @@
           <file leaf-file-name="sijax_handler.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/sijax_handler.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="396">
-                  <caret line="49" column="50" selection-start-line="49" selection-start-column="50" selection-end-line="49" selection-end-column="50" />
+                <state relative-caret-position="630">
+                  <caret line="92" column="56" selection-start-line="92" selection-start-column="37" selection-end-line="92" selection-end-column="56" />
                   <folding>
                     <element signature="e#239#255#0" expanded="true" />
                   </folding>
@@ -248,9 +207,9 @@
         <option value="$PROJECT_DIR$/app/static/css/style.css" />
         <option value="$PROJECT_DIR$/app/templates/login.html" />
         <option value="$PROJECT_DIR$/app/static/js/site-functions.js" />
-        <option value="$PROJECT_DIR$/app/sijax_handler.py" />
         <option value="$PROJECT_DIR$/app/templates/group_partial.html" />
         <option value="$PROJECT_DIR$/app/templates/main.html" />
+        <option value="$PROJECT_DIR$/app/sijax_handler.py" />
       </list>
     </option>
   </component>
@@ -291,6 +250,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -405,7 +365,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -680,13 +639,13 @@
     <frame x="0" y="23" width="1920" height="1122" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11927582" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12034079" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17990468" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23009709" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22965117" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32796076" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -940,7 +899,7 @@
     <entry file="file://$PROJECT_DIR$/app/apic_manager/apic.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="13464">
-          <caret line="748" column="33" selection-start-line="748" selection-start-column="33" selection-end-line="748" selection-end-column="33" />
+          <caret line="748" column="11" selection-start-line="748" selection-start-column="11" selection-end-line="748" selection-end-column="11" />
           <folding>
             <element signature="e#294#316#0" expanded="true" />
           </folding>
@@ -1010,59 +969,18 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/static/js/site-functions.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="198">
+        <state relative-caret-position="234">
           <caret line="13" column="1" selection-start-line="13" selection-start-column="1" selection-end-line="13" selection-end-column="1" />
           <folding>
             <element signature="n#!!doc" expanded="true" />
-            <marker date="1462582906000" expanded="true" signature="503:514" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="767:778" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="959:970" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="1281:1292" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="1789:1800" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="2338:2349" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="2801:2812" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="3515:3526" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="3873:3884" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="5299:5311" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="7601:7612" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="8057:8068" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="8373:8384" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="8690:8701" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="9133:9144" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="9685:9696" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="10269:10280" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="10791:10802" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="11425:11436" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="12021:12032" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="12479:12490" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="13116:13127" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="13791:13802" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="14249:14260" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="14886:14897" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="15560:15571" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="16812:16824" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="18356:18367" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="18720:18731" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="19108:19119" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="19534:19545" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="20053:20064" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="21278:21289" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="21763:21774" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="22116:22127" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="24303:24314" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="24702:24713" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="25047:25058" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="25448:25459" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="26571:26581" placeholder="..." />
-            <marker date="1462582906000" expanded="true" signature="27182:27193" placeholder="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/sijax_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="396">
-          <caret line="49" column="50" selection-start-line="49" selection-start-column="50" selection-end-line="49" selection-end-column="50" />
+        <state relative-caret-position="630">
+          <caret line="92" column="56" selection-start-line="92" selection-start-column="37" selection-end-line="92" selection-end-column="56" />
           <folding>
             <element signature="e#239#255#0" expanded="true" />
           </folding>
@@ -1074,7 +992,6 @@
         <state relative-caret-position="1098">
           <caret line="61" column="49" selection-start-line="61" selection-start-column="49" selection-end-line="61" selection-end-column="49" />
           <folding>
-            <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
@@ -1089,7 +1006,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/main.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="20">
+        <state relative-caret-position="236">
           <caret line="19" column="66" selection-start-line="19" selection-start-column="66" selection-end-line="19" selection-end-column="66" />
           <folding />
         </state>

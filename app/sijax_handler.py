@@ -62,9 +62,10 @@ class handler:
                 tenants = apic_object.get_all_tenants()
                 all_tenants_list = ''
                 for tenant in tenants:
-                    all_tenants_list += '<h5>' + str(tenant.name) + '</h5><hr style="margin:0px 0px 0px 0px"/>'
+                    if tenant.name != 'mgmt' and tenant.name !='common' and tenant.name !='infra':
+                        all_tenants_list += '<div style="font-size:.9em;">' + str(tenant.name) + '</div><hr style="margin:0px 0px 0px 0px"/>'
                 obj_response.html("#tenant_list", all_tenants_list)
-                all_tenants_list += "</div>"
+                #all_tenants_list += "</div>"
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not retrieve group list', '" + str(e).replace("'", "").
