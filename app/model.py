@@ -7,7 +7,7 @@ Model and database definition
 """
 from peewee import *
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
-database = SqliteDatabase('fedex-hub.db')
+database = SqliteDatabase('l2-integration.db')
 
 
 class base(Model):

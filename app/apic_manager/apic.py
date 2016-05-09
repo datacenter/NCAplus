@@ -45,9 +45,8 @@ from cobra.modelimpl.fabric.hifpol import HIfPol
 from cobra.modelimpl.lacp.lagpol import LagPol
 from cobra.modelimpl.cdp.ifpol import IfPol
 from cobra.modelimpl.fv.ctx import Ctx
-from cobra.modelimpl.fabric.healthtotal import HealthTotal
-from cobra.modelimpl.health.inst import Inst
-from cobra.modelimpl.eqptcapacity.polusage5min import PolUsage5min
+from cobra.modelimpl.infra.accportgrp import AccPortGrp
+
 import re
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
@@ -415,7 +414,7 @@ class Apic:
         rsdom = RsDomAtt(epg_dn, str(DomP_mo.dn))
         self.commit(rsdom)
 
-    def get_vpc_assignments(self, epg_dn):
+    def get_vpc_assignments_by_epg(self, epg_dn):
         return filter(lambda x: type(x).__name__ == 'RsPathAtt' and 'topology/pod-1/protpaths' in str(x.tDn),
                       self.query_child_objects(epg_dn))
 
@@ -425,18 +424,143 @@ class Apic:
             fv_rspathattr_mo.delete()
             self.commit(fv_rspathattr_mo)
 
-    def create_single_access(self, epg_dn, port_dn, vlan_number):
+    def create_single_access(self, epg_dn, switch_dn, port_dn, vlan_number, aep_name,
+                             if_policy_group_name, switch_p_name):
+        if_policy_group = self.create_if_policy_group(if_policy_group_name, aep_name)
+        if_profile = self.create_interface_profile(port_dn,if_policy_group.dn)
+        self.create_single_access_switch_profile(switch_dn, if_profile.dn, switch_p_name)
         fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys', 'pathep')
         rspathatt_mo = RsPathAtt(epg_dn, fabric_path_dn, encap='vlan-' + str(vlan_number))
         self.commit(rspathatt_mo)
 
-    def delete_single_access(self, epg_dn, port_dn):
+    def create_single_access_switch_profile(self, switch_dn, if_profile_dn, switch_p_name):
+        # Create switch profile
+        switch_mo = self.moDir.lookupByDn(switch_dn)
+        switch_p_mo = NodeP('uni/infra/', switch_p_name)
+        self.commit(switch_p_mo)
+
+        # Add switch selector
+        switch_selector_mo = LeafS(str(switch_p_mo.dn), str(switch_mo.rn), 'range')
+        self.commit(switch_selector_mo)
+        node_block_mo = NodeBlk(switch_selector_mo.dn, str(switch_mo.rn) + '_nb', from_=switch_mo.id, to_=switch_mo.id)
+        self.commit(node_block_mo)
+
+        # Add interface profile
+        rs_acc_port_p_mo = RsAccPortP(switch_p_mo.dn, if_profile_dn)
+        self.commit(rs_acc_port_p_mo)
+
+    def create_interface_profile(self, port_dn, if_group_profile_dn):
+        # Create interface profile
+        port_mo = self.moDir.lookupByDn(port_dn)
+        interface_p = AccPortP('uni/infra/', 'single_access_' + str(port_mo.id).split('/')[1])
+        self.commit(interface_p)
+        # Create interface selector
+        if_sel_mo = HPortS(interface_p.dn, 'port_' + str(port_mo.id).split('/')[1], 'range')
+        self.commit(if_sel_mo)
+        # Assign interface selector to interface policy group
+        rs_access_base_group_mo = RsAccBaseGrp(if_sel_mo.dn, tDn=str(if_group_profile_dn))
+        self.commit(rs_access_base_group_mo)
+        # Create port block
+        port_blk_mo = PortBlk(if_sel_mo.dn, str(port_mo.id).replace('/', '-'),
+                              fromCard=str(port_mo.id).split('/')[0].replace('eth', ''),
+                              fromPort=str(port_mo.id).split('/')[1],
+                              toCard=str(port_mo.id).split('/')[0].replace('eth', ''),
+                              toPort=str(port_mo.id).split('/')[1])
+        self.commit(port_blk_mo)
+        return interface_p
+
+    def create_if_policy_group(self, name, aep_name):
+        if_policy_group_mo = AccPortGrp('uni/infra/funcprof/', name)
+        self.commit(if_policy_group_mo)
+        # if attachable entity profile does not exists, creates a new one
+        class_query = ClassQuery('infraAttEntityP')
+        class_query.propFilter = 'eq(infraAttEntityP.name, "aep-' + aep_name + '")'
+        pd_list = self.moDir.query(class_query)
+        if len(pd_list) == 0:
+            vlan_pool_mo = self.create_vlan_pool('vlan-pool-' + aep_name, 'static')
+            DomP_mo = self.create_physical_domain('pd-' + aep_name, str(vlan_pool_mo.dn))
+            AttEntityP_mo = self.create_attachable_entity_profile('aep-' + aep_name, str(DomP_mo.dn))
+        else:
+            AttEntityP_mo = pd_list[0]
+        # Assign attached entity profile
+        self.commit(
+            RsAttEntP(if_policy_group_mo.dn, tDn=str(AttEntityP_mo.dn))
+        )
+        # Assign interface policies. For non-defaults, check if is already created. If not, the system will create them
+        IfPolmo = self.moDir.lookupByDn('uni/infra/cdpIfP-CDP-ON')
+        if not IfPolmo:
+            IfPolmo = IfPol('uni/infra','CDP-ON',adminSt='enabled')
+            self.commit(IfPolmo)
+        self.commit(
+            RsCdpIfPol(if_policy_group_mo.dn, tnCdpIfPolName=IfPolmo.name)
+        )
+        HIfPolmo = self.moDir.lookupByDn('uni/infra/hintfpol-1GB')
+        if not HIfPolmo:
+            HIfPolmo = HIfPol('uni/infra', '1GB', speed='1G')
+            self.commit(HIfPolmo)
+        self.commit(
+            RsHIfPol(if_policy_group_mo.dn, tnFabricHIfPolName=HIfPolmo.name)
+        )
+        self.commit(
+            RsL2IfPol(if_policy_group_mo.dn, tnL2IfPolName='default')
+        )
+        self.commit(
+            RsLldpIfPol(if_policy_group_mo.dn, tnLldpIfPolName='default')
+        )
+        self.commit(
+            RsMcpIfPol(if_policy_group_mo.dn, tnMcpIfPolName='default')
+        )
+        self.commit(
+            RsMonIfInfraPol(if_policy_group_mo.dn, tnMonInfraPolName='default')
+        )
+        self.commit(
+            RsStormctrlIfPol(if_policy_group_mo.dn, tnStormctrlIfPolName='default')
+        )
+        self.commit(
+            RsStpIfPol(if_policy_group_mo.dn, tnStpIfPolName='default')
+        )
+        return if_policy_group_mo
+
+    def delete_single_access(self, epg_dn, port_dn, if_policy_group_name, switch_p_name):
         fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys', 'pathep')
         rspathatt_list = filter(lambda x: type(x).__name__ == 'RsPathAtt' and str(x.tDn) == fabric_path_dn,
                                 self.query_child_objects(epg_dn))
         if len(rspathatt_list) > 0:
             rspathatt_list[0].delete()
             self.commit(rspathatt_list[0])
+
+        # If there is not other assignment to this port, the switch profiles and policy groups are removed
+        fabric_path_dn = port_dn.replace('node', 'paths').replace('sys/phys', 'pathep')
+        class_query = ClassQuery('fvRsPathAtt')
+        RsPathAtt_list = filter(lambda x: str(fabric_path_dn) in str(x.tDn),
+                      self.moDir.query(class_query))
+        if len(RsPathAtt_list) == 0:
+
+            # Policy group
+            class_query = ClassQuery('infraAccPortGrp')
+            class_query.propFilter = 'eq(infraAccPortGrp.name, "' + if_policy_group_name + '")'
+            policy_groups = self.moDir.query(class_query)
+            if len(policy_groups) > 0:
+                policy_groups[0].delete()
+                self.commit(policy_groups[0])
+
+            # Interface profile
+            port_mo = self.moDir.lookupByDn(port_dn)
+            class_query = ClassQuery('infraAccPortP')
+            class_query.propFilter = 'eq(infraAccPortP.name, "single_access_' + str(port_mo.id).split('/')[1] + '")'
+            interface_profiles = self.moDir.query(class_query)
+            if len(interface_profiles) > 0:
+                interface_profiles[0].delete()
+                self.commit(interface_profiles[0])
+
+            # Switch profile
+            port_mo = self.moDir.lookupByDn(port_dn)
+            class_query = ClassQuery('infraNodeP')
+            class_query.propFilter = 'eq(infraNodeP.name, "' + switch_p_name + '")'
+            switch_profiles = self.moDir.query(class_query)
+            if len(switch_profiles) > 0:
+                switch_profiles[0].delete()
+                self.commit(switch_profiles[0])
 
     def add_vlan(self, vlan_number, vlan_pool_name):
         class_query = ClassQuery('fvnsVlanInstP')
@@ -452,7 +576,6 @@ class Apic:
         encap_mo = EncapBlk(str(VlanInstP_mo.dn), 'vlan-' + str(vlan_number),
                             'vlan-' + str(vlan_number), allocMode='static')
         self.commit(encap_mo)
-        pass
 
     def remove_vlan(self, vlan_number, vlan_pool_name):
         class_query = ClassQuery('fvnsVlanInstP')
@@ -487,7 +610,7 @@ class Apic:
         self.commit(port_blk_mo)
         return interface_p
 
-    def create_if_policy_group(self, name, aep_name):
+    def create_vpc_if_policy_group(self, name, aep_name):
         policy_group_mo = AccBndlGrp('uni/infra/funcprof/', name, lagT='node')
         self.commit(policy_group_mo)
         # if attachable entity profile does not exists, creates a new one
@@ -561,6 +684,20 @@ class Apic:
         # Add interface profile
         rs_acc_port_p_mo = RsAccPortP(switch_p_mo.dn, if_profile_dn)
         self.commit(rs_acc_port_p_mo)
+
+    def get_vpc_assignments(self):
+        """Return a dictionary: keys are VPC names and values are the list of EPGs that are associated to the it"""
+        result = {}
+        class_query = ClassQuery('fvRsPathAtt')
+        RsPathAtt_list = filter(lambda x: 'topology/pod-1/protpaths' in str(x.tDn),
+                      self.moDir.query(class_query))
+        for RsPathAtt_mo in RsPathAtt_list:
+            vpc_name = str(RsPathAtt_mo.tDn).split('[')[1][:-1]
+            epg_mo = self.moDir.lookupByDn(RsPathAtt_mo.parentDn)
+            if vpc_name not in result.keys():
+                result[vpc_name] = []
+            result[vpc_name].append(epg_mo.name)
+        return result
 
     def get_vpc_ports(self, vpc_dn):
         result = []
@@ -747,3 +884,4 @@ class Apic:
     def get_system_health(self):
         HealthTotal_mo = self.moDir.lookupByDn('topology/health')
         return HealthTotal_mo.cur
+
