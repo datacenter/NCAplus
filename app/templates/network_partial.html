@@ -1,34 +1,54 @@
 <div id="network_tab" class="tab-pane fade">
-    <div id="div_create_network" name="div_create_network" class="panel panel-primary">
-        <div class="panel-heading">Create Network
+    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+        <div id="div_network_list" class="panel panel-primary">
+            <div class="panel-heading">Network list&nbsp;
+                <span class="fa fa-info-circle" aria-hidden="true"
+                      data-toggle="popover"
+                      data-trigger="hover"
+                      title="Network List"
+                      data-content="List of network within Tenants in the ACI Fabric">
+                                        </span>
+            </div>
+            <div class="panel-body">
+                <div id="network_list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <div id="div_create_network" name="div_create_network" class="panel panel-primary">
+            <div class="panel-heading">Create Network
              <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Create Network"
-                                          data-content="The tool creates a new End Point Group and a new
+                   data-toggle="popover"
+                   data-trigger="hover"
+                   title="Create Network"
+                   data-content="The tool creates a new End Point Group and a new
                                            Bridge domain per VLAN in the APIC.
                                            Also, if there is none VRF within the tenant, it will create one. Only one
                                            VRF is needed for all the VLANs within a tenant">
                                     </span>
-            <div id="create_network_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Network name
+                <div id="create_network_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Network name
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Network"
                                           data-content="Specify the name of the new network.">
                                     </span>
-                </label>
-                <div class="{{ txtinputclassmd }}">
-                    <input type="text" class="form-control" maxlength="50" id="create_network_name" value=""
-                           name="create_network_name" placeholder="Name">
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="text" class="form-control" maxlength="50" id="create_network_name" value=""
+                               name="create_network_name" placeholder="Name">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="{{ labelclass }}"> VLAN
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VLAN
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
@@ -36,181 +56,201 @@
                                           data-content="Specify the VLAN of the new network. This VLAN will be added
                                           to a VLAN pool in the APIC">
                                     </span>
-                </label>
-                <div class="{{ txtinputclassmd }}">
-                    <input type="text" class="form-control" maxlength="50" id="create_network_encapsulation"
-                           value="" name="create_network_encapsulation" placeholder="VLAN">
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="text" class="form-control" maxlength="50" id="create_network_encapsulation"
+                               value="" name="create_network_encapsulation" placeholder="VLAN">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Group
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Group
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
                                           data-content="Select the group or tenant to assign the network">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_create_network_group" name="sel_create_network_group"
-                            class="form-control sel-group">
-                    </select>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_create_network_group" name="sel_create_network_group"
+                                class="form-control sel-group">
+                        </select>
+                    </div>
                 </div>
+                <hr>
+                <button id="btn_create_network" type="button" class="btn btn-primary" onclick="create_network()">
+                    Create
+                </button>
             </div>
-            <hr>
-            <button id="btn_create_network" type="button" class="btn btn-primary" onclick="create_network()">
-                Create
-            </button>
         </div>
-    </div>
-    <div id="div_delete_network" name="div_delete_network" class="panel panel-default">
-        <div class="panel-heading">Delete Network
+        <div id="div_delete_network" name="div_delete_network" class="panel panel-default   ">
+            <div class="panel-heading">Delete Network
              <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Delete Network"
-                                          data-content="This will remove an End Point Group and a Bridge Domain in
+                   data-toggle="popover"
+                   data-trigger="hover"
+                   title="Delete Network"
+                   data-content="This will remove an End Point Group and a Bridge Domain in
                                           the APIC">
                                     </span>
-            <div id="delete_network_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Group
+                <div id="delete_network_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Group
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
                                           data-content="Select the group or tenant to search for the network">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_delete_network_group" name="sel_delete_network_group"
-                            class="form-control sel-group" onchange="get_sel_delete_networks();">
-                    </select>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_delete_network_group" name="sel_delete_network_group"
+                                class="form-control sel-group" onchange="get_sel_delete_networks();">
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Network
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Network
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Network"
                                           data-content="Select the network to be deleted.">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_delete_network_name" name="sel_delete_network_name"
-                            class="form-control">
-                    </select>
-                </div>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_delete_network_name" name="sel_delete_network_name"
+                                class="form-control">
+                        </select>
+                    </div>
 
+                </div>
+                <hr>
+                <button id="btn_delete_network" type="button" class="btn btn-danger" onclick="delete_network()">
+                    Delete
+                </button>
             </div>
-            <hr>
-            <button id="btn_delete_network" type="button" class="btn btn-danger" onclick="delete_network()">
-                Delete
-            </button>
         </div>
     </div>
-    <div id="div_create_network_profile" name="div_create_network" class="panel panel-primary">
-        <div class="panel-heading">Create VLAN Profile
+
+    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+        <div id="div_vlan_profile_list" class="panel panel-primary">
+            <div class="panel-heading">VLAN Profile list&nbsp;
+                <span class="fa fa-info-circle" aria-hidden="true"
+                      data-toggle="popover"
+                      data-trigger="hover"
+                      title="VLAN profile List"
+                      data-content="List of of VLAN profiles in the local database">
+                                        </span>
+            </div>
+            <div class="panel-body">
+                <div id="network_profile_list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <div id="div_create_network_profile" name="div_create_network" class="panel panel-primary">
+            <div class="panel-heading">Create VLAN Profile
             <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Create VLAN Profile"
-                                          data-content="A VLAN profile is just an group of networks that you want to
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Create VLAN Profile"
+                  data-content="A VLAN profile is just an group of networks that you want to
                                            apply the same configurations. Nothing is created in the APIC when you add
                                            a new VLAN profile, it is saved in the tool's database">
                                     </span>
-            <div id="create_network_profile_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}"> VLAN Profile
+                <div id="create_network_profile_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VLAN Profile
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Name"
                                           data-content="Ingress the vlan profile name">
                                     </span>
-                </label>
-                <div class="{{ txtinputclassmd }}">
-                    <input type="text" class="form-control" maxlength="50" id="create_network_profile_name"
-                           value=""
-                           name="create_network_profile_name" placeholder="Name">
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="text" class="form-control" maxlength="50" id="create_network_profile_name"
+                               value=""
+                               name="create_network_profile_name" placeholder="Name">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Group
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Group
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
                                           data-content="Select the group or tenant to search for the network">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_create_network_profile_group" name="sel_create_network_profile_group"
-                            class="form-control sel-group" onchange="get_create_network_profile_networks();">
-                    </select>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_create_network_profile_group" name="sel_create_network_profile_group"
+                                class="form-control sel-group" onchange="get_create_network_profile_networks();">
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Network
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Network
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
                                           data-content="Select the network to be added">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_create_network_profile_network" name="sel_create_network_profile_network"
-                            class="form-control">
-                    </select>
-                </div>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_create_network_profile_network" name="sel_create_network_profile_network"
+                                class="form-control">
+                        </select>
+                    </div>
 
+                </div>
+                <hr>
+                <button id="btn_add_create_network_profile" type="button" class="btn btn-primary"
+                        onclick="add_create_network_profile()">Add
+                </button>
+                <div class="form-group">
+                    <table id="table_create_network_profile" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Network</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
+                <button id="btn_create_network_profile" type="button" class="btn btn-primary"
+                        onclick="create_network_profile()">
+                    Create
+                </button>
+                <input type="hidden" name="create_network_profile_dns" id="create_network_profile_dns" value=""/>
             </div>
-            <hr>
-            <button id="btn_add_create_network_profile" type="button" class="btn btn-primary"
-                    onclick="add_create_network_profile()">Add
-            </button>
-            <div class="form-group">
-                <table id="table_create_network_profile" class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Group</th>
-                        <th>Network</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr></tr>
-                    </tbody>
-                </table>
-            </div>
-            <hr>
-            <button id="btn_create_network_profile" type="button" class="btn btn-primary"
-                    onclick="create_network_profile()">
-                Create
-            </button>
-            <input type="hidden" name="create_network_profile_dns" id="create_network_profile_dns" value=""/>
         </div>
-    </div>
-    <div id="div_delete_network_profile" name="div_delete_network" class="panel panel-default">
-        <div class="panel-heading">Delete VLAN Profile
+        <div id="div_delete_network_profile" name="div_delete_network" class="panel panel-default">
+            <div class="panel-heading">Delete VLAN Profile
             <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Delete VLAN profile"
-                                          data-content="This will remove the VLAN profile from the tool's database.
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Delete VLAN profile"
+                  data-content="This will remove the VLAN profile from the tool's database.
                                           The network configuration will not change because nothing is removed in the
                                           APIC">
                                     </span>
-            <div id="delete_network_profile_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}"> VLAN Profile
+                <div id="delete_network_profile_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VLAN Profile
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
@@ -218,33 +258,34 @@
                                           data-content="Select the vlan profile to delete. This will not delete the
                                           networks, just the VLAN profile.">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_delete_network_profile" name="sel_delete_network_profile"
-                            class="form-control sel-net-profile"
-                            onchange="get_delete_network_profile_networks();">
-                    </select>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_delete_network_profile" name="sel_delete_network_profile"
+                                class="form-control sel-net-profile"
+                                onchange="get_delete_network_profile_networks();">
+                        </select>
+                    </div>
                 </div>
+                <div class="form-group">
+                    <table id="table_delete_network_profile" class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>Group</th>
+                            <th>Network</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <hr>
+                <button id="btn_delete_network_profile" type="button" class="btn btn-danger"
+                        onclick="delete_network_profile()">
+                    Delete
+                </button>
+                <input type="hidden" name="delete_network_profile_dns" id="delete_network_profile_dns" value=""/>
             </div>
-            <div class="form-group">
-                <table id="table_delete_network_profile" class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Group</th>
-                        <th>Network</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr></tr>
-                    </tbody>
-                </table>
-            </div>
-            <hr>
-            <button id="btn_delete_network_profile" type="button" class="btn btn-danger"
-                    onclick="delete_network_profile()">
-                Delete
-            </button>
-            <input type="hidden" name="delete_network_profile_dns" id="delete_network_profile_dns" value=""/>
         </div>
     </div>
 </div>

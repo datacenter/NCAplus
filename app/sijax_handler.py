@@ -60,9 +60,9 @@ class handler:
         elif values['operation'] == 'tenant_list':
             try:
                 tenants = apic_object.get_all_tenants()
-                all_tenants_list = '<div style="font-size:.8em;">'
+                all_tenants_list = ''
                 for tenant in tenants:
-                    all_tenants_list += str(tenant.name) + '</br>'
+                    all_tenants_list += '<h5>' + str(tenant.name) + '</h5><hr style="margin:0px 0px 0px 0px"/>'
                 obj_response.html("#tenant_list", all_tenants_list)
                 all_tenants_list += "</div>"
             except Exception as e:
@@ -71,13 +71,12 @@ class handler:
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             finally:
                 g.db.close()
-                #obj_response.html("#get_group_list", '')
 
         elif values['operation'] == 'create_group':
             try:
                 apic_object.create_group(values['create_group_name'])
                 obj_response.script("create_notification('Created', '', 'success', 5000)")
-                obj_response.script('get_groups();')
+                obj_response.script('get_groups();get_tenants();')
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not create group', '" + str(e).replace("'", "").
@@ -89,7 +88,7 @@ class handler:
         elif values['operation'] == 'delete_group':
             try:
                 apic_object.delete_tenant(values['sel_delete_group_name'])
-                obj_response.script("get_groups();")
+                obj_response.script("get_groups();get_tenants();")
                 obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
@@ -120,7 +119,8 @@ class handler:
                 network_object.update(epg_dn=str(epg.dn)).where(
                     model.network.id == network_object.id).execute()
 
-                obj_response.script("create_notification('Created', '', 'success', 5000)")
+                obj_response.script("create_notification('Created', '', 'success', 5000);")
+                obj_response.script("get_sel_delete_networks();get_network_list();")
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not create network', '" + str(e).replace("'", "").
@@ -153,7 +153,7 @@ class handler:
                 if len(network_list) > 0:
                     apic_object.remove_vlan(network_list[0].encapsulation, 'migration-tool')
                     apic_object.delete_network(network_list[0])
-                    obj_response.script('get_sel_delete_networks()')
+                    obj_response.script('get_sel_delete_networks();get_network_list()')
                     obj_response.script("create_notification('Deleted', '', 'success', 5000)")
                     # Delete the network from any network profile
                     model.network_profilexnetwork.delete().where(
@@ -217,7 +217,7 @@ class handler:
                         '</tbody>'
                 obj_response.html("#table_create_network_profile", table)
                 obj_response.html("#sel_create_network_profile_network", '')
-                obj_response.script('get_network_profiles()')
+                obj_response.script('get_network_profiles();get_network_profile_list();')
                 obj_response.script('$("#sel_create_network_profile_group").val("")')
                 obj_response.script("create_notification('Created', '', 'success', 5000)")
             except Exception as e:
@@ -308,8 +308,58 @@ class handler:
                 g.db.close()
                 obj_response.html("#delete_network_profile_response", '')
                 obj_response.html("#sel_create_network_profile_network", '')
-                obj_response.script('get_network_profiles()')
+                obj_response.script('get_network_profiles();get_network_profile_list();')
                 obj_response.script('$("#sel_delete_network_profile").val("")')
+
+        elif values['operation'] == 'get_network_list':
+            try:
+                network_list = ''
+                for tenant in apic_object.get_all_tenants():
+                    network_aps = apic_object.get_ap_by_tenant(str(tenant.dn))
+                    if len(network_aps) > 0:
+                        networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                        network_list += '<label data-toggle="collapse" data-target="#' + tenant.name + '" style="cursor:pointer">'
+                        network_list += tenant.name + ' </label>'
+                        network_list += '<div id="' + tenant.name + '" class="collapse">'
+                        for network in networks:
+                            network_list += '<p>' + str(network.name) + '</p>'
+                        network_list += '</div>'
+                        network_list += '<hr style="margin:0px 0px 0px 0px"/>'
+                obj_response.html("#network_list", network_list)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#delete_network_response", '')
+
+        elif values['operation'] == 'get_network_profile_list':
+            try:
+                network_profiles = model.network_profile.select()
+                vlan_profile_list_str = ''
+                for network_p in network_profiles:
+                    vlan_profile_list_str += '<label data-toggle="collapse" data-target="#profile_' + str(network_p.id)\
+                                             + '" style="cursor:pointer">'
+                    vlan_profile_list_str += network_p.name + ' </label>'
+                    vlan_profile_list_str += '<div id="profile_' + str(network_p.id) + '" class="collapse">'
+                    network_profilexnetwork_list = model.network_profilexnetwork.select().where(
+                    model.network_profilexnetwork.network_profile == network_p)
+                    for network_profilexnetwork in network_profilexnetwork_list:
+                        group_mo = apic_object.moDir.lookupByDn(network_profilexnetwork.network.group)
+                        vlan_profile_list_str += '<p>' + group_mo.name + ' - ' + str(network_profilexnetwork.network.name) + '</p>'
+                    vlan_profile_list_str += '</div>'
+                    vlan_profile_list_str += '<hr style="margin:0px 0px 0px 0px"/>'
+                obj_response.html("#network_profile_list", vlan_profile_list_str)
+                obj_response.html("#div_create_vpc_access_response", '')
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script(
+                    "create_notification('Can not retrieve VLAN profile', '" + str(e).replace("'", "").replace('"', '').
+                    replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#div_create_vpc_access_response", '')
 
     @staticmethod
     def fabric_handler(obj_response, formvalues):
@@ -441,7 +491,7 @@ class handler:
                     if len(port_dn) > 0:
                         switch_mo = apic_object.get_switch_by_port(port_dn)
                         switch_mo_list.append(switch_mo)
-                        if_policy_group_mo = apic_object.create_if_policy_group(values['create_vpc_name'], 'migration-tool')
+                        if_policy_group_mo = apic_object.create_vpc_if_policy_group(values['create_vpc_name'], 'migration-tool')
                         if_profile = apic_object.create_vpc_interface_profile(
                             port_dn, if_policy_group_mo.dn, values['create_vpc_name']
                         )
@@ -467,7 +517,7 @@ class handler:
                 obj_response.html("#sel_port_create_vpc", '')
                 obj_response.script('$("#create_vpc_name").val("")')
                 obj_response.script('$("#sel_leaf_create_vpc").val("")')
-                obj_response.script('get_vpcs()')
+                obj_response.script('get_vpcs();get_vpc_list();')
                 obj_response.script("create_notification('Created', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
@@ -518,7 +568,7 @@ class handler:
         elif values['operation'] == 'delete_vpc':
             try:
                 apic_object.delete_vpc(values['sel_delete_vpc_name'])
-                obj_response.script('get_vpcs();')
+                obj_response.script('get_vpcs();get_vpc_list();')
                 obj_response.html("#delete_vpc_ports", "")
                 obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:
@@ -549,7 +599,7 @@ class handler:
             try:
                 apic_object.remove_vpc_group(values['sel_delete_vpc_group_name'])
                 obj_response.script("get_vpc_groups()")
-                obj_response.script("get_vpcs()")
+                obj_response.script("get_vpcs();get_vpc_group_list();get_vpc_list();")
                 obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
@@ -568,7 +618,7 @@ class handler:
                     str(switch_mo_1.dn),
                     str(switch_mo_2.dn)
                 )
-                obj_response.script("get_vpc_groups()")
+                obj_response.script("get_vpc_groups();get_vpc_group_list();get_vpc_list();")
                 obj_response.script("create_notification('Created', '', 'success', 5000)")
             except Exception as e:
                 print traceback.print_exc()
@@ -592,6 +642,43 @@ class handler:
             finally:
                 g.db.close()
                 obj_response.html("#create_vpc_response", '')
+
+        elif values['operation'] == 'get_vpc_group_list':
+            try:
+                vpc_group_list_str = ''
+                vpc_groups = apic_object.get_vpc_explicit_groups()
+                for group in vpc_groups:
+                    vpc_group_list_str += '<h5>' + str(group.name) + '</h5><hr style="margin:0px 0px 0px 0px"/>'
+                vpc_group_list_str += "</div>"
+                obj_response.html("#vpc_group_list", vpc_group_list_str)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve VPC groups', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+
+        elif values['operation'] == 'get_vpc_list':
+            try:
+                vpc_list = apic_object.get_vpcs()
+                vpc_list_str = ''
+                for vpc in vpc_list:
+                    vpc_list_str += '<label data-toggle="collapse" data-target="#vpc_' + vpc.name + '" style="cursor:pointer">'
+                    vpc_list_str += vpc.name + ' </label>'
+                    vpc_list_str += '<div id="vpc_' + vpc.name + '" class="collapse">'
+                    port_list = apic_object.get_vpc_ports(str(vpc.dn))
+                    for vpc_port_mo in port_list:
+                        switch_mo = apic_object.get_switch_by_vpc_port(str(vpc_port_mo.dn))
+                        vpc_list_str += '<p>' + str(switch_mo.rn) + ' - ' + str(vpc_port_mo.tSKey) + '</p>'
+                    vpc_list_str += '</div>'
+                    vpc_list_str += '<hr style="margin:0px 0px 0px 0px"/>'
+                obj_response.html("#vpc_list", vpc_list_str)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve VPCs', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
 
     @staticmethod
     def vpc_access_handler(obj_response, formvalues):
@@ -630,6 +717,7 @@ class handler:
                             ex.message = 'Some networks where not assigned because they are not in the local database'
                             raise ex
                     obj_response.script("create_notification('Assigned', '', 'success', 5000)")
+                obj_response.script("get_vpc_assignment_list();")
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not create VPC access', '" + str(e).replace("'", "").
@@ -674,7 +762,7 @@ class handler:
 
         elif values['operation'] == 'get_delete_vpc_access_assignments':
             try:
-                vpc_assignments = apic_object.get_vpc_assignments(values['sel_network_delete_vpc_access'])
+                vpc_assignments = apic_object.get_vpc_assignments_by_epg(values['sel_network_delete_vpc_access'])
                 option_list = '<option value="">Select</option>'
                 for vpc_assignment in vpc_assignments:
 
@@ -703,11 +791,12 @@ class handler:
                         model.network_profilexnetwork.network_profile == network_profile_o)
 
                     for network_profilexnetwork in network_profilexnetwork_list:
-                        vpc_assignments = apic_object.get_vpc_assignments(network_profilexnetwork.network.epg_dn)
+                        vpc_assignments = apic_object.get_vpc_assignments_by_epg(network_profilexnetwork.network.epg_dn)
                         for vpc_assignment in vpc_assignments:
                             if str(vpc_assignment.tDn) == values['sel_vpc_delete_vpc_access_profile']:
                                 apic_object.delete_vpc_assignment(str(vpc_assignment.dn))
                     obj_response.script("create_notification('Removed', '', 'success', 5000)")
+                obj_response.script("get_vpc_assignment_list();")
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not delete VPC access', '" + str(e).replace("'", "").
@@ -715,6 +804,28 @@ class handler:
             finally:
                 g.db.close()
                 obj_response.html("#div_delete_vpc_access_response", '')
+
+        elif values['operation'] == 'get_vpc_assignment_list':
+            try:
+                vpc_list = apic_object.get_vpcs()
+                vpc_assignments = apic_object.get_vpc_assignments()
+                vpc_assignment_list_str = ''
+                for vpc in vpc_list:
+                    vpc_assignment_list_str += '<label data-toggle="collapse" data-target="#vpc_assign_' + vpc.name + '" style="cursor:pointer">'
+                    vpc_assignment_list_str += vpc.name + ' </label>'
+                    vpc_assignment_list_str += '<div id="vpc_assign_' + vpc.name + '" class="collapse">'
+                    if vpc.name in vpc_assignments.keys():
+                        for epg_name in vpc_assignments[vpc.name]:
+                            vpc_assignment_list_str += '<p>' + epg_name + '</p>'
+                    vpc_assignment_list_str += '</div>'
+                    vpc_assignment_list_str += '<hr style="margin:0px 0px 0px 0px"/>'
+                obj_response.html("#vpc_assignment_list", vpc_assignment_list_str)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script("create_notification('Can not retrieve VPC assignments', '" + str(e).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
 
     @staticmethod
     def single_access_handler(obj_response, formvalues):
@@ -759,13 +870,19 @@ class handler:
 
         elif values['operation'] == 'create_single_access':
             try:
+                port_id = values['sel_create_single_access_port'].split('[')[-1][:-1].replace('/','-')
+                switch_id = values['sel_create_single_access_leaf'].split('/')[-1]
                 if values['create_port_access_type'] == 'single_vlan':
                     network_o = model.network.select().where(model.network.epg_dn ==
                                                              values['sel_create_single_access_network'])
                     if len(network_o) > 0:
-                        apic_object.create_single_access(values['sel_create_single_access_network'],
-                                                         values['sel_create_single_access_port'],
-                                                         network_o[0].encapsulation)
+                        apic_object.create_single_access(network_o[0].epg_dn,
+                                                             values['sel_create_single_access_leaf'],
+                                                             values['sel_create_single_access_port'],
+                                                             network_o[0].encapsulation,
+                                                         'migration-tool',
+                                                         'if_policy_' + switch_id + '_' + port_id,
+                                                         'single_access_' + switch_id + '_' + port_id)
                         obj_response.script("create_notification('Assigned', '', 'success', 5000)")
                     else:
                         obj_response.script(
@@ -777,8 +894,12 @@ class handler:
                         network_o = model.network.select().where(model.network.id == network_profile.network.id)
                         if len(network_o) > 0:
                             apic_object.create_single_access(network_o[0].epg_dn,
+                                                             values['sel_create_single_access_leaf'],
                                                              values['sel_create_single_access_port'],
-                                                             network_o[0].encapsulation)
+                                                             network_o[0].encapsulation,
+                                                         'migration-tool',
+                                                         'if_policy_' + switch_id + '_' + port_id,
+                                                         'single_access_' + switch_id + '_' + port_id)
                         else:
                             ex = Exception()
                             ex.message = 'Some networks where not assigned because they are not in the local database'
@@ -826,12 +947,16 @@ class handler:
 
         elif values['operation'] == 'delete_single_access':
             try:
+                port_id = values['sel_delete_single_access_port'].split('[')[-1][:-1].replace('/','-')
+                switch_id = values['sel_delete_single_access_leaf'].split('/')[-1]
                 if values['delete_port_access_type'] == 'single_vlan':
                     network_o = model.network.select().where(model.network.epg_dn ==
                                                              values['sel_delete_single_access_network'])
                     if len(network_o) > 0:
                         apic_object.delete_single_access(values['sel_delete_single_access_network'],
-                                                         values['sel_delete_single_access_port'])
+                                                         values['sel_delete_single_access_port'],
+                                                         'if_policy_' + switch_id + '_' + port_id,
+                                                         'single_access_' + switch_id + '_' + port_id)
                         obj_response.script("create_notification('Removed', '', 'success', 5000)")
                     else:
                         obj_response.script(
@@ -843,8 +968,14 @@ class handler:
                         network_o = model.network.select().where(model.network.id == network_profile.network.id)
                         if len(network_o) > 0:
                             apic_object.delete_single_access(network_o[0].epg_dn,
-                                                             values['sel_delete_single_access_port'])
+                                                             values['sel_delete_single_access_port'],
+                                                             'if_policy_' + switch_id + '_' + port_id,
+                                                             'single_access_' + switch_id + '_' + port_id)
+
                     obj_response.script("create_notification('Removed', '', 'success', 5000)")
+
+
+
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
@@ -898,7 +1029,7 @@ class handler:
                                            user=values['access_switch_user'],
                                            hostname=values['access_switch_hostname'])
                 obj_response.script("create_notification('Created', '', 'success', 5000)")
-                obj_response.script("get_access_switches();")
+                obj_response.script("get_access_switches();get_access_switch_list();")
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
@@ -913,7 +1044,7 @@ class handler:
                 model.access_switch.delete().where(
                     model.access_switch.ip == values['sel_delete_access_switch']).execute()
                 obj_response.script("create_notification('Deleted', '', 'success', 5000)")
-                obj_response.script("get_access_switches();")
+                obj_response.script("get_access_switches();get_access_switch_list();")
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
@@ -931,6 +1062,22 @@ class handler:
                     option_list += '<option value="' + str(switch.ip) + '">' + switch.ip + \
                                    ' (' + switch.hostname + ')</option>'
                 obj_response.html(".sel-access-switch", option_list)
+            except Exception as e:
+                print traceback.print_exc()
+                obj_response.script(
+                    "create_notification('Cannot retrieve access switches', '" + str(e).replace("'", "").
+                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            finally:
+                g.db.close()
+                obj_response.html("#access_switch_response", '')
+
+        elif values['operation'] == 'get_access_switch_list':
+            try:
+                access_switches = model.access_switch.select()
+                access_switch_list_str = ''
+                for switch in access_switches:
+                    access_switch_list_str += switch.hostname + ' - ' + switch.ip
+                obj_response.html("#access_switch_list", access_switch_list_str)
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script(
