@@ -12,7 +12,7 @@ import os
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
-COMMAND_WAIT_TIME = 0.5
+COMMAND_WAIT_TIME = 1
 PEXPECT_TIME_OUT = 3
 
 class switch_controller:

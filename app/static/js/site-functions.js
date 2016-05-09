@@ -35,6 +35,12 @@ function delete_group() {
     $('#sel_delete_group_name').rules("remove", "required");
 }
 
+function get_network_list(){
+    $('#operation').val('get_network_list');
+    submit_form('network_handler')
+    $('#network_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
+}
+
 function create_network(){
     $('#create_network_name').rules("add", "required");
     $('#create_network_encapsulation').rules("add", "required");
@@ -150,6 +156,12 @@ function add_port(){
     $('#sel_leaf_create_vpc').rules("remove", "required");
 }
 
+function get_vpc_list(){
+    $('#operation').val('get_vpc_list');
+    submit_form('vpc_handler')
+    $('#vpc_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
+}
+
 function create_vpc(){
     switch_selected_list = []
     $("#vpc_ports tr").each(function(index) {
@@ -238,6 +250,12 @@ function get_create_vpc_access_networks() {
             $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_group_create_vpc_access').rules("remove", "required");
+}
+
+function get_vpc_assignment_list(){
+    $('#operation').val('get_vpc_assignment_list');
+    submit_form('vpc_access_handler')
+    $('#vpc_assignment_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 function create_vpc_access(){
@@ -434,6 +452,12 @@ function create_network_profile(){
 
 }
 
+function get_network_profile_list(){
+    $('#operation').val('get_network_profile_list');
+    submit_form('network_handler')
+    $('#network_profile_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
+}
+
 function get_network_profiles(){
     if($('#network_form').valid()){
             $('#operation').val('get_network_profiles')
@@ -476,6 +500,11 @@ function create_access_switch(){
     $('#access_switch_user').rules('remove','required')
 }
 
+function get_access_switch_list(){
+    $('#operation').val('get_access_switch_list');
+    submit_form('access_switch_handler');
+    $('#access_switch_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
+}
 
 function configure_access_switches(){
     if ($("#table_access_switches tr").length < 3){
@@ -580,6 +609,12 @@ function create_vpc_group() {
     }
     $('#sel_create_vpc_group_leaf_1').rules('remove','required')
     $('#sel_create_vpc_group_leaf_2').rules('remove','required')
+}
+
+function get_vpc_group_list(){
+    $('#operation').val('get_vpc_group_list');
+    submit_form('vpc_handler')
+    $('#vpc_group_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 function get_vpc_groups(){
