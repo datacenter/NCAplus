@@ -32,9 +32,10 @@ class group_handler(base_handler):
             try:
                 tenants = apic_object.get_all_tenants()
                 option_list = '<option value="">Select</option>'
-                for tenant in tenants:
-                    if tenant.name not in REMOVED_TENANTS:
-                        option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
+                # for tenant in tenants:
+                for tenant in [elem for elem in tenants if elem.name not in REMOVED_TENANTS]:
+                # if tenant.name not in REMOVED_TENANTS:
+                    option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
                 obj_response.html(".sel-group", option_list)
             except Exception as e:
                 print traceback.print_exc()
@@ -50,9 +51,8 @@ class group_handler(base_handler):
             try:
                 tenants = apic_object.get_all_tenants()
                 all_tenants_list = '<ul style="padding-left:10px;">'
-                for tenant in tenants:
-                    if tenant.name not in REMOVED_TENANTS:
-                        all_tenants_list += '<li><div style="font-size:.9em;">' + str(tenant.name) + '</div></li>'
+                for tenant in [elem for elem in tenants if elem.name not in REMOVED_TENANTS]:
+                    all_tenants_list += '<li><div style="font-size:.9em;">' + str(tenant.name) + '</div></li>'
                 all_tenants_list += '</ul>'
                 obj_response.html("#tenant_list", all_tenants_list)
             except Exception as e:
