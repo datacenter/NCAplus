@@ -232,14 +232,16 @@ class network_handler(base_handler):
                 for tenant in apic_object.get_all_tenants():
                     network_aps = apic_object.get_ap_by_tenant(str(tenant.dn))
                     if len(network_aps) > 0:
-                        networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                        network_list += '<label data-toggle="collapse" data-target="#' + tenant.name + '" style="cursor:pointer">'
-                        network_list += tenant.name + ' </label>'
-                        network_list += '<div id="' + tenant.name + '" class="collapse">'
-                        for network in networks:
-                            network_list += '<p>' + str(network.name) + '</p>'
-                        network_list += '</div>'
-                        network_list += '<hr style="margin:0px 0px 0px 0px"/>'
+                        if tenant.name != 'mgmt' and tenant.name != 'infra' and tenant.name != 'common':
+                            networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                            network_list += '<ul style="padding-left:10px;font-size:.9em;">'
+                            network_list += '<label data-toggle="collapse" data-target="#' + tenant.name + '" style="float:left;cursor:pointer">'
+                            network_list += '<i class="fa fa-chevron-circle-down" aria-hidden="true"></i></label>&nbsp;' + tenant.name
+                            network_list += '<div id="' + tenant.name + '" class="collapse">'
+                            for network in networks:
+                                network_list += '<div style="clear:both; padding-left:10px;font-size:.8em;">' + str(network.name) + '</div>'
+                            network_list += '</div>'
+                            network_list += '</ul>'
                 obj_response.html("#network_list", network_list)
             except Exception as e:
                 print traceback.print_exc()
