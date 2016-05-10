@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="59034775-fc62-449f-a93b-587783da81d0" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/sijax_handler.py" afterPath="$PROJECT_DIR$/app/sijax_handler.py" />
-    </list>
+    <list default="true" id="59034775-fc62-449f-a93b-587783da81d0" name="Default" comment="" />
     <ignored path="fedex-hub.iws" />
     <ignored path=".idea/workspace.xml" />
     <ignored path=".idea/dataSources.local.xml" />
@@ -40,7 +37,7 @@
     <favorites_list name="fedex-hub" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.36864406">
+    <splitter split-orientation="horizontal" split-proportion="0.37953994">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
@@ -148,7 +145,7 @@
           <file leaf-file-name="sijax_handler.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/sijax_handler.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="630">
+                <state relative-caret-position="558">
                   <caret line="92" column="56" selection-start-line="92" selection-start-column="37" selection-end-line="92" selection-end-column="56" />
                   <folding>
                     <element signature="e#239#255#0" expanded="true" />
@@ -979,7 +976,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/sijax_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="630">
+        <state relative-caret-position="558">
           <caret line="92" column="56" selection-start-line="92" selection-start-column="37" selection-end-line="92" selection-end-column="56" />
           <folding>
             <element signature="e#239#255#0" expanded="true" />
