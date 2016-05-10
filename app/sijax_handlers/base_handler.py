@@ -9,7 +9,7 @@ from app.access_switch_manager import switch_controller
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 COMMAND_WAIT_TIME = 1
 handler_app = None
-SHOW_DEFAULT_TENANTS=False # True will show infra, common and mgmt tennat
+REMOVED_TENANTS=['mgmt','common','infra']
 
 class base_handler:
 

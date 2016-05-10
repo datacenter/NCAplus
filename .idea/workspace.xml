@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="59034775-fc62-449f-a93b-587783da81d0" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/test.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/app/test.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py" afterPath="$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/sijax_handlers/base_handler.py" afterPath="$PROJECT_DIR$/app/sijax_handlers/base_handler.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/sijax_handlers/group_handler.py" afterPath="$PROJECT_DIR$/app/sijax_handlers/group_handler.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/sijax_handlers/network_handler.py" afterPath="$PROJECT_DIR$/app/sijax_handlers/network_handler.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/main.html" afterPath="$PROJECT_DIR$/app/templates/main.html" />
     </list>
     <ignored path="fedex-hub.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -43,7 +44,7 @@
     <favorites_list name="fedex-hub" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5">
+    <splitter split-orientation="horizontal" split-proportion="0.7138989">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
           <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
@@ -108,13 +109,13 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="network_handler.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="network_handler.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/sijax_handlers/network_handler.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0">
-                  <caret line="241" column="60" selection-start-line="241" selection-start-column="60" selection-end-line="241" selection-end-column="60" />
+                <state vertical-scroll-proportion="-0.7233502">
+                  <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
                   <folding>
-                    <element signature="e#239#276#0" expanded="true" />
+                    <element signature="e#239#293#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -123,20 +124,18 @@
           <file leaf-file-name="apic_l2_tool.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/app/apic_manager/apic_l2_tool.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="-50.555557">
-                  <caret line="91" column="20" selection-start-line="91" selection-start-column="20" selection-end-line="91" selection-end-column="20" />
-                  <folding>
-                    <element signature="e#247#278#0" expanded="true" />
-                  </folding>
+                <state vertical-scroll-proportion="-5.0">
+                  <caret line="9" column="15" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
+                  <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="apic_base.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="apic_base.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/app/apic_manager/apic_base.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.7925926">
-                  <caret line="124" column="30" selection-start-line="124" selection-start-column="30" selection-end-line="124" selection-end-column="30" />
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
                   <folding>
                     <element signature="e#293#353#0" expanded="true" />
                   </folding>
@@ -158,13 +157,23 @@
               </provider>
             </entry>
           </file>
+          <file leaf-file-name="access_switch_handler.py" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0">
+                  <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
           <file leaf-file-name="group_handler.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/app/sijax_handlers/group_handler.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.43650794">
-                  <caret line="44" column="0" selection-start-line="44" selection-start-column="0" selection-end-line="44" selection-end-column="0" />
+                <state vertical-scroll-proportion="0.49046323">
+                  <caret line="44" column="20" selection-start-line="44" selection-start-column="20" selection-end-line="44" selection-end-column="58" />
                   <folding>
-                    <element signature="e#239#276#0" expanded="true" />
+                    <element signature="e#239#292#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -184,7 +193,7 @@
             <entry file="file://$PROJECT_DIR$/app/sijax_handlers/base_handler.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state vertical-scroll-proportion="0.0">
-                  <caret line="11" column="73" selection-start-line="11" selection-start-column="73" selection-end-line="11" selection-end-column="73" />
+                  <caret line="11" column="39" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
                   <folding />
                 </state>
               </provider>
@@ -248,7 +257,6 @@
         <option value="$PROJECT_DIR$/app/sijax_handlers/single_access_handler.py" />
         <option value="$PROJECT_DIR$/app/templates/vpc_access.html" />
         <option value="$PROJECT_DIR$/app/templates/single_access.html" />
-        <option value="$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py" />
         <option value="$PROJECT_DIR$/app/templates/access_switches.html" />
         <option value="$PROJECT_DIR$/app/views.py" />
         <option value="$PROJECT_DIR$/app/templates/index.html" />
@@ -257,6 +265,7 @@
         <option value="$PROJECT_DIR$/app/apic_manager/apic_base.py" />
         <option value="$PROJECT_DIR$/app/apic_manager/constant.py" />
         <option value="$PROJECT_DIR$/app/sijax_handlers/constants.py" />
+        <option value="$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py" />
         <option value="$PROJECT_DIR$/app/sijax_handlers/base_handler.py" />
         <option value="$PROJECT_DIR$/app/sijax_handlers/group_handler.py" />
         <option value="$PROJECT_DIR$/app/sijax_handlers/network_handler.py" />
@@ -581,7 +590,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32796076" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4156545" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.43049932" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -832,16 +841,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
-          <folding>
-            <element signature="e#239#276#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/vpc_access.html">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-25.458334">
@@ -937,14 +936,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/apic_manager/constant.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/sijax_handlers/fabric_handler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -953,50 +944,64 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/apic_manager/apic_base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="36" selection-start-line="16" selection-start-column="36" selection-end-line="16" selection-end-column="36" />
+          <folding>
+            <element signature="e#293#353#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/apic_manager/constant.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="29" column="0" selection-start-line="29" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/sijax_handlers/access_switch_handler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/sijax_handlers/base_handler.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="11" column="73" selection-start-line="11" selection-start-column="73" selection-end-line="11" selection-end-column="73" />
+          <caret line="11" column="39" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/apic_manager/apic_l2_tool.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-50.555557">
-          <caret line="91" column="20" selection-start-line="91" selection-start-column="20" selection-end-line="91" selection-end-column="20" />
-          <folding>
-            <element signature="e#247#278#0" expanded="true" />
-          </folding>
+        <state vertical-scroll-proportion="-5.0">
+          <caret line="9" column="15" selection-start-line="9" selection-start-column="15" selection-end-line="9" selection-end-column="15" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/sijax_handlers/group_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.43650794">
-          <caret line="44" column="0" selection-start-line="44" selection-start-column="0" selection-end-line="44" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.49046323">
+          <caret line="44" column="20" selection-start-line="44" selection-start-column="20" selection-end-line="44" selection-end-column="58" />
           <folding>
-            <element signature="e#239#276#0" expanded="true" />
+            <element signature="e#239#292#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/sijax_handlers/network_handler.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="241" column="60" selection-start-line="241" selection-start-column="60" selection-end-line="241" selection-end-column="60" />
+        <state vertical-scroll-proportion="-0.7233502">
+          <caret line="30" column="35" selection-start-line="30" selection-start-column="35" selection-end-line="30" selection-end-column="35" />
           <folding>
-            <element signature="e#239#276#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/apic_manager/apic_base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7925926">
-          <caret line="124" column="30" selection-start-line="124" selection-start-column="30" selection-end-line="124" selection-end-column="30" />
-          <folding>
-            <element signature="e#293#353#0" expanded="true" />
+            <element signature="e#239#293#0" expanded="true" />
           </folding>
         </state>
       </provider>
