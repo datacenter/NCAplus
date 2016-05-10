@@ -10,7 +10,7 @@ import flask_sijax
 from flask import render_template, g, session, request, redirect
 
 import model
-from apic_manager import apic
+from apic_manager import apic_l2_tool
 from app import app
 from sijax_handlers.group_handler import group_handler
 from sijax_handlers.network_handler import network_handler
@@ -55,7 +55,7 @@ def login():
                     ex.message = 'Apic URL is required'
                     raise ex
                 else:
-                    apic_object = apic.Apic()
+                    apic_object = apic_l2_tool.Apic_l2_tool()
                     apic_object.login(values['login_apic_url'],values['login_username'],values['login_password'])
                     session['login_apic_url'] = values['login_apic_url']
                     session['username'] = values['login_username']
