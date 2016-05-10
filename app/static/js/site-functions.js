@@ -690,6 +690,6 @@ function get_health_dashboard(){
             $('#noc_monitor_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     // Refresh the health scores each 10 seconds
-    setTimeout(get_health_dashboard,10000)
+    setTimeout(get_health_dashboard,30000)
 }
 

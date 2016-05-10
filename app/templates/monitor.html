@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+{% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+{% set selectclass = "col-lg-4 col-md-4 col-sm-4 col-xs-4" %}
+{% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+{% block subcontent %}
+
+<h1>Monitor</h1>
+<hr/>
+<div id="noc_monitor_tab">
+    <img src="/static/images/loading.gif" style="height:20px" />
+</div>
+{% endblock subcontent %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$().ready(function() {
+		get_health_dashboard();
+});
+</script>
+{% endblock scripts %}

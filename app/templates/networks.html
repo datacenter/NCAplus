@@ -1,4 +1,12 @@
-<div id="network_tab" class="tab-pane fade">
+{% extends "main.html" %}
+{% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+{% set selectclass = "col-lg-4 col-md-4 col-sm-4 col-xs-4" %}
+{% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+{% block subcontent %}
+
+<h1>Networks</h1>
+<hr/>
+
     <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
         <div id="div_network_list" class="panel panel-primary">
             <div class="panel-heading">Network list&nbsp;
@@ -288,4 +296,27 @@
             </div>
         </div>
     </div>
-</div>
+{% endblock subcontent %}
+{% block scripts %}
+{{ super() }}
+<script>
+$().ready(function() {
+		// validations
+		$("#network_form").validate({
+		    errorClass: "error",
+            errorElement: "label",
+            rules: {
+
+			},
+			highlight: function(element, errorClass) {
+                $(element).removeClass(errorClass);
+            }
+		});
+        get_network_list();
+        get_network_profile_list();
+        get_groups();
+        get_network_profiles();
+});
+
+</script>
+{% endblock scripts %}

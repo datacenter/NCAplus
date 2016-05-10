@@ -10,31 +10,69 @@
 <div class="container">
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
-                <a href="/" class="navbar-brand">
-                    <div class="pn-noncollapse">L2 Integration Tool</div>
-                </a>
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                        data-target="#bs-example-navbar-collapse-1">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
                     <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar navbar-inverse"></span>
+                    <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
+                <a class="navbar-brand" href="/">L2 Integration tool</a>
             </div>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div id="navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
                 <ul class="nav navbar-nav">
-                    <li class="ciscoliveitem"><a target="blank" data-toggle="modal" data-target="#ABOUT"
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Menu <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/groups">
+                                Groups
+                            </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/networks">
+                                Networks
+                            </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/vpcs">
+                                VPCs
+                            </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/vpc_access">
+                                VPC Access
+                            </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/single_access">
+                                Single Access
+                            </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/access_switches">
+                                Access switches
+                            </a></li>
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/monitor">
+                                Monitor
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">System <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a target="blank" data-toggle="modal" data-target="#ABOUT"
                                                  href="#">About</a></li>
-                    <li class="ciscoliveitem"><a href="/logout">Logout</a></li>
-                </ul>
-                <ul class="nav navbar-nav navbar-right navHeaderCollapse">
-                    <img width="35px" style="margin:6px;" src="/static/images/CiscoLogoWhite.png">
+                            <li role="separator" class="divider"></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <img width="35px" style="margin:15px;" src="/static/images/CiscoLogoWhite.png">
 
+                    </li>
                 </ul>
-            </div><!-- /.navbar-collapse -->
+            </div><!--/.nav-collapse -->
         </div><!-- /.container-fluid -->
     </nav>
 </div>
@@ -61,32 +99,8 @@
               class="form-horizontal">
             <input type="hidden" id="operation" name="operation" value="">
             <input type="hidden" id="sub_operation" name="sub_operation" value="">
-            <ul style="margin: 20px 0px 22px; visibility: visible;" class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" href="#group_tab" onclick="clean_inputs();">Group</a></li>
-                    <li class=""><a data-toggle="tab" href="#network_tab" onclick="clean_inputs();">Network</a></li>
-                    <li class=""><a data-toggle="tab" href="#vpc_tab" onclick="clean_inputs();">VPC</a></li>
-                    <li class=""><a data-toggle="tab" href="#vpc_access_tab" onclick="clean_inputs();">VPC Access</a></li>
-                    <li class=""><a data-toggle="tab" href="#port_access_tab" onclick="clean_inputs();">Single Access</a>
-                </li>
-                <li class="">
-                    <a data-toggle="tab" href="#access_switch_tab" onclick="clean_inputs();">Access
-                    Switches</a>
-                </li>
-                <li class="">
-                    <a data-toggle="tab" href="#noc_monitor_tab" onclick="clean_inputs();">
-                    AFWH Noc monitor</a>
-                </li>
-            </ul>
-            <div class="tab-content">
-                {% include 'group_partial.html' %}
-                {% include 'network_partial.html' %}
-                {% include 'vpc_partial.html' %}
-                {% include 'vpc_access_partial.html' %}
-                {% include 'port_access_partial.html' %}
-                {% include 'access_switch_partial.html' %}
-                {% include 'noc_monitor_partial.html' %}
-            </div>
+            {% block subcontent %}
+            {% endblock subcontent %}
         </form>
     </div>
 </div>
@@ -94,7 +108,7 @@
 {% block scripts %}
 {{ super() }}
 <script>
-$().ready(function() {
+/*$().ready(function() {
 		// validations
 		$("#network_form").validate({
 		    errorClass: "error",
@@ -119,7 +133,7 @@ $().ready(function() {
 		get_vpc_groups();
 		get_access_switches();
 		get_access_switch_list();
-		get_health_dashboard();
-});
+});*/
+
 </script>
 {% endblock scripts %}
