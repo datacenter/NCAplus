@@ -11,6 +11,7 @@ from flask import g
 
 class group_handler(base_handler):
 
+
     @staticmethod
     def group_handler(obj_response, formvalues):
         try:
@@ -25,7 +26,8 @@ class group_handler(base_handler):
                 tenants = apic_object.get_all_tenants()
                 option_list = '<option value="">Select</option>'
                 for tenant in tenants:
-                    option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
+                    if tenant.name != 'common' and tenant.name != 'mgmt' and tenant.name!= 'infra':
+                        option_list += '<option value="' + str(tenant.dn) + '">' + tenant.name + '</option>'
                 obj_response.html(".sel-group", option_list)
             except Exception as e:
                 print traceback.print_exc()
@@ -38,11 +40,13 @@ class group_handler(base_handler):
         elif values['operation'] == 'tenant_list':
             try:
                 tenants = apic_object.get_all_tenants()
-                all_tenants_list = ''
+                all_tenants_list = '<ul style="padding-left:10px;">'
                 for tenant in tenants:
-                    all_tenants_list += '<h5>' + str(tenant.name) + '</h5><hr style="margin:0px 0px 0px 0px"/>'
+                    if tenant.name != 'common' and tenant.name != 'mgmt' and tenant.name!= 'infra':
+                        all_tenants_list += '<li><div style="font-size:.9em;">' + str(tenant.name) + '</div></li>'
+
+                all_tenants_list += '</ul>'
                 obj_response.html("#tenant_list", all_tenants_list)
-                all_tenants_list += "</div>"
             except Exception as e:
                 print traceback.print_exc()
                 obj_response.script("create_notification('Can not retrieve group list', '" + str(e).replace("'", "").
