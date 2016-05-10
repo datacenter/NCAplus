@@ -14,6 +14,12 @@ class fabric_handler(base_handler):
 
     @staticmethod
     def fabric_handler(obj_response, formvalues):
+        """
+        Handles all operations related to the fabric hardware such as get the ports or switches within ACI
+        :param obj_response:
+        :param formvalues:
+        :return:
+        """
         try:
             apic_object, values = fabric_handler.init_connections(formvalues)
         except Exception as e:
@@ -22,6 +28,7 @@ class fabric_handler(base_handler):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         if values['operation'] == 'get_leafs':
+            # Load the select that show all the leafs within the fabric
             try:
                 option_list = '<option value="">Select</option>'
                 leafs = apic_object.get_leafs()
@@ -37,7 +44,7 @@ class fabric_handler(base_handler):
                 obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_ports':
-            # """ Returns only available ports """
+            # Load the sel_port_create_vpc select, only with available ports that are not used in virtual port channels
             try:
                 option_list = '<option value="">Select</option>'
                 ports = apic_object.get_available_ports(values['sel_leaf_create_vpc'])
@@ -63,7 +70,7 @@ class fabric_handler(base_handler):
                 obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_health_dashboard':
-            # """ Returns only available ports """
+            # Load the web page that shows the health scores of the system and of the switches (/monitor)
             try:
                 system_health = apic_object.get_system_health()
                 if int(system_health) < 90:

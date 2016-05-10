@@ -14,6 +14,13 @@ class single_access_handler(base_handler):
 
     @staticmethod
     def single_access_handler(obj_response, formvalues):
+        """
+        Manages all the operations that are involved with a single port association with EPGs
+        (for virtual port channel association the vpc_access_handler is used)
+        :param obj_response:
+        :param formvalues:
+        :return:
+        """
         try:
             apic_object, values = single_access_handler.init_connections(formvalues)
         except Exception as e:
@@ -22,6 +29,7 @@ class single_access_handler(base_handler):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         if values['operation'] == 'get_create_single_access_networks':
+            # Load the sel_create_single_access_network select with the networks within the selected group
             try:
                 network_aps = apic_object.get_ap_by_tenant(values['sel_create_single_access_group'])
                 if len(network_aps) > 0:
@@ -39,6 +47,7 @@ class single_access_handler(base_handler):
                 obj_response.html("#create_single_access_response", '')
 
         elif values['operation'] == 'get_create_single_access_ports':
+            # Load the sel_create_single_access_port select with the available ports within the selected leaf
             try:
                 ports = apic_object.get_available_ports(values['sel_create_single_access_leaf'])
                 option_list = '<option value="">Select</option>'
@@ -54,6 +63,8 @@ class single_access_handler(base_handler):
                 obj_response.html("#create_single_access_response", '')
 
         elif values['operation'] == 'create_single_access':
+            # Creates switch profiles, interface profiles, policy groups and static bindings to associate a port
+            # to an EPG
             try:
                 port_id = values['sel_create_single_access_port'].split('[')[-1][:-1].replace('/','-')
                 switch_id = values['sel_create_single_access_leaf'].split('/')[-1]
@@ -99,6 +110,7 @@ class single_access_handler(base_handler):
                 obj_response.html("#create_single_access_response", '')
 
         elif values['operation'] == 'get_delete_single_access_networks':
+            # Load the sel_delete_single_access_network select with the network within the selected group
             try:
                 network_aps = apic_object.get_ap_by_tenant(values['sel_delete_single_access_group'])
                 if len(network_aps) > 0:
@@ -116,6 +128,7 @@ class single_access_handler(base_handler):
                 obj_response.html("#delete_single_access_response", '')
 
         elif values['operation'] == 'get_delete_single_access_ports':
+            # Load the sel_delete_single_access_port select with the available ports from the selected leaf
             try:
                 ports = apic_object.get_available_ports(values['sel_delete_single_access_leaf'])
                 option_list = '<option value="">Select</option>'
@@ -131,6 +144,8 @@ class single_access_handler(base_handler):
                 obj_response.html("#delete_single_access_response", '')
 
         elif values['operation'] == 'delete_single_access':
+            # Removes the static binding between a port and an EPG. If no other EPG is using this port the system
+            # removes also the switch profile, interface profile and policy group associated with the port
             try:
                 port_id = values['sel_delete_single_access_port'].split('[')[-1][:-1].replace('/','-')
                 switch_id = values['sel_delete_single_access_leaf'].split('/')[-1]

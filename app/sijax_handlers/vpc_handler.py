@@ -14,6 +14,12 @@ class vpc_handler(base_handler):
 
     @staticmethod
     def vpc_handler(obj_response, formvalues):
+        """
+        Handles all operations related to creation and deletion of virtual port channels
+        :param obj_response:
+        :param formvalues:
+        :return:
+        """
         try:
             apic_object, values = vpc_handler.init_connections(formvalues)
         except Exception as e:
@@ -23,6 +29,7 @@ class vpc_handler(base_handler):
             return
         if values['operation'] == 'create_vpc':
             try:
+                # Creates a switch profile, interface profiles and policy groups
                 # check if vpc has a unique name
                 vpc_list = apic_object.get_vpcs()
                 for vpc in vpc_list:
@@ -60,6 +67,7 @@ class vpc_handler(base_handler):
                         '</tbody>'
                 obj_response.html("#vpc_ports", table)
                 obj_response.html("#sel_port_create_vpc", '')
+                # Executes javascript function (only after the response is received by the browser)
                 obj_response.script('$("#create_vpc_name").val("")')
                 obj_response.script('$("#sel_leaf_create_vpc").val("")')
                 obj_response.script('get_vpcs();get_vpc_list();')
@@ -73,6 +81,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_delete_vpc_assigned_ports':
+            # load the list delete_vpc_ports with the ports assigned to a virtual port channel
             try:
                 port_list = apic_object.get_vpc_ports(values['sel_delete_vpc_name'])
                 table = '<thead>' \
@@ -96,6 +105,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#delete_vpc_response", '')
 
         elif values['operation'] == 'get_vpcs':
+            # Load the selects that show all the virtual port channels
             try:
                 vpc_list = apic_object.get_vpcs()
                 option_list = '<option value="">Select</option>'
@@ -111,6 +121,8 @@ class vpc_handler(base_handler):
                 obj_response.html("#delete_vpc_response", '')
 
         elif values['operation'] == 'delete_vpc':
+            # Removes switch profiles, interface policies and policy groups associated to the selected
+            # virtual port channel
             try:
                 apic_object.delete_vpc(values['sel_delete_vpc_name'])
                 obj_response.script('get_vpcs();get_vpc_list();')
@@ -125,6 +137,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#delete_vpc_response", '')
 
         elif values['operation'] == 'get_leafs_by_vpc_group':
+            # Load the sel_leaf_create_vpc with the leafs that are port of the selected vpc explicit group
             try:
                 option_list = '<option value="">Select</option>'
                 leafs = apic_object.get_leaf_by_explicit_group(values['sel_vpc_group_create_vpc'])
@@ -141,6 +154,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'delete_vpc_group':
+            # Delete an explicit protection group
             try:
                 apic_object.remove_vpc_group(values['sel_delete_vpc_group_name'])
                 obj_response.script("get_vpc_groups()")
@@ -155,6 +169,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#delete_vpc_group_response", '')
 
         elif values['operation'] == 'create_vpc_group':
+            # Creates an explicit protection group
             try:
                 switch_mo_1 = apic_object.moDir.lookupByDn(values['sel_create_vpc_group_leaf_1'])
                 switch_mo_2 = apic_object.moDir.lookupByDn(values['sel_create_vpc_group_leaf_2'])
@@ -174,6 +189,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#div_create_vpc_group_response", '')
 
         elif values['operation'] == 'get_vpc_groups':
+            # Load the selects that shows all the vpc explicit groups
             try:
                 option_list = '<option value="">Select</option>'
                 vpc_groups = apic_object.get_vpc_explicit_groups()
@@ -189,6 +205,7 @@ class vpc_handler(base_handler):
                 obj_response.html("#create_vpc_response", '')
 
         elif values['operation'] == 'get_vpc_group_list':
+            # Load the vpc_group_list with all the explicit groups created in ACI
             try:
                 vpc_group_list_str = ''
                 vpc_groups = apic_object.get_vpc_explicit_groups()
@@ -204,6 +221,7 @@ class vpc_handler(base_handler):
                 g.db.close()
 
         elif values['operation'] == 'get_vpc_list':
+            # Load the vpc_list with all the virtual port channels created in ACI
             try:
                 vpc_list = apic_object.get_vpcs()
                 vpc_list_str = ''

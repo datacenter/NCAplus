@@ -14,6 +14,12 @@ class group_handler(base_handler):
 
     @staticmethod
     def group_handler(obj_response, formvalues):
+        """
+        Manages all operations related to groups or tenants
+        :param obj_response:
+        :param formvalues:
+        :return:
+        """
         try:
             apic_object, values = group_handler.init_connections(formvalues)
         except Exception as e:
@@ -22,6 +28,7 @@ class group_handler(base_handler):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         if values['operation'] == 'get_groups':
+            # Load the selects that show the groups
             try:
                 tenants = apic_object.get_all_tenants()
                 option_list = '<option value="">Select</option>'
@@ -38,6 +45,8 @@ class group_handler(base_handler):
                 obj_response.html("#create_network_response", '')
 
         elif values['operation'] == 'tenant_list':
+            # Load the list that shows all the tenants that have been created, avoids the defaults
+            # (common, mgmt and fabric)
             try:
                 tenants = apic_object.get_all_tenants()
                 all_tenants_list = '<ul style="padding-left:10px;">'
@@ -54,9 +63,11 @@ class group_handler(base_handler):
                 g.db.close()
 
         elif values['operation'] == 'create_group':
+            # Creates a tenant in ACI
             try:
                 apic_object.create_group(values['create_group_name'])
                 obj_response.script("create_notification('Created', '', 'success', 5000)")
+                # Executes javascript function (only after the response is received by the browser)
                 obj_response.script('get_groups();get_tenants();')
             except Exception as e:
                 print traceback.print_exc()
@@ -67,8 +78,10 @@ class group_handler(base_handler):
                 obj_response.html("#create_group_response", '')
 
         elif values['operation'] == 'delete_group':
+            # Removes a tenant from ACI
             try:
                 apic_object.delete_tenant(values['sel_delete_group_name'])
+                # Executes javascript function (only after the response is received by the browser)
                 obj_response.script("get_groups();get_tenants();")
                 obj_response.script("create_notification('Deleted', '', 'success', 5000)")
             except Exception as e:

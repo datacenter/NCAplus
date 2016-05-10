@@ -12,9 +12,16 @@ handler_app = None
 REMOVED_TENANTS=['mgmt','common','infra']
 
 class base_handler:
-
+    """
+    Base class that all handlers inherit
+    """
     @staticmethod
     def init_connections(formvalues):
+        """
+        Connects to the APIC and set the form values to a dictionary
+        :param formvalues:
+        :return:
+        """
         values = get_values(formvalues)
         apic_object = apic_l2_tool.Apic_l2_tool()
         apic_object.login(

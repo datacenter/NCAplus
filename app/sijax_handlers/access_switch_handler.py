@@ -17,12 +17,15 @@ class access_switch_handler(base_handler):
     @staticmethod
     def access_switch_handler(obj_response, formvalues):
         """
-
+        Manages all the configuration to switches that are external to ACI
+        There is hidden in the form that comes from the HTML request that tells which operation is going to be
+        executed
         :param obj_response:
         :param formvalues:
         :return:
         """
         try:
+            # Login to APIC and load the form's values
             apic_object, values = access_switch_handler.init_connections(formvalues)
         except Exception as e:
             print traceback.print_exc()
@@ -30,10 +33,15 @@ class access_switch_handler(base_handler):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         if values['operation'] == 'configure_access_switches':
+            # Send commands to the switches. All the selected switches are sent using a hidden (called
+            # hd_configure_access_switches) input in the HTML that is set using javascript before the request. Each
+            # switch is separated by a ';' character
             try:
+                # Get the switches
                 switch_list = values['hd_configure_access_switches'].split(';')
                 sc = switch_controller.switch_controller()
                 log_messages = ''
+                # Executes the commands per each switch
                 for switch in switch_list:
                     if len(switch) > 0:
                         switch_ip = switch.split('(')[0].replace(' ', '')
@@ -46,7 +54,7 @@ class access_switch_handler(base_handler):
                             values['access_switch_login_password'],
                             values['access_switch_enable_password'],
                             switch_model.hostname,
-                            values['access_switch_commands'].split('\n'))
+                            values['access_switch_commands'].split('\n')) # Each command is separated by a '\n' character
                 obj_response.script("create_notification('Commands sent!', '', 'success', 5000)")
                 obj_response.html('#access_switch_result', str(log_messages))
                 obj_response.script('$("#access_switch_result").val($("#access_switch_result").html())')
@@ -60,6 +68,7 @@ class access_switch_handler(base_handler):
                 obj_response.html("#access_switch_response", '')
 
         elif values['operation'] == 'create_access_switch':
+            # Creates an access switch into the local database
             try:
                 app.model.access_switch.create(ip=values['access_switch_ip'],
                                                user=values['access_switch_user'],
@@ -91,6 +100,7 @@ class access_switch_handler(base_handler):
                 obj_response.html("#access_switch_response", '')
 
         elif values['operation'] == 'get_access_switches':
+            # Load the selects that will show the access switches saved in the local database
             try:
                 access_switches = app.model.access_switch.select()
                 option_list = '<option value="">Select</option>'
@@ -108,6 +118,7 @@ class access_switch_handler(base_handler):
                 obj_response.html("#access_switch_response", '')
 
         elif values['operation'] == 'get_access_switch_list':
+            # Load the list that contains all the switches that are in the local database
             try:
                 access_switches = app.model.access_switch.select()
                 access_switch_list_str = ''

@@ -14,6 +14,13 @@ class vpc_access_handler(base_handler):
 
     @staticmethod
     def vpc_access_handler(obj_response, formvalues):
+        """
+        Handles all operations related to virtual port channels association with EPGs (for single port associations
+        single_access_handler is used)
+        :param obj_response:
+        :param formvalues:
+        :return:
+        """
         try:
             apic_object, values = vpc_access_handler.init_connections(formvalues)
         except Exception as e:
@@ -22,6 +29,7 @@ class vpc_access_handler(base_handler):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         if values['operation'] == 'create_vpc_access':
+            # Creates an static binding between a virtual port channel and a EPG
             try:
                 if values['create_vpc_access_type'] == 'single_vlan':
                     network_o = app.model.network.select().where(app.model.network.epg_dn ==
@@ -59,6 +67,7 @@ class vpc_access_handler(base_handler):
                 obj_response.html("#div_create_vpc_access_response", '')
 
         elif values['operation'] == 'get_create_vpc_access_networks':
+            # Load the sel_network_create_vpc_access with the networks within the selected group
             try:
                 network_aps = apic_object.get_ap_by_tenant(values['sel_group_create_vpc_access'])
                 if len(network_aps) > 0:
@@ -76,6 +85,7 @@ class vpc_access_handler(base_handler):
                 obj_response.html("#div_create_vpc_access_response", '')
 
         elif values['operation'] == 'get_delete_vpc_access_networks':
+            # Load the sel_network_delete_vpc_access with the networks within the selected group
             try:
                 network_aps = apic_object.get_ap_by_tenant(values['sel_group_delete_vpc_access'])
                 if len(network_aps) > 0:
@@ -93,6 +103,7 @@ class vpc_access_handler(base_handler):
                 obj_response.html("#div_delete_vpc_access_response", '')
 
         elif values['operation'] == 'get_delete_vpc_access_assignments':
+            # Load the sel_vpc_delete_vpc_access select with the vpc static bindings associated to the selected network
             try:
                 vpc_assignments = apic_object.get_vpc_assignments_by_epg(values['sel_network_delete_vpc_access'])
                 option_list = '<option value="">Select</option>'
@@ -110,6 +121,7 @@ class vpc_access_handler(base_handler):
                 obj_response.html("#div_delete_vpc_access_response", '')
 
         elif values['operation'] == 'delete_vpc_access':
+            # Deletes a static binding between the selected network and the selected virtual port channel
             try:
                 if values['delete_vpc_access_type'] == 'single_vlan':
                     apic_object.delete_vpc_assignment(values['sel_vpc_delete_vpc_access'])
@@ -138,6 +150,7 @@ class vpc_access_handler(base_handler):
                 obj_response.html("#div_delete_vpc_access_response", '')
 
         elif values['operation'] == 'get_vpc_assignment_list':
+            # load the vpc_assigment_list with all the vpc static bindings grouped by vpc
             try:
                 vpc_list = apic_object.get_vpcs()
                 vpc_assignments = apic_object.get_vpc_assignments()
