@@ -2,7 +2,7 @@
 *************************************************************************
  Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
 *************************************************************************
-Helper for views.py
+Sijax Handler for the access switches operations
 
 """
 from base_handler import base_handler
@@ -11,10 +11,17 @@ import app.model
 from flask import g
 from app.access_switch_manager import switch_controller
 
+
 class access_switch_handler(base_handler):
 
     @staticmethod
     def access_switch_handler(obj_response, formvalues):
+        """
+
+        :param obj_response:
+        :param formvalues:
+        :return:
+        """
         try:
             apic_object, values = access_switch_handler.init_connections(formvalues)
         except Exception as e:

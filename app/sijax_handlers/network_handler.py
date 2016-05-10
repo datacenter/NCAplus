@@ -5,7 +5,7 @@
 Helper for views.py
 
 """
-from base_handler import base_handler
+from base_handler import base_handler, REMOVED_TENANTS
 import traceback
 import app.model
 from flask import g
@@ -232,7 +232,7 @@ class network_handler(base_handler):
                 for tenant in apic_object.get_all_tenants():
                     network_aps = apic_object.get_ap_by_tenant(str(tenant.dn))
                     if len(network_aps) > 0:
-                        if tenant.name != 'mgmt' and tenant.name != 'infra' and tenant.name != 'common':
+                        if tenant.name not in REMOVED_TENANTS:
                             networks = apic_object.get_epg_by_ap(str(network_aps[0].dn))
                             network_list += '<ul style="padding-left:10px;font-size:.9em;">'
                             network_list += '<label data-toggle="collapse" data-target="#' + tenant.name + '" style="float:left;cursor:pointer">'
