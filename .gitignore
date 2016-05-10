@@ -9,3 +9,4 @@ include
 .DS_Store
 .idea
 print_output.html
+l2-integration.db
