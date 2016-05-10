@@ -1,0 +1,282 @@
+{% extends "main.html" %}
+{% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+{% set selectclass = "col-lg-4 col-md-4 col-sm-4 col-xs-4" %}
+{% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+{% block subcontent %}
+
+<h1>VPC Access</h1>
+<hr/>
+
+<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+    <div id="div_vpc_assignment_list" class="panel panel-primary">
+        <div class="panel-heading">VPC Assignments&nbsp;
+                <span class="fa fa-info-circle" aria-hidden="true"
+                      data-toggle="popover"
+                      data-trigger="hover"
+                      title="VPC Assignments"
+                      data-content="List of vpc assignments to VLANs in the ACI Fabric">
+                                        </span>
+        </div>
+        <div class="panel-body">
+            <div id="vpc_assignment_list">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+    <div id="div_create_vpc_access" class="panel panel-primary">
+        <div class="panel-heading">Create Virtual Port Channel Access
+            <span class="fa fa-info-circle" aria-hidden="true"
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Create Virtual Port Channel Access"
+                  data-content="A virtual port channel access is basically a way to allow VLANs
+                                          to go trough the port channel. You can do it selecting the VLAN that
+                                          you want and the VPC, or also using VLAN profiles to save some time
+                                          for those VLANs that need the same configuration. You can create VLAN
+                                          profiles under the 'Network' section">
+                                    </span>
+            <div id="div_create_vpc_access_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#"
+                       onclick="$('#vlan_profile').css('display','none');
+                            $('#single_vlan').css('display','');
+                            $('#create_vpc_access_type').val('single_vlan')">
+                        Single VLAN</a>
+                </li>
+                <li class=""><a data-toggle="tab" href="#"
+                                onclick="$('#single_vlan').css('display','none');
+                            $('#vlan_profile').css('display','');
+                            $('#create_vpc_access_type').val('vlan_profile')">
+                    VLAN Profile</a></li>
+            </ul>
+            <br/>
+
+            <div id="single_vlan">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Group
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the group to be assign to the virtual port channel">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_group_create_vpc_access" name="sel_group_create_vpc_access"
+                                class="form-control sel-group" onchange="get_create_vpc_access_networks()">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Network
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be assign to the virtual port channel">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_network_create_vpc_access" name="sel_network_create_vpc_access"
+                                class="form-control network">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="vlan_profile" style="display:none">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VLAN Profile
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VLAN Profile"
+                                  data-content="Select the vlan profile to be assign to the virtual port channel">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_profile_create_vpc_access" name="sel_profile_create_vpc_access"
+                                class="form-control sel-net-profile">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="{{ labelclasslg }}"> VPC
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VPC"
+                                  data-content="Select the virtual port channel to be assigned to the network">
+                            </span>
+                </label>
+                <div class="{{ selectclass }}">
+                    <select id="sel_vpc_create_vpc_access" name="sel_vpc_create_vpc_access"
+                            class="form-control sel-vpc">
+                    </select>
+                </div>
+            </div>
+            <hr>
+            <button id="btn_create_vpc_access" type="button" class="btn btn-primary"
+                    onclick="create_vpc_access()">Assign
+            </button>
+            <input type="hidden" name="create_vpc_access_type" id="create_vpc_access_type" value="single_vlan"/>
+        </div>
+
+    </div>
+    <div id="div_delete_vpc_access" name="div_delete_vpc_access" class="panel panel-default">
+        <div class="panel-heading">Delete Virtual Port Channel Access
+            <span class="fa fa-info-circle" aria-hidden="true"
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Delete Virtual Port Channel Access"
+                  data-content="This will remove the VLANs from the link, and packets from those
+                                          VLANs will not be able to go through the VPC. You can do it selecting the VLAN
+                                          that you want to remove and the VPC, or also using VLAN profiles to save some time
+                                          for those VLANs that need the same configuration. You can create VLAN
+                                          profiles under the 'Network' section">
+                                    </span>
+            <div id="div_delete_vpc_access_response" style="float:right;font-size:16px"></div>
+        </div>
+        <div class="panel-body">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a data-toggle="tab" href="#"
+                       onclick="$('#vlan_profile_delete_vpc_access').css('display','none');
+                            $('#single_vlan_delete_vpc_access').css('display','');
+                            $('#delete_vpc_access_type').val('single_vlan')">
+                        Single VLAN</a>
+                </li>
+                <li class=""><a data-toggle="tab" href="#"
+                                onclick="$('#single_vlan_delete_vpc_access').css('display','none');
+                            $('#vlan_profile_delete_vpc_access').css('display','');
+                            $('#delete_vpc_access_type').val('vlan_profile')">
+                    VLAN Profile</a></li>
+            </ul>
+            <br/>
+            <div id="single_vlan_delete_vpc_access">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Group
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Group"
+                                  data-content="Select the group to be removed from the virtual port channel">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_group_delete_vpc_access" name="sel_group_delete_vpc_access"
+                                class="form-control sel-group" onchange="get_delete_vpc_access_networks()">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Network
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="Network"
+                                  data-content="Select the network to be removed from the virtual port channel">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_network_delete_vpc_access" name="sel_network_delete_vpc_access"
+                                class="form-control" onchange="get_delete_vpc_access_assignments()">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VPC
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VPC"
+                                  data-content="Select the virtual port channel to be removed from the network
+                                  or profile">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_vpc_delete_vpc_access" name="sel_vpc_delete_vpc_access"
+                                class="form-control">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div id="vlan_profile_delete_vpc_access" style="display:none">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VLAN Profile
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VLAN Profile"
+                                  data-content="Select the vlan profile to be removed from the virtual port channel">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_profile_delete_vpc_access" name="sel_profile_delete_vpc_access"
+                                class="form-control sel-net-profile">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> VPC
+                            <span class="fa fa-info-circle" aria-hidden="true"
+                                  data-toggle="popover"
+                                  data-trigger="hover"
+                                  title="VPC"
+                                  data-content="Select the virtual port channel to be removed from the network
+                                  profile">
+                            </span>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_vpc_delete_vpc_access_profile" name="sel_vpc_delete_vpc_access_profile"
+                                class="form-control sel-vpc">
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+            <button id="btn_delete_network_vpc_assignments" type="button" class="btn btn-danger"
+                    onclick="delete_network_vpc_assignments()"><i class="fa fa-trash" aria-hidden="true"></i>&nbsp;Remove
+                assignment
+            </button>
+            <input type="hidden" name="delete_vpc_access_type" id="delete_vpc_access_type" value="single_vlan"/>
+        </div>
+    </div>
+</div>
+
+
+{% endblock subcontent %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+$().ready(function() {
+		// validations
+		$("#network_form").validate({
+		    errorClass: "error",
+            errorElement: "label",
+            rules: {
+
+			},
+			highlight: function(element, errorClass) {
+                $(element).removeClass(errorClass);
+            }
+		});
+		get_groups();
+        get_tenants();
+		get_leafs();
+		get_vpcs();
+		get_vpc_assignment_list();
+		get_network_profiles();
+});
+
+</script>
+{% endblock scripts %}
