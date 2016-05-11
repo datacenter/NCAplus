@@ -1,86 +1,104 @@
 <div id="access_switch_tab" class="tab-pane fade">
-    <div id="div_access_switch" name="div_access_switch" class="panel panel-primary">
-        <div class="panel-heading">Access Switch
+    <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+        <div id="div_network_list" class="panel panel-primary">
+            <div class="panel-heading">Access Switch list&nbsp;
+                <span class="fa fa-info-circle" aria-hidden="true"
+                      data-toggle="popover"
+                      data-trigger="hover"
+                      title="Access Switch List"
+                      data-content="List of switches that are not part of the ACI fabric">
+                                        </span>
+            </div>
+            <div class="panel-body">
+                <div id="access_switch_list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+        <div id="div_access_switch" name="div_access_switch" class="panel panel-primary">
+            <div class="panel-heading">Access Switch
             <span class="panel-default" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Access switch"
-                                          data-content="This section allows you to create and remove switches that
+                  data-toggle="popover"
+                  data-trigger="hover"
+                  title="Access switch"
+                  data-content="This section allows you to create and remove switches that
                                           are not controlled by the APIC. Once you have created a switch, you can start
                                           sending commands to it, just like if you were connected using a ssh connection.">
                                     </span>
-            <div id="access_switch_response" style="float:right;font-size:16px"></div>
-        </div>
-        <div class="panel-body">
-            <ul class="nav nav-tabs">
-                <li class="active">
-                    <a data-toggle="tab" href="#"
-                       onclick="$('#send_commands').css('display','none');
+                <div id="access_switch_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs">
+                    <li class="active">
+                        <a data-toggle="tab" href="#"
+                           onclick="$('#send_commands').css('display','none');
                             $('#create_access_switch').css('display','');
                             $('#div_delete_access_switch').css('display','');clean_inputs();">
-                        Create/Delete</a>
-                </li>
-                <li class=""><a data-toggle="tab" href="#"
-                                onclick="$('#create_access_switch').css('display','none');
+                            Create/Delete</a>
+                    </li>
+                    <li class=""><a data-toggle="tab" href="#"
+                                    onclick="$('#create_access_switch').css('display','none');
                                 $('#div_delete_access_switch').css('display','none');
                             $('#send_commands').css('display','');clean_inputs();">
-                    Send commands</a></li>
-            </ul>
-            <br/>
-            <div id="create_access_switch">
-                <div class="form-group">
-                    <label class="{{ labelclass }}"> Hostname
+                        Send commands</a></li>
+                </ul>
+                <br/>
+                <div id="create_access_switch">
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}"> Hostname
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Hostname"
                                           data-content="Specify the switch hostname">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="text" class="form-control" maxlength="50" id="access_switch_hostname"
-                               value="" name="access_switch_hostname" placeholder="Switch Hostname">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="access_switch_hostname"
+                                   value="" name="access_switch_hostname" placeholder="Switch Hostname">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="{{ labelclass }}"> IP
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}"> IP
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="IP"
                                           data-content="Ingress the switch IP">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="text" class="form-control" maxlength="50" id="access_switch_ip" value=""
-                               name="access_switch_ip" placeholder="x.x.x.x">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="access_switch_ip" value=""
+                                   name="access_switch_ip" placeholder="x.x.x.x">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="{{ labelclass }}"> User
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}"> User
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="User"
                                           data-content="Ingress the switch username">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="text" class="form-control" maxlength="50" id="access_switch_user"
-                               value=""
-                               name="access_switch_user" placeholder="Username">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="text" class="form-control" maxlength="50" id="access_switch_user"
+                                   value=""
+                                   name="access_switch_user" placeholder="Username">
+                        </div>
                     </div>
+                    <hr>
+                    <button id="btn_create_switch" type="button" class="btn btn-primary"
+                            onclick="create_access_switch()">
+                        Create
+                    </button>
                 </div>
-                <hr>
-                <button id="btn_create_switch" type="button" class="btn btn-primary"
-                        onclick="create_access_switch()">
-                    Create
-                </button>
-            </div>
 
-            <div id="send_commands" style="display:none">
-                <div class="form-group">
-                    <label class="{{ labelclass }}"> Switch
+                <div id="send_commands" style="display:none">
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}"> Switch
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
@@ -90,126 +108,131 @@
                                           want, be aware that the tool will try to use the same passwords for all
                                           the switches in the list.">
                                     </span>
-                    </label>
-                    <div class="{{ selectclass }}">
-                        <select id="sel_access_switch" name="sel_access_switch" class="form-control sel-access-switch">
-                        </select>
+                        </label>
+                        <div class="{{ selectclass }}">
+                            <select id="sel_access_switch" name="sel_access_switch"
+                                    class="form-control sel-access-switch">
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <hr>
-                <button id="btn_add_switch_configure" type="button" class="btn btn-primary" onclick="add_switch()">Add
-                </button>
-                <div class="form-group">
-                    <table id="table_access_switches" class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th>IP (hostname)</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <hr>
-                <div class="form-group">
-                    <label class="{{ labelclass }}">Login Password
+                    <hr>
+                    <button id="btn_add_switch_configure" type="button" class="btn btn-primary" onclick="add_switch()">
+                        Add
+                    </button>
+                    <div class="form-group">
+                        <table id="table_access_switches" class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>IP (hostname)</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr>
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}">Login Password
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Login Password"
                                           data-content="Specify the login password to be used.">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="password" class="form-control" maxlength="50" id="access_switch_login_password"
-                               value="" name="access_switch_login_password" placeholder="*********">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="password" class="form-control" maxlength="50" id="access_switch_login_password"
+                                   value="" name="access_switch_login_password" placeholder="*********">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="{{ labelclass }}">Enable Password
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}">Enable Password
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Enable Password"
                                           data-content="Specify the enable password to be used.">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="password" class="form-control" maxlength="50" id="access_switch_enable_password"
-                               value="" name="access_switch_enable_password" placeholder="*********">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
+                            <input type="password" class="form-control" maxlength="50"
+                                   id="access_switch_enable_password"
+                                   value="" name="access_switch_enable_password" placeholder="*********">
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label class="{{ labelclass }}"> Commands
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}"> Commands
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Commands"
                                           data-content="Commands to be executed within the access switch">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
                             <textarea class="form-control" maxlength="500" id="access_switch_commands"
                                       value="" name="access_switch_commands"
                                       placeholder="Enter commands, one per line. The starting level is EXEC mode"
                                       style="font-family: inherit;min-height: 150px;"></textarea>
-                    </div>
+                        </div>
 
-                </div>
-                <hr>
-                <button id="btn_access_switch" type="button" class="btn btn-primary"
-                        onclick="configure_access_switches()">
-                    Configure
-                </button>
-                <input type="hidden" value="" id="hd_configure_access_switches" name="hd_configure_access_switches"/>
-                <hr>
-                <div class="form-group">
-                    <label class="{{ labelclass }}"> Result
+                    </div>
+                    <hr>
+                    <button id="btn_access_switch" type="button" class="btn btn-primary"
+                            onclick="configure_access_switches()">
+                        Configure
+                    </button>
+                    <input type="hidden" value="" id="hd_configure_access_switches"
+                           name="hd_configure_access_switches"/>
+                    <hr>
+                    <div class="form-group">
+                        <label class="{{ labelclasslg }}"> Result
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Result"
                                           data-content="Text returned from the access switches">
                                     </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
+                        </label>
+                        <div class="{{ txtinputclassmd }}">
                             <textarea class="form-control" id="access_switch_result"
                                       value="" name="access_switch_result"
                                       placeholder="Send the commands to see the output"
                                       style="font-family: inherit;min-height: 150px;" disabled></textarea>
-                    </div>
+                        </div>
 
+                    </div>
                 </div>
             </div>
-        </div>
 
-    </div>
-    <div id="div_delete_access_switch" name="div_delete_access_switch" class="panel panel-default">
-        <div class="panel-heading">Delete Access Switch
-            <div id="delete_access_switch_response" style="float:right;font-size:16px"></div>
         </div>
-        <div class="panel-body">
-            <div class="form-group">
-                <label class="{{ labelclass }}"> Switch IP
+        <div id="div_delete_access_switch" name="div_delete_access_switch" class="panel panel-default">
+            <div class="panel-heading">Delete Access Switch
+                <div id="delete_access_switch_response" style="float:right;font-size:16px"></div>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <label class="{{ labelclasslg }}"> Switch IP
                                     <span class="panel-default" aria-hidden="true"
                                           data-toggle="popover"
                                           data-trigger="hover"
                                           title="Group"
                                           data-content="Select the switch to be deleted">
                                     </span>
-                </label>
-                <div class="{{ selectclass }}">
-                    <select id="sel_delete_access_switch" name="sel_delete_access_switch"
-                            class="form-control sel-access-switch">
-                    </select>
+                    </label>
+                    <div class="{{ selectclass }}">
+                        <select id="sel_delete_access_switch" name="sel_delete_access_switch"
+                                class="form-control sel-access-switch">
+                        </select>
+                    </div>
                 </div>
+                <hr>
+                <button id="btn_delete_access_switch" type="button" class="btn btn-danger"
+                        onclick="delete_access_switch()">
+                    Delete
+                </button>
             </div>
-            <hr>
-            <button id="btn_delete_access_switch" type="button" class="btn btn-danger"
-                    onclick="delete_access_switch()">
-                Delete
-            </button>
         </div>
     </div>
 </div>
