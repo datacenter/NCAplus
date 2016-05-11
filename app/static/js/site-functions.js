@@ -1,33 +1,79 @@
-// *************************************************************************
-// Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-// *************************************************************************
+/*
+*************************************************************************
+Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
+*************************************************************************
+This file contains all Ajax calls that are made using sijax. All methods have the following structure
+- Validation rules are added to when some field is required for the operation
+- Check if the required fields are valid
+- If valid, perform the operation sending an Ajax request to the server and show the loading gif
+- Remove validation rules to required fields
+*/
 
-
-function create_group(){
-    $('#create_group_name').rules("add", "required");
+function submit_network_form() {
     if($('#network_form').valid()){
+        Sijax.request('network_form_handler', [Sijax.getFormValues('#network_form')]);
+    }
+}
+
+/**
+ * Submit the network_form using Sijax
+ */
+function submit_form(handler_name) {
+    if($('#network_form').valid()){
+        Sijax.request(handler_name, [Sijax.getFormValues('#network_form')]);
+    }
+}
+
+/**
+ * Makes a call to the group handler and set the operation to create_group.
+ * If successfully, will create a tenant in ACI
+ */
+function create_group(){
+    // Add rules
+    $('#create_group_name').rules("add", "required");
+    // Check rules
+    if($('#network_form').valid()){
+        //Set operation hidden input value
         $('#operation').val('create_group')
+        //Make request to server
         submit_form('group_handler')
+        //Show loading gif
         $('#create_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
+    // Remove rules
     $('#create_group_name').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the group handler and set the operation to get_groups.
+ * If successfully, will populate all group selects
+ */
 function get_groups(){
+    //Set operation hidden input value
     $('#operation').val('get_groups')
     submit_form('group_handler')
     $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+/**
+ * Makes a call to the group handler and set the operation to tenant_list.
+ * If successfully, will populate the group list
+ */
 function get_tenants(){
+    //Set operation hidden input value
     $('#operation').val('tenant_list');
     submit_form('group_handler')
     $('#tenant_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+/**
+ * Makes a call to the group handler and set the operation to delete_group.
+ * If successfully, will delete a tenant.
+ */
 function delete_group() {
     $('#sel_delete_group_name').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_group')
             submit_form('group_handler')
             $('#delete_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -35,17 +81,26 @@ function delete_group() {
     $('#sel_delete_group_name').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the network handler and set the operation to get_network_list.
+ * If successfully, will populate the network list
+ */
 function get_network_list(){
     $('#operation').val('get_network_list');
     submit_form('network_handler')
     $('#network_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+/**
+ * Makes a call to the network handler and set the operation to create_network.
+ * If successfully, will create a VLAN
+ */
 function create_network(){
     $('#create_network_name').rules("add", "required");
     $('#create_network_encapsulation').rules("add", "required");
     $('#sel_create_network_group').rules("add", "required");
     if($('#network_form').valid()){
+        //Set operation hidden input value
         $('#operation').val('create_network')
         submit_form('network_handler')
         $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -56,9 +111,14 @@ function create_network(){
 }
 
 
+/**
+ * Makes a call to the network handler and set the operation to get_sel_delete_networks.
+ * If successfully, will populate the get_sel_delete_networks select with all networks within the selected group
+ */
 function get_sel_delete_networks() {
     $('#sel_delete_network_group').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_sel_delete_networks')
             submit_form('network_handler')
             $('#delete_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -66,10 +126,15 @@ function get_sel_delete_networks() {
     $('#sel_delete_network_group').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the network handler and set the operation to delete_network.
+ * If successfully, will remove a VLAN
+ */
 function delete_network() {
     $('#sel_delete_network_group').rules("add", "required");
     $('#sel_delete_network_name').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_network')
             submit_form('network_handler')
             $('#delete_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -78,31 +143,28 @@ function delete_network() {
     $('#sel_delete_network_group').rules("remove", "required");
 }
 
-function submit_network_form() {
-    if($('#network_form').valid()){
-        Sijax.request('network_form_handler', [Sijax.getFormValues('#network_form')]);
-    }
-}
-
-function submit_form(handler_name) {
-    if($('#network_form').valid()){
-        Sijax.request(handler_name, [Sijax.getFormValues('#network_form')]);
-    }
-}
-
-
+/**
+ * Makes a call to the fabric handler and set the operation to get_leafs.
+ * If successfully, will populate all leaf selects
+ */
 function get_leafs(){
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_leafs')
             submit_form('fabric_handler')
             $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
+/**
+ * Makes a call to the fabric handler and set the operation to get_ports.
+ * If successfully, will populate the sel_port_create_vpc select with the ports of the selected leaf
+ */
 function get_ports(){
     $('#sel_leaf_create_vpc').rules("add", "required");
     $('#sel_port_create_vpc').html("");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_ports')
             submit_form('fabric_handler')
             $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -110,6 +172,9 @@ function get_ports(){
     $('#sel_leaf_create_vpc').rules("remove", "required");
 }
 
+/**
+ * Add a row to the table vpc_ports checking first if the selected port and selected switch has been selected before
+ */
 function add_port(){
     $('#create_vpc_response').html('')
     $('#sel_port_create_vpc').rules("add", "required");
@@ -156,14 +221,25 @@ function add_port(){
     $('#sel_leaf_create_vpc').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc handler and set the operation to get_vpc_list.
+ * If successfully, will populate the virtual port channel list with the ports that are part of the vpc
+ */
 function get_vpc_list(){
+    //Set operation hidden input value
     $('#operation').val('get_vpc_list');
     submit_form('vpc_handler')
     $('#vpc_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+/**
+ * Makes a call to the vpc handler and set the operation to create_vpc.
+ * If successfully, will create a vpc
+ */
 function create_vpc(){
+    //Declare a list where the selected switches will be stored
     switch_selected_list = []
+    //Traverse the vpc_port table checking that there is not the same port for the same switch two times
     $("#vpc_ports tr").each(function(index) {
             if (index != 0) {
                 $row = $(this);
@@ -182,28 +258,34 @@ function create_vpc(){
                 }
             }
         });
+    //Check that at least two ports have been selected
     if($("#vpc_ports tr").length - 3 <= 0){
         $('#create_vpc_response').html(
                    '<label class="label label-danger" > <i class="fa fa-times-circle"></i> Must assign at least two ports</label>'
                    );
         return;
     }
+    //Check if there is more or less than two switches selected
     if(switch_selected_list.length != 2){
          $('#create_vpc_response').html(
                    '<label class="label label-danger" > <i class="fa fa-times-circle"></i> Must assign exactly two different switches</label>'
                    );
         return;
     }
+    //Variable to store the selected ports distinguished names
     port_dns = ''
+    //All selected ports distinguished name is saved in the port_dns variable separated by a ';' character
     $("#vpc_ports tr").each(function(index) {
             if (index != 0) {
                 $row = $(this);
                 port_dns += $row.find("td:first").text() + ";";
             }
         });
+    //Set a hidden with the port_dns value to be able to submit that information to the server
     $('#port_dns').val(port_dns);
     $('#create_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('create_vpc')
             submit_form('vpc_handler')
             $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -211,12 +293,16 @@ function create_vpc(){
     $('#create_vpc_name').rules("remove", "required");
 }
 
-
-
+/**
+ * Makes a call to the vpc handler and set the operation to get_delete_vpc_assigned_ports.
+ * If successfully, will populate the delete_vpc_ports table with the ports that are
+ * bundled in the selected vpc
+ */
 function get_delete_vpc_assigned_ports(){
     $('#sel_delete_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
             $('#delete_vpc_ports').html('')
+            //Set operation hidden input value
             $('#operation').val('get_delete_vpc_assigned_ports')
             submit_form('vpc_handler')
             $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -224,17 +310,27 @@ function get_delete_vpc_assigned_ports(){
     $('#sel_delete_vpc_name').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc handler and set the operation to get_vpcs.
+ * If successfully, will populate all vpc selects
+ */
 function get_vpcs(){
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_vpcs')
             submit_form('vpc_handler')
             $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
+/**
+ * Makes a call to the vpc handler and set the operation to delete_vpc.
+ * If successfully, will remove a virtual port channel
+ */
 function delete_vpc(){
     $('#sel_delete_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_vpc')
             submit_form('vpc_handler')
             $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -242,9 +338,14 @@ function delete_vpc(){
     $('#sel_delete_vpc_name').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc access handler and set the operation to get_create_vpc_access_networks.
+ * If successfully, will populate the sel_network_create_vpc_access with the networks within the selected group
+ */
 function get_create_vpc_access_networks() {
     $('#sel_group_create_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_create_vpc_access_networks')
             submit_form('vpc_access_handler')
             $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -252,17 +353,27 @@ function get_create_vpc_access_networks() {
     $('#sel_group_create_vpc_access').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc access handler and set the operation to get_vpc_assignment_list.
+ * If successfully, will populate the vpc assignment list
+ */
 function get_vpc_assignment_list(){
+    //Set operation hidden input value
     $('#operation').val('get_vpc_assignment_list');
     submit_form('vpc_access_handler')
     $('#vpc_assignment_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+/**
+ * Makes a call to the vpc access handler and set the operation to create_vpc_access.
+ * If successfully, will create allow the selected VLAN to go through the virtual port channel
+ */
 function create_vpc_access(){
     $('#sel_group_create_vpc_access').rules("add", "required");
     $('#sel_network_create_vpc_access').rules("add", "required");
     $('#sel_vpc_create_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('create_vpc_access')
             submit_form('vpc_access_handler')
             $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -272,9 +383,15 @@ function create_vpc_access(){
     $('#sel_vpc_create_vpc_access').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc access handler and set the operation to get_delete_vpc_access_networks.
+ * If successfully, will populate the sel_network_delete_vpc_access select with the networks within the selected
+ * group
+ */
 function get_delete_vpc_access_networks(){
     $('#sel_group_delete_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_delete_vpc_access_networks')
             submit_form('vpc_access_handler')
             $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -282,10 +399,16 @@ function get_delete_vpc_access_networks(){
     $('#sel_group_delete_vpc_access').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc access handler and set the operation to get_delete_vpc_access_assignments.
+ * If successfully, will populate the sel_vpc_delete_vpc_access with the networks that are allowed to go through
+ * the selected virtual port channel
+ */
 function get_delete_vpc_access_assignments(){
     $('#sel_group_delete_vpc_access').rules("add", "required");
     $('#sel_network_delete_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_delete_vpc_access_assignments')
             submit_form('vpc_access_handler')
             $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -294,11 +417,16 @@ function get_delete_vpc_access_assignments(){
     $('#sel_network_delete_vpc_access').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the vpc access handler and set the operation to delete_vpc_access.
+ * If successfully, will deny the selected network to go through the virtual port channel
+ */
 function delete_network_vpc_assignments(){
     $('#sel_group_delete_vpc_access').rules("add", "required");
     $('#sel_network_delete_vpc_access').rules("add", "required");
     $('#sel_vpc_delete_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_vpc_access')
             submit_form('vpc_access_handler')
             $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -308,30 +436,49 @@ function delete_network_vpc_assignments(){
     $('#sel_vpc_delete_vpc_access').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the single access handler and set the operation to get_create_single_access_networks.
+ * If successfully, will populate the sel_create_single_access_network select with the networks within the selected
+ * group
+ */
 function get_create_single_access_networks() {
     $('#sel_create_single_access_group').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_create_single_access_networks')
             submit_form('single_access_handler')
             $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_single_access_group').rules("remove", "required");
 }
+
+/**
+ * Makes a call to the single access handler and set the operation to get_create_single_access_ports.
+ * If successfully, will populate the sel_create_single_access_leaf select with the available ports of the
+ * selected leaf
+ */
 function get_create_single_access_ports () {
     $('#sel_create_single_access_leaf').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_create_single_access_ports')
             submit_form('single_access_handler')
             $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_single_access_leaf').rules("remove", "required");
 }
+
+/**
+ * Makes a call to the single access handler and set the operation to create_single_access.
+ * If successfully, will allow the selected VLAN to go through the selected port
+ */
 function create_single_access(){
     $('#sel_create_single_access_leaf').rules("add", "required");
     $('#sel_create_single_access_group').rules("add", "required");
     $('#sel_create_single_access_network').rules("add", "required");
     $('#sel_create_single_access_port').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('create_single_access')
             submit_form('single_access_handler')
             $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -342,30 +489,45 @@ function create_single_access(){
     $('#sel_create_single_access_leaf').rules("remove", "required");
 }
 
+/**
+ * Makes a call to the single access handler and set the operation to get_delete_single_access_networks.
+ * If successfully, will populate the sel_delete_single_access_network with the networks within the selected
+ * group
+ */
 function get_delete_single_access_networks() {
     $('#sel_delete_single_access_group').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_delete_single_access_networks')
             submit_form('single_access_handler')
             $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_single_access_group').rules("remove", "required");
 }
+
+/**
+ * Makes a call to the single access handler and set the operation to get_delete_single_access_ports.
+ * If successfully, will populate all group selects
+ */
 function get_delete_single_access_ports () {
     $('#sel_delete_single_access_leaf').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_delete_single_access_ports')
             submit_form('single_access_handler')
             $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_single_access_leaf').rules("remove", "required");
 }
+
+
 function delete_single_access(){
     $('#sel_delete_single_access_leaf').rules("add", "required");
     $('#sel_delete_single_access_group').rules("add", "required");
     $('#sel_delete_single_access_network').rules("add", "required");
     $('#sel_delete_single_access_port').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_single_access')
             submit_form('single_access_handler')
             $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -376,15 +538,18 @@ function delete_single_access(){
     $('#sel_delete_single_access_leaf').rules("remove", "required");
 }
 
+
 function get_create_network_profile_networks(){
     $('#sel_create_network_profile_group').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_create_network_profile_networks')
             submit_form('network_handler')
             $('#create_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_network_profile_group').rules('remove','required')
 }
+
 
 function add_create_network_profile(){
     $('#create_network_profile_response').html('')
@@ -427,6 +592,7 @@ function add_create_network_profile(){
     $('#sel_create_network_profile_network').rules("remove", "required");
 }
 
+
 function create_network_profile(){
     if($("#table_create_network_profile tr").length - 2 <= 0){
         $('#create_network_profile_response').html(
@@ -444,6 +610,7 @@ function create_network_profile(){
     $('#create_network_profile_dns').val(network_dns);
     $('#create_network_profile_name').rules("add", "required");
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('create_network_profile')
             submit_form('network_handler')
             $('#create_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -452,23 +619,29 @@ function create_network_profile(){
 
 }
 
+
 function get_network_profile_list(){
+    //Set operation hidden input value
     $('#operation').val('get_network_profile_list');
     submit_form('network_handler')
     $('#network_profile_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+
 function get_network_profiles(){
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_network_profiles')
             submit_form('network_handler')
             $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
+
 function get_delete_network_profile_networks(){
     $('#sel_delete_network_profile').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_delete_network_profile_networks')
             submit_form('network_handler')
             $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -476,9 +649,11 @@ function get_delete_network_profile_networks(){
     $('#sel_delete_network_profile').rules('remove','required')
 }
 
+
 function delete_network_profile(){
     $('#sel_delete_network_profile').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_network_profile')
             submit_form('network_handler')
             $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -486,11 +661,13 @@ function delete_network_profile(){
     $('#sel_delete_network_profile').rules('remove','required')
 }
 
+
 function create_access_switch(){
     $('#access_switch_hostname').rules('add','required')
     $('#access_switch_ip').rules('add','required')
     $('#access_switch_user').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('create_access_switch')
             submit_form('access_switch_handler')
             $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -500,11 +677,14 @@ function create_access_switch(){
     $('#access_switch_user').rules('remove','required')
 }
 
+
 function get_access_switch_list(){
+    //Set operation hidden input value
     $('#operation').val('get_access_switch_list');
     submit_form('access_switch_handler');
     $('#access_switch_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
+
 
 function configure_access_switches(){
     if ($("#table_access_switches tr").length < 3){
@@ -526,6 +706,7 @@ function configure_access_switches(){
             }
         });
         $('#hd_configure_access_switches').val(switches_info)
+        //Set operation hidden input value
         $('#operation').val('configure_access_switches')
         submit_form('access_switch_handler')
         $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -535,23 +716,28 @@ function configure_access_switches(){
     $('#access_switch_commands').rules('remove','required')
 }
 
+
 function get_access_switches(){
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_access_switches')
             submit_form('access_switch_handler')
             $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
+
 function delete_access_switch(){
     $('#sel_delete_access_switch').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_access_switch')
             submit_form('access_switch_handler')
             $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_access_switch').rules('remove','required')
 }
+
 
 function add_switch(){
     $('#access_switch_response').html('')
@@ -593,6 +779,7 @@ function add_switch(){
     $('#sel_access_switch').rules("remove", "required");
 }
 
+
 function create_vpc_group() {
     if ($('#sel_create_vpc_group_leaf_1').val() == $('#sel_create_vpc_group_leaf_2').val()) {
         $('#div_create_vpc_group_response').html(
@@ -603,6 +790,7 @@ function create_vpc_group() {
     $('#sel_create_vpc_group_leaf_1').rules('add','required')
     $('#sel_create_vpc_group_leaf_2').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('create_vpc_group')
             submit_form('vpc_handler')
             $('#div_create_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -611,23 +799,29 @@ function create_vpc_group() {
     $('#sel_create_vpc_group_leaf_2').rules('remove','required')
 }
 
+
 function get_vpc_group_list(){
+    //Set operation hidden input value
     $('#operation').val('get_vpc_group_list');
     submit_form('vpc_handler')
     $('#vpc_group_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
+
 function get_vpc_groups(){
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_vpc_groups')
             submit_form('vpc_handler')
             $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
+
 function get_leafs_by_vpc_group() {
     $('#sel_vpc_group_create_vpc').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_leafs_by_vpc_group')
             submit_form('vpc_handler')
             $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -635,15 +829,18 @@ function get_leafs_by_vpc_group() {
     $('#sel_vpc_group_create_vpc').rules('remove','required')
 }
 
+
 function delete_vpc_group(){
     $('#sel_delete_vpc_group_name').rules('add','required')
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('delete_vpc_group')
             submit_form('vpc_handler')
             $('#delete_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_vpc_group_name').rules('remove','required')
 }
+
 
 function create_notification(title, message, type, delay) {
     $.notify({
@@ -674,6 +871,8 @@ function create_notification(title, message, type, delay) {
 	    '</div>'
     });
 }
+
+
 function clean_inputs(){
     $('select').val('');
     $('input[type=text]').val('');
@@ -683,13 +882,15 @@ function clean_inputs(){
     $('tbody').html('<tr></tr>')
 }
 
+
 function get_health_dashboard(){
     if($('#network_form').valid()){
+            //Set operation hidden input value
             $('#operation').val('get_health_dashboard')
             submit_form('fabric_handler')
             $('#noc_monitor_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     // Refresh the health scores each 10 seconds
-    setTimeout(get_health_dashboard,10000)
+    setTimeout(get_health_dashboard,30000)
 }
 
