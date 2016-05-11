@@ -1,0 +1,17 @@
+{% extends "main.html" %}
+{% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+{% set selectclass = "col-lg-4 col-md-4 col-sm-4 col-xs-4" %}
+{% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+{% block subcontent %}
+
+<h1>L2 integration tool</h1>
+<hr/>
+<div class="row">
+    <img src="/static/images/DataCenter.png" class="img-responsive img-thumbnail">
+    <p>This has been made to simplify the creation of VLANs and their access to the ACI fabric.
+        It is able to create groups, VLANs, virtual port channels, VLAN profiles and provide
+        access to the ACI with just few clicks. Besides, it is able to send commands to other devices
+        that are not part of the ACI fabric.</p>
+    <hr/>
+</div>
+{% endblock subcontent %}
