@@ -5,8 +5,8 @@ body{
 }
 
 
-#sidelogo{
-    background-image: url("");
+#sidecompanylogo{
+    background-image: url("/static/images/company_logo.png");
     background-repeat: no-repeat;
     min-height: 600px;
     margin-top:50px;
