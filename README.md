@@ -8,7 +8,7 @@ Cesar Obediente ( cobedien@cisco.com )
 For this solution to work you first need to do the following steps
 
 1) Inside this project
-Go to fedex-hub -> app -> __init__
+Go to app -> __init__
 
 Assign this variable:
 
