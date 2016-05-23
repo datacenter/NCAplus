@@ -42,7 +42,7 @@ The instructions to install them would be:
 
 Once the SDK's are installed in the virtual environment, you can then change the application key in Flask
 
-1) Inside this project
+Inside this project
 Go to app -> __init__
 
 Assign this variable:
@@ -52,9 +52,6 @@ app.secret_key = ''
 This is a flask parameter, just choose a random string of no less than 40 characters.
 E.g:
 'A0Zr4FhJASD1LFmw0918jHH!jm84$#ssaWQsif!1'
-
-2) Install the requirements listed in requirements.txt
-Remember to install ACI cobra egg files. Those must be the same version that the APIC software
 
 To run the the application just execute the run.py file.
 E.g. for a linux machine will be sudo python run.py
