@@ -4,14 +4,29 @@
 {% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
 {% block subcontent %}
 
-<h1>L2 integration tool</h1>
+<h1>NCA Plus</h1>
 <hr/>
 <div class="row">
     <img src="/static/images/DataCenter.png" class="img-responsive img-thumbnail">
-    <p>This has been made to simplify the creation of VLANs and their access to the ACI fabric.
-        It is able to create groups, VLANs, virtual port channels, VLAN profiles and provide
-        access to the ACI with just few clicks. Besides, it is able to send commands to other devices
-        that are not part of the ACI fabric.</p>
-    <hr/>
+                    <p>
+                        In some instances there is a interest in using ACI simply as a network Layer 2 transport. This operating
+                        model wants to take advantage of the many advantages of the ACI fabric operational capabilities for
+                        customers that aren't ready to implement the full functionality of the Application Profile structures
+                        and security constructs of ACI.
+                    </p>
+                    <p>
+                        For this reason this tool was developed to assist in the creation of these policies in ACI. By taking a
+                        traditional classical ethernet approach, the tool builds the policies in ACI to match a working solution
+                        in this integration model. Focused on purely extending the layer 2 network the tool provides the ability to
+                        create the networks and associate them to specific interfaces, port channels and virtual port channels in the
+                        ACI fabric.
+                    </p>
+                    <p>
+                        The following diagram shows a brownfield environment that has a classical core, distribution and access layer
+                        for which we are attaching a new ACI fabric. NCAPlus can create the networks that are described in this
+                        picture to extend the layer2 connection into the fabric.
+                    </p>
+                    <img src="/static/images/L2-migration.png" class="img-responsive">
+                    
 </div>
 {% endblock subcontent %}
