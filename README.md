@@ -1,11 +1,11 @@
 **NCA Plus**
 
-NCA Plus ( Network Centric Application Plus ) is an application designed for ACI to simplify the creation of L2 networks. Designed for 
+NCA Plus ( Network Centric Application Plus ) is an application designed for ACI to simplify the creation of L2 networks. Designed for
 customers that want a simple way to extend Layer2 VLANS into an ACI fabric, NCA Plus does everything from definition of Tenants, Bridge Domains
-and End Point Groups (EPG's). 
+and End Point Groups (EPG's).
 
-The application runs on top of a Flask Application and uses Javascript (Sijax) and other constructs to create a simple HTML 
-application that can be deployed in a production environment using Apache/NGINX with WSGI. 
+The application runs on top of a Flask Application and uses Javascript (Sijax) and other constructs to create a simple HTML
+application that can be deployed in a production environment using Apache/NGINX with WSGI.
 
 
 Contacts:
@@ -17,8 +17,8 @@ Contacts:
 
 **Installation**
 
-As this is a Flask application you will need to either integrate the application in your production environment or you can 
-get it operational in a virtual environment on your computer. In the distribution is a requirements.txt file that you can 
+As this is a Flask application you will need to either integrate the application in your production environment or you can
+get it operational in a virtual environment on your computer. In the distribution is a requirements.txt file that you can
 use to get the package requirements that are needed. The requirements file is located in the root directory of the distribution.
 
 It might make sense for you to create a Python Virtual Environment before installing the requirements file. For information on utilizing
@@ -33,7 +33,7 @@ files directly via the URL:
 
 http[s]://APIC_address/cobra/_downloads/
 
-Download the two COBRA SDK files ( the models file and the sdk ). 
+Download the two COBRA SDK files ( the models file and the sdk ).
 
 The instructions to install them would be:
 
