@@ -41,6 +41,7 @@ from cobra.modelimpl.lacp.lagpol import LagPol
 from cobra.modelimpl.cdp.ifpol import IfPol
 from cobra.modelimpl.fv.ctx import Ctx
 from cobra.modelimpl.infra.accportgrp import AccPortGrp
+from cobra.mit.request import DnQuery
 from constant import *
 import re
 
@@ -930,4 +931,92 @@ class Apic_l2_tool(apic_base):
         """
         HealthTotal_mo = self.moDir.lookupByDn('topology/health')
         return HealthTotal_mo.cur
+
+    def get_endpoints(self, epg_dn):
+        """
+        Returns an end point list
+        :return:
+        """
+        result = []
+        for item in filter(lambda x: type(x).__name__ == 'CEp', self.query_child_objects(epg_dn)):
+            # Creates a dynamic object type.
+            endpoint = type('endpoint', (object,), {})
+
+            # Filter the endpoint in memory looking for the object that contains the interface where the endpoint is
+            # attached
+            endpoint_connection_mo = filter(lambda x: type(x).__name__ == 'RsCEpToPathEp',
+                                            self.query_child_objects(item.dn))[0]
+
+            # Format the string to be human readable
+            endpoint_connection_interface = str(endpoint_connection_mo.tDn).replace('topology/pod-1/paths','node').\
+                replace('pathep-[', '').replace(']','')
+
+            # Add attributes to the object
+            endpoint.ip = item.ip
+            endpoint.mac = item.mac
+            endpoint.name = item.name
+            endpoint.interface = endpoint_connection_interface
+
+            # Append it to the list
+            result.append(endpoint)
+        return result
+
+    def get_epg_health_score(self, epg_dn):
+        return self.moDir.lookupByDn(epg_dn + '/health').cur
+
+    def get_epg(self, tenant_name, epg_name):
+        """
+        Retrieves the tenant
+        :param tenant_name:
+        :param epg_name:
+        :return:
+        """
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap',
+                          self.query_child_objects('uni/tn-%s' % tenant_name))
+        if len(ap_list) > 0:
+            epg_list = filter(lambda x: type(x).__name__ == 'AEPg' and x.name == epg_name,
+                              self.query_child_objects(str(ap_list[0].dn)))
+            if len(epg_list) > 0:
+                return epg_list[0]
+
+    def get_faults_history(self, epg_dn):
+        """
+        Retrieves a historic list of all faults associated to an EPG
+        :param epg_dn:
+        :return:
+        """
+        class_query = ClassQuery('faultRecord')
+        class_query.propFilter = 'eq(faultRecord.affected, "' + epg_dn + '")'
+        return self.moDir.query(class_query)
+
+    def get_stats(self, epg_dn):
+        """
+        Get all traffic statistics of an EPG
+        :param epg_dn:
+        :return:
+        """
+        # Apic saves up to 95 different objects with statistic information
+        traffic_list = []
+        for i in range(10, -1, -1):
+            traffic = self.moDir.lookupByDn(epg_dn + '/HDl2IngrBytesAg15min-%s' % str(i))
+            if traffic is not None:
+                traffic_list.append(traffic)
+        return traffic_list
+
+    def get_faults(self, epg_dn):
+        class_query = DnQuery('uni/tn-Computers/ap-Computers-ap/epg-Vlan10-vlan10')
+        class_query.subtree = 'full'
+        class_query.subtreeInclude = 'faults'
+        epg_list = self.moDir.query(class_query)
+        fault_list = self.get_faults_from_tree(epg_list[0], [])
+        return fault_list
+
+    def get_faults_from_tree(self, mo, faults):
+        if type(mo).__name__ == 'Inst':
+            faults.append(mo)
+        elif len(mo.children) > 0:
+            for child in mo.children:
+                self.get_faults_from_tree(child)
+        return faults
+
 

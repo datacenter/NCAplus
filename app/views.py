@@ -203,4 +203,15 @@ def netmon():
         g.sijax.register_object(netmon_handler())
         return g.sijax.process_request()
 
-    return render_template('netmon.html')
+    return render_template('netmon/netmon.html')
+
+@flask_sijax.route(app, '/netmon/<tenant_name>/<network_name>')
+def network_dashboard(tenant_name, network_name):
+    if not session.get('login_apic_url'):
+        return redirect('/login')
+
+    if g.sijax.is_sijax_request:
+        g.sijax.register_object(netmon_handler())
+        return g.sijax.process_request()
+
+    return render_template('netmon/network_dashboard.html', tenant=tenant_name, network=network_name)

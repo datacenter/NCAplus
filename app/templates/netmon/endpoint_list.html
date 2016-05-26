@@ -1,0 +1,20 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>MAC</th>
+        <th>IP</th>
+        <th>Interface</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for endpoint in endpoints %}
+    <tr>
+        <td>{{ endpoint.name }} </td>
+        <td>{{ endpoint.mac }}</td>
+        <td>{{ endpoint.ip }}</td>
+        <td>{{ endpoint.interface }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>

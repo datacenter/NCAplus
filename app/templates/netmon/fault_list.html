@@ -1,0 +1,20 @@
+<table class="table table-bordered">
+    <thead>
+    <tr>
+        <th>Severity</th>
+        <th>Description</th>
+        <th>Cause</th>
+        <th>Creation Time</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for fault in faults %}
+    <tr>
+        <td>{{ fault.severity }} </td>
+        <td>{{ fault.descr }}</td>
+        <td>{{ fault.cause }}</td>
+        <td>{{ fault.created }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
