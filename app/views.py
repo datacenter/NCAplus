@@ -19,6 +19,7 @@ from sijax_handlers.vpc_handler import vpc_handler
 from sijax_handlers.vpc_access_handler import vpc_access_handler
 from sijax_handlers.single_access_handler import single_access_handler
 from sijax_handlers.access_switch_handler import access_switch_handler
+from sijax_handlers.netmon_handler import netmon_handler
 from routefunc import get_values
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
@@ -192,3 +193,14 @@ def monitor():
         return g.sijax.process_request()
 
     return render_template('monitor.html')
+
+@flask_sijax.route(app, '/netmon')
+def netmon():
+    if not session.get('login_apic_url'):
+        return redirect('/login')
+
+    if g.sijax.is_sijax_request:
+        g.sijax.register_object(netmon_handler())
+        return g.sijax.process_request()
+
+    return render_template('netmon.html')

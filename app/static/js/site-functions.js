@@ -894,3 +894,6 @@ function get_health_dashboard(){
     setTimeout(get_health_dashboard,30000)
 }
 
+function netmon_netlist(){
+    Sijax.request('network_list');
+}

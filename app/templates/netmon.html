@@ -6,16 +6,18 @@
 
 <h1>Network Monitor</h1>
 <hr/>
-<div id="noc_monitor_tab">
+<div id="busy_indicator">
     <img src="/static/images/loading.gif" style="height:20px" />
 </div>
+<div id="network_list"></div>
+
 {% endblock subcontent %}
 
 {% block scripts %}
 {{ super() }}
 <script>
 $().ready(function() {
-		get_health_dashboard();
+		Sijax.request('network_list');
 });
 </script>
 {% endblock scripts %}

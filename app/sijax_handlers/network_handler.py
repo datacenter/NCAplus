@@ -10,6 +10,7 @@ import traceback
 import app.model
 from flask import g
 
+
 class network_handler(base_handler):
 
     @staticmethod

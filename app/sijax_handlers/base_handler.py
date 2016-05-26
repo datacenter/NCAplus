@@ -32,3 +32,25 @@ class base_handler:
         g.db = app.model.database
         g.db.connect()
         return apic_object, values
+
+
+class base_handler2:
+
+    @staticmethod
+    def init_connections():
+        print "Initializing apic connections from base_handler2()"
+        """
+        Connects to the APIC and return the APIC connection as an object
+        :return:
+        """
+        apic_object = apic_l2_tool.Apic_l2_tool()
+        apic_object.login(
+            session['login_apic_url'],
+            session['username'],
+            session['password'],
+        )
+        g.db = app.model.database
+        g.db.connect()
+        return apic_object
+
+

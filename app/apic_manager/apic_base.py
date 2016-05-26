@@ -33,6 +33,8 @@ class apic_base:
         :param password:
         :return:
         """
+        self.apic_url = url
+        self.apic_user = user
         self.session = LoginSession(url, user, password)
         self.moDir = MoDirectory(self.session)
         self.moDir.login()
@@ -385,3 +387,6 @@ class apic_base:
         tn_children = self.query_child_objects(tenant_dn)
         # Queries all the children and then filters them in memory looking for the ones that belongs to the Ap class.
         return filter(lambda x: type(x).__name__ == 'Ap', tn_children)
+
+    def __repr__(self):
+        return 'Connected to %s with userid: %s' % (self.apic_url, self.apic_user)
