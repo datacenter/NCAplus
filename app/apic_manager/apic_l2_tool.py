@@ -1004,7 +1004,7 @@ class Apic_l2_tool(apic_base):
         return traffic_list
 
     def get_faults(self, epg_dn):
-        class_query = DnQuery('uni/tn-Computers/ap-Computers-ap/epg-Vlan10-vlan10')
+        class_query = DnQuery(epg_dn)
         class_query.subtree = 'full'
         class_query.subtreeInclude = 'faults'
         epg_list = self.moDir.query(class_query)
@@ -1014,9 +1014,6 @@ class Apic_l2_tool(apic_base):
     def get_faults_from_tree(self, mo, faults):
         if type(mo).__name__ == 'Inst':
             faults.append(mo)
-        elif len(mo.children) > 0:
-            for child in mo.children:
-                self.get_faults_from_tree(child)
+        for child in mo.children:
+                self.get_faults_from_tree(child, faults)
         return faults
-
-

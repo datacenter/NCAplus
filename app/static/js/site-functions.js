@@ -917,7 +917,7 @@ function load_traffic_chart(lables, data){
         labels: lables,
         datasets: [
             {
-                label: "EPG Traffic",
+                label: "EPG Ingress Unicast Traffic",
                 fill: false,
                 lineTension: 0.1,
                 backgroundColor: "rgba(75,192,192,0.4)",
@@ -953,4 +953,8 @@ function load_traffic_chart(lables, data){
 
 function get_traffic_chart(){
     Sijax.request('get_traffic_chart', [Sijax.getFormValues('#network_form')]);
+}
+
+function get_faults(){
+    Sijax.request('get_faults', [Sijax.getFormValues('#network_form')]);
 }

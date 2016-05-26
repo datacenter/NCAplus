@@ -34,7 +34,9 @@
             </div>
         </div>
         <div class="tab-pane fade" id="faults">
-
+            <div id="fault_busy_indicator">
+                <img src="/static/images/loading.gif" style="height:20px"/>
+            </div>
         </div>
 
         <div class="tab-pane fade" id="history">
@@ -53,12 +55,13 @@
         get_epg_health_score();
         get_traffic_chart();
 		get_endpoints();
+		get_faults();
 		get_faults_history();
 
 });
 
-</script>
 
+</script>
 
 
 {% endblock scripts %}

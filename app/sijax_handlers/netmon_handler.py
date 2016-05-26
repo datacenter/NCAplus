@@ -29,6 +29,11 @@ class netmon_handler(base_handler2):
             print traceback.print_exc()
 
     def network_list(self, obj_response):
+        """
+        Returns a list of networks grouped by tenant
+        :param obj_response:
+        :return:
+        """
         if self.exception is not None:
             obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
@@ -52,6 +57,12 @@ class netmon_handler(base_handler2):
             obj_response.html("#delete_network_response", '')
 
     def get_endpoints(self, obj_response, form_values):
+        """
+        Return a list of end points associated to an end point group
+        :param obj_response:
+        :param form_values:
+        :return:
+        """
         if self.exception is not None:
             obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
@@ -70,6 +81,12 @@ class netmon_handler(base_handler2):
             g.db.close()
 
     def get_epg_health_score(self, obj_response, form_values):
+        """
+        Returns the health score of a specific end point group
+        :param obj_response:
+        :param form_values:
+        :return:
+        """
         if self.exception is not None:
             obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
@@ -88,6 +105,12 @@ class netmon_handler(base_handler2):
             g.db.close()
 
     def get_faults_history(self, obj_response, form_values):
+        """
+        Get the history of faults within an end point group
+        :param obj_response:
+        :param form_values:
+        :return:
+        """
         if self.exception is not None:
             obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
@@ -106,22 +129,21 @@ class netmon_handler(base_handler2):
             g.db.close()
 
     def get_traffic_chart(self, obj_response, form_values):
+        """
+        returns traffic statistics
+        :param obj_response:
+        :param form_values:
+        :return:
+        """
         if self.exception is not None:
             obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         try:
-
             epg = self.apic_object.get_epg(form_values['tenant'], form_values['network'])
             traffic_list = self.apic_object.get_stats(str(epg.dn))
-
-
-            self.apic_object.get_faults(str(epg.dn))
-
-
             labels = []
             data = []
-
             for traffic in traffic_list:
                 date = datetime.datetime.strptime(traffic.repIntvEnd[:-13], "%Y-%m-%dT%H:%M")
                 labels.append(str(date.hour) + ':' + str(date.minute))
@@ -133,3 +155,23 @@ class netmon_handler(base_handler2):
                                 replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
         finally:
             g.db.close()
+
+    def get_faults(self, obj_response, form_values):
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
+        try:
+            epg = self.apic_object.get_epg(form_values['tenant'], form_values['network'])
+            fault_list = self.apic_object.get_faults(str(epg.dn))
+            html_response = render_template('netmon/fault_list.html',
+                                            faults=fault_list)
+            obj_response.html("#faults", html_response)
+        except Exception as e:
+            print traceback.print_exc()
+            obj_response.script("create_notification('Can not retrieve score', '" + str(e).replace("'", "").
+                                replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+        finally:
+            g.db.close()
+
+

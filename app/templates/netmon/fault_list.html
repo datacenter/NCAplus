@@ -13,7 +13,7 @@
         <td>{{ fault.severity }} </td>
         <td>{{ fault.descr }}</td>
         <td>{{ fault.cause }}</td>
-        <td>{{ fault.created }}</td>
+        <td>{{ fault.created[:-13].replace('T',' ') }}</td>
     </tr>
     {% endfor %}
     </tbody>
