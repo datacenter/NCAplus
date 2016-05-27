@@ -4,7 +4,13 @@
 {% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
 {% block subcontent %}
 
-<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12"><h1>Network {{ network }} dashboard</h1>
+<div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+    <div style="font-size:2.0em; margin:10px 20px 0px 0px;border-bottom:1px solid #f0f0f0;">
+        {{ network }}
+    </div>
+    <div style="font-size:1.0em; padding-left:20px;">
+        Net Group:&nbsp;{{tenant}}
+    </div>
 </div>
 <div id="epg_score" style="margin-top: 25px;margin-bottom: 25px;"
      class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
@@ -16,7 +22,7 @@
 <input type="hidden" value="{{ tenant }}" name="tenant"/>
 <input type="hidden" value="{{ network }}" name="network"/>
 
-<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >
     <ul class="nav nav-tabs" id="myTab">
         <li class="active"><a href="#stats" data-toggle="tab">Stats</a></li>
         <li><a href="#endpoints" data-toggle="tab">Endpoints</a></li>
@@ -25,23 +31,23 @@
     </ul>
 
     <div class="tab-content">
-        <div class="tab-pane active fade in" id="stats">
+        <div class="tab-pane active fade in" id="stats" style="height:20px;margin:20px 10px 10px 10px;">
             <canvas id="traffic_chart" style="max-height:500px; max-width:900px;"></canvas>
         </div>
-        <div class="tab-pane fade" id="endpoints">
+        <div class="tab-pane fade" id="endpoints" style="height:20px;margin:20px 10px 10px 10px;">
             <div id="endpoints_busy_indicator">
-                <img src="/static/images/loading.gif" style="height:20px"/>
+                <img src="/static/images/loading.gif" />
             </div>
         </div>
-        <div class="tab-pane fade" id="faults">
+        <div class="tab-pane fade" id="faults" style="height:20px;margin:20px 10px 10px 10px;">
             <div id="fault_busy_indicator">
-                <img src="/static/images/loading.gif" style="height:20px"/>
+                <img src="/static/images/loading.gif" />
             </div>
         </div>
 
-        <div class="tab-pane fade" id="history">
+        <div class="tab-pane fade" id="history" style="height:20px;margin:20px 10px 10px 10px;">
             <div id="fault_history_busy_indicator">
-                <img src="/static/images/loading.gif" style="height:20px"/>
+                <img src="/static/images/loading.gif" />
             </div>
         </div>
     </div>

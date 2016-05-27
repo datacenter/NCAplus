@@ -1,7 +1,6 @@
-<table class="table table-bordered">
+<table class="table table-bordered table-condensed table-striped table-hover">
     <thead>
     <tr>
-        <th>Name</th>
         <th>MAC</th>
         <th>IP</th>
         <th>Interface</th>
@@ -10,9 +9,8 @@
     <tbody>
     {% for endpoint in endpoints %}
     <tr>
-        <td>{{ endpoint.name }} </td>
-        <td>{{ endpoint.mac }}</td>
-        <td>{{ endpoint.ip }}</td>
+        <td><div style="font-size:.8em;font-family: menlo">{{ endpoint.mac }}</div></td>
+        <td><div style="font-size:.9em;font-family: menlo">{{ endpoint.ip }}</div></td>
         <td>{{ endpoint.interface }}</td>
     </tr>
     {% endfor %}
