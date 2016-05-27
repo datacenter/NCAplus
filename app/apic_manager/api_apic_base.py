@@ -1,7 +1,4 @@
 """
-*************************************************************************
- Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-*************************************************************************
 Sets connections with APIC controller using the API. This class is for operations
 that are not supported in the Cobra SDK
 """

@@ -1,7 +1,4 @@
 """
-*************************************************************************
- Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-*************************************************************************
 Sijax Handler for the access switches operations
 
 """

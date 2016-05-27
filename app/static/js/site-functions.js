@@ -1,7 +1,5 @@
 /*
-*************************************************************************
-Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-*************************************************************************
+
 This file contains all Ajax calls that are made using sijax. All methods have the following structure
 - Validation rules are added to when some field is required for the operation
 - Check if the required fields are valid

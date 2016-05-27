@@ -1,7 +1,5 @@
 """
-*************************************************************************
- Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-*************************************************************************
+
 Sets connections with APIC controller for creation and deletion of object
 """
 
@@ -23,7 +21,7 @@ class cobra_apic_base:
         self.moDir = None
         self.configReq = None
         self.uniMo = None
-
+        
     """ Authentication """
     def login(self, url, user, password):
         """
