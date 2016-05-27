@@ -7,7 +7,6 @@ Helper for views.py
 """
 from base_handler import base_handler2, REMOVED_TENANTS
 import traceback
-import app.model
 from flask import g, render_template
 import datetime
 
@@ -22,7 +21,7 @@ class netmon_handler(base_handler2):
         :return:
         """
         try:
-            self.apic_object = netmon_handler.init_connections()
+            self.cobra_apic_object = netmon_handler.init_connections()
             self.exception = None
         except Exception as e:
             self.exception = e
@@ -40,11 +39,11 @@ class netmon_handler(base_handler2):
             return
         try:
             html_response = ''
-            for tenant in self.apic_object.get_all_tenants():
-                network_aps = self.apic_object.get_ap_by_tenant(str(tenant.dn))
+            for tenant in self.cobra_apic_object.get_all_tenants():
+                network_aps = self.cobra_apic_object.get_ap_by_tenant(str(tenant.dn))
                 if len(network_aps) > 0:
                     if tenant.name not in REMOVED_TENANTS:
-                        networks = self.apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                        networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
                         html_response += render_template('netmon/network_list.html', tenant=tenant, networks=networks)
             obj_response.html("#network_list", html_response)
             obj_response.script('$("#busy_indicator").hide()')
@@ -70,7 +69,9 @@ class netmon_handler(base_handler2):
         try:
             epg_dn = 'uni/tn-%s/ap-%s/epg-%s' % (form_values['tenant'],form_values['tenant'],form_values['network'])
             html_response = render_template('netmon/endpoint_list.html',
-                                            endpoints=self.apic_object.get_endpoints(epg_dn))
+                                            endpoints=self.cobra_apic_object.get_endpoints(epg_dn),
+                                            tenant=form_values['tenant'],
+                                            network=form_values['network'])
             obj_response.html("#endpoints", html_response)
             obj_response.script('$("#endpoints_busy_indicator").hide()')
         except Exception as e:
@@ -92,8 +93,8 @@ class netmon_handler(base_handler2):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         try:
-            epg = self.apic_object.get_epg(form_values['tenant'], form_values['network'])
-            score = self.apic_object.get_epg_health_score(str(epg.dn))
+            epg = self.cobra_apic_object.get_epg(form_values['tenant'], form_values['network'])
+            score = self.cobra_apic_object.get_epg_health_score(str(epg.dn))
             html_response = render_template('netmon/epg_score.html',
                                             score=int(score))
             obj_response.html("#epg_score", html_response)
@@ -116,8 +117,8 @@ class netmon_handler(base_handler2):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         try:
-            epg = self.apic_object.get_epg(form_values['tenant'], form_values['network'])
-            fault_list = self.apic_object.get_faults_history(str(epg.dn))
+            epg = self.cobra_apic_object.get_epg(form_values['tenant'], form_values['network'])
+            fault_list = self.cobra_apic_object.get_faults_history(str(epg.dn))
             html_response = render_template('netmon/fault_list.html',
                                             faults=fault_list)
             obj_response.html("#history", html_response)
@@ -140,8 +141,8 @@ class netmon_handler(base_handler2):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         try:
-            epg = self.apic_object.get_epg(form_values['tenant'], form_values['network'])
-            traffic_list = self.apic_object.get_stats(str(epg.dn))
+            epg = self.cobra_apic_object.get_epg(form_values['tenant'], form_values['network'])
+            traffic_list = self.cobra_apic_object.get_stats(str(epg.dn))
             labels = []
             data = []
             for traffic in traffic_list:
@@ -162,11 +163,36 @@ class netmon_handler(base_handler2):
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
             return
         try:
-            epg = self.apic_object.get_epg(form_values['tenant'], form_values['network'])
-            fault_list = self.apic_object.get_faults(str(epg.dn))
+            epg = self.cobra_apic_object.get_epg(form_values['tenant'], form_values['network'])
+            fault_list = self.cobra_apic_object.get_faults(str(epg.dn))
             html_response = render_template('netmon/fault_list.html',
                                             faults=fault_list)
             obj_response.html("#faults", html_response)
+        except Exception as e:
+            print traceback.print_exc()
+            obj_response.script("create_notification('Can not retrieve score', '" + str(e).replace("'", "").
+                                replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+        finally:
+            g.db.close()
+
+    def get_endpoint_track(self, obj_response, form_values):
+        """
+        This operation is not suported in cobra, we are using direct api calls
+        :param obj_response:
+        :param form_values:
+        :return:
+        """
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
+        try:
+            epg = self.cobra_apic_object.get_epg(form_values['tenant'], form_values['network'])
+            api_apic = self.create_api_apic()
+            end_point_track_list = api_apic.get_endpoint_track(str(epg.dn) + '/cep-' + form_values['endpoint_mac'])
+            html_response = render_template('netmon/endpoint_track_list.html',
+                                            end_point_track_list=end_point_track_list)
+            obj_response.html("#network_track", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve score', '" + str(e).replace("'", "").

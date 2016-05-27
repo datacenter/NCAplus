@@ -5,7 +5,7 @@
 L2 integration tool methods
 """
 
-from apic_base import apic_base
+from cobra_apic_base import cobra_apic_base
 from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
 from cobra.mit.request import ClassQuery
 from cobra.modelimpl.fabric.protpol import ProtPol
@@ -61,9 +61,9 @@ def atoi(text):
 """ All calls to APIC are done using the following class """
 
 
-class Apic_l2_tool(apic_base):
+class cobra_apic_l2_tool(cobra_apic_base):
     def __init__(self):
-        apic_base.__init__(self)
+        cobra_apic_base.__init__(self)
 
     def create_network(self, network_o):
         """

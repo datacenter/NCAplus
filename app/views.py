@@ -10,7 +10,7 @@ import flask_sijax
 from flask import render_template, g, session, request, redirect
 
 import model
-from apic_manager import apic_l2_tool
+from apic_manager import cobra_apic_l2_tool
 from app import app
 from sijax_handlers.group_handler import group_handler
 from sijax_handlers.network_handler import network_handler
@@ -56,8 +56,8 @@ def login():
                     ex.message = 'Apic URL is required'
                     raise ex
                 else:
-                    apic_object = apic_l2_tool.Apic_l2_tool()
-                    apic_object.login(values['login_apic_url'],values['login_username'],values['login_password'])
+                    apic_object = cobra_apic_l2_tool.cobra_apic_l2_tool()
+                    apic_object.login(values['login_apic_url'], values['login_username'], values['login_password'])
                     session['login_apic_url'] = values['login_apic_url']
                     session['username'] = values['login_username']
                     session['password'] = values['login_password']
@@ -215,3 +215,15 @@ def network_dashboard(tenant_name, network_name):
         return g.sijax.process_request()
 
     return render_template('netmon/network_dashboard.html', tenant=tenant_name, network=network_name)
+
+@flask_sijax.route(app, '/netmon/<tenant_name>/<network_name>/<endpoint_mac>')
+def endpoint_track(tenant_name, network_name, endpoint_mac):
+    if not session.get('login_apic_url'):
+        return redirect('/login')
+
+    if g.sijax.is_sijax_request:
+        g.sijax.register_object(netmon_handler())
+        return g.sijax.process_request()
+
+    return render_template('netmon/endpoint_track.html', tenant=tenant_name, network=network_name,
+                           endpoint_mac=endpoint_mac)

@@ -1,10 +1,9 @@
 import traceback
 import app.model
 
-from app.apic_manager import apic_l2_tool
+from app.apic_manager import cobra_apic_l2_tool, api_apic_base
 from app.routefunc import get_values
 from flask import g, session
-from app.access_switch_manager import switch_controller
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 COMMAND_WAIT_TIME = 1
@@ -23,7 +22,7 @@ class base_handler:
         :return:
         """
         values = get_values(formvalues)
-        apic_object = apic_l2_tool.Apic_l2_tool()
+        apic_object = cobra_apic_l2_tool.cobra_apic_l2_tool()
         apic_object.login(
             session['login_apic_url'],
             session['username'],
@@ -43,14 +42,18 @@ class base_handler2:
         Connects to the APIC and return the APIC connection as an object
         :return:
         """
-        apic_object = apic_l2_tool.Apic_l2_tool()
-        apic_object.login(
+        cobra_apic_object = cobra_apic_l2_tool.cobra_apic_l2_tool()
+        cobra_apic_object.login(
             session['login_apic_url'],
             session['username'],
             session['password'],
         )
         g.db = app.model.database
         g.db.connect()
-        return apic_object
+        return cobra_apic_object
+
+    def create_api_apic(self):
+        return api_apic_base.api_apic_base(session['login_apic_url'], session['username'], session['password'])
+
 
 

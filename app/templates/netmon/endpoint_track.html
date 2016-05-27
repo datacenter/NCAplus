@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+{% set labelclasslg = "col-lg-4 col-md-4 col-sm-4 col-xs-12 control-label" %}
+{% set selectclass = "col-lg-4 col-md-4 col-sm-4 col-xs-4" %}
+{% set txtinputclassmd = "col-lg-6 col-md-6 col-sm-12 col-xs-12" %}
+{% block subcontent %}
+<input type="hidden" value="{{ tenant }}" name="tenant"/>
+<input type="hidden" value="{{ network }}" name="network"/>
+<input type="hidden" value="{{ endpoint_mac }}" name="endpoint_mac"/>
+
+<h1>Endpoint track {{ endpoint_mac }}</h1>
+<hr/>
+
+<div id="network_track">
+<div id="busy_indicator">
+    <img src="/static/images/loading.gif" style="height:20px"/>
+</div>
+</div>
+
+{% endblock subcontent %}
+{% block scripts %}
+{{ super() }}
+<script>
+    $().ready(function() {
+        get_endpoint_track();
+});
+</script>
+{% endblock scripts %}

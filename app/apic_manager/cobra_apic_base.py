@@ -17,7 +17,7 @@ from cobra.mit.request import ClassQuery
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
 
-class apic_base:
+class cobra_apic_base:
     def __init__(self):
         self.session = None
         self.moDir = None

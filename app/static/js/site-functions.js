@@ -958,3 +958,7 @@ function get_traffic_chart(){
 function get_faults(){
     Sijax.request('get_faults', [Sijax.getFormValues('#network_form')]);
 }
+
+function get_endpoint_track() {
+    Sijax.request('get_endpoint_track', [Sijax.getFormValues('#network_form')]);
+}
