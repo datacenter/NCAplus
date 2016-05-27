@@ -93,7 +93,7 @@ def groups():
         return redirect('/login')
 
     if g.sijax.is_sijax_request:
-        g.sijax.register_object(group_handler)
+        g.sijax.register_object(group_handler())
         group_handler.handler_app = app
         return g.sijax.process_request()
 
@@ -107,7 +107,7 @@ def networks():
     if g.sijax.is_sijax_request:
         g.sijax.register_object(network_handler)
         network_handler.handler_app = app
-        g.sijax.register_object(group_handler)
+        g.sijax.register_object(group_handler())
         group_handler.handler_app = app
         return g.sijax.process_request()
 
@@ -123,7 +123,7 @@ def vpcs():
         fabric_handler.handler_app = app
         g.sijax.register_object(vpc_handler)
         vpc_handler.handler_app = app
-        g.sijax.register_object(group_handler)
+        g.sijax.register_object(group_handler())
         group_handler.handler_app = app
 
         return g.sijax.process_request()
@@ -142,7 +142,7 @@ def vpc_access():
         fabric_handler.handler_app = app
         g.sijax.register_object(vpc_handler)
         vpc_handler.handler_app = app
-        g.sijax.register_object(group_handler)
+        g.sijax.register_object(group_handler())
         group_handler.handler_app = app
         g.sijax.register_object(vpc_access_handler)
         vpc_access_handler.handler_app = app
@@ -162,7 +162,7 @@ def single_access():
         fabric_handler.handler_app = app
         g.sijax.register_object(vpc_handler)
         vpc_handler.handler_app = app
-        g.sijax.register_object(group_handler)
+        g.sijax.register_object(group_handler())
         group_handler.handler_app = app
         g.sijax.register_object(single_access_handler)
         single_access_handler.handler_app = app
@@ -176,7 +176,7 @@ def access_switches():
         return redirect('/login')
 
     if g.sijax.is_sijax_request:
-        g.sijax.register_object(access_switch_handler)
+        g.sijax.register_object(access_switch_handler())
         access_switch_handler.handler_app = app
         return g.sijax.process_request()
 

@@ -33,10 +33,7 @@ function create_group(){
     $('#create_group_name').rules("add", "required");
     // Check rules
     if($('#network_form').valid()){
-        //Set operation hidden input value
-        $('#operation').val('create_group')
-        //Make request to server
-        submit_form('group_handler')
+        Sijax.request('create_group', [Sijax.getFormValues('#network_form')]);
         //Show loading gif
         $('#create_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
@@ -49,9 +46,7 @@ function create_group(){
  * If successfully, will populate all group selects
  */
 function get_groups(){
-    //Set operation hidden input value
-    $('#operation').val('get_groups')
-    submit_form('group_handler')
+    Sijax.request('get_groups');
     $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
@@ -60,9 +55,7 @@ function get_groups(){
  * If successfully, will populate the group list
  */
 function get_tenants(){
-    //Set operation hidden input value
-    $('#operation').val('tenant_list');
-    submit_form('group_handler')
+    Sijax.request('tenant_list');
     $('#tenant_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
@@ -73,9 +66,7 @@ function get_tenants(){
 function delete_group() {
     $('#sel_delete_group_name').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_group')
-            submit_form('group_handler')
+            Sijax.request('delete_group', [Sijax.getFormValues('#network_form')]);
             $('#delete_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_group_name').rules("remove", "required");
@@ -667,9 +658,7 @@ function create_access_switch(){
     $('#access_switch_ip').rules('add','required')
     $('#access_switch_user').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('create_access_switch')
-            submit_form('access_switch_handler')
+            Sijax.request('create_access_switch', [Sijax.getFormValues('#network_form')]);
             $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#access_switch_hostname').rules('remove','required')
@@ -679,9 +668,7 @@ function create_access_switch(){
 
 
 function get_access_switch_list(){
-    //Set operation hidden input value
-    $('#operation').val('get_access_switch_list');
-    submit_form('access_switch_handler');
+    Sijax.request('get_access_switch_list');
     $('#access_switch_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
@@ -707,8 +694,7 @@ function configure_access_switches(){
         });
         $('#hd_configure_access_switches').val(switches_info)
         //Set operation hidden input value
-        $('#operation').val('configure_access_switches')
-        submit_form('access_switch_handler')
+        Sijax.request('configure_access_switches', [Sijax.getFormValues('#network_form')]);
         $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#access_switch_login_password').rules('remove','required')
@@ -718,21 +704,15 @@ function configure_access_switches(){
 
 
 function get_access_switches(){
-    if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_access_switches')
-            submit_form('access_switch_handler')
-            $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
-    }
+    Sijax.request('get_access_switches');
+    $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 
 function delete_access_switch(){
     $('#sel_delete_access_switch').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_access_switch')
-            submit_form('access_switch_handler')
+            Sijax.request('delete_access_switch', [Sijax.getFormValues('#network_form')]);
             $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_access_switch').rules('remove','required')
