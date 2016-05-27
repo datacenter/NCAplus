@@ -9,11 +9,15 @@
     </thead>
     <tbody>
     {% for fault in faults %}
+    {% set year = fault.created[:4] %}
+    {% set month = fault.created[5:7] %}
+    {% set day = fault.created[8:10] %}
+    {% set hour_second = fault.created[11:16] %}
     <tr>
         <td width="10%"><div style="font-size:1.1em;">{{ fault.severity }}</div></td>
         <td width="50%"><div style="font-size:.8em;">{{ fault.descr }}</div></td>
         <td width="20%">{{ fault.cause }}</td>
-        <td width="20%">{{ fault.created[:-13].replace('T',' ') }}</td>
+        <td width="20%">{{ month }}-{{ day }}-{{ year }} {{ hour_second }}</td>
     </tr>
     {% endfor %}
     </tbody>
