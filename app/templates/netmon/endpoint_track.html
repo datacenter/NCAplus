@@ -7,10 +7,15 @@
 <input type="hidden" value="{{ network }}" name="network"/>
 <input type="hidden" value="{{ endpoint_mac }}" name="endpoint_mac"/>
 
-<h1>Endpoint track {{ endpoint_mac }}</h1>
-<hr/>
+<div style="font-size:2.0em; margin:10px 20px 0px 0px;border-bottom:1px solid #f0f0f0;">
+    {{ endpoint_mac }}
+</div>
+<div style="font-size:1.0em; padding-left:20px;">
+    Net Group:&nbsp;{{tenant}}, Network: {{network}}
+</div>
 
-<div id="network_track">
+
+<div id="network_track" style="margin:20px 10px 0px 10px;">
 <div id="busy_indicator">
     <img src="/static/images/loading.gif" style="height:20px"/>
 </div>
