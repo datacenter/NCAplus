@@ -1,4 +1,4 @@
-<table class="table table-bordered">
+<table class="table table-bordered table-condensed table-striped table-hover">
     <thead>
     <tr>
         <th>Severity</th>
@@ -10,10 +10,10 @@
     <tbody>
     {% for fault in faults %}
     <tr>
-        <td>{{ fault.severity }} </td>
-        <td>{{ fault.descr }}</td>
-        <td>{{ fault.cause }}</td>
-        <td>{{ fault.created[:-13].replace('T',' ') }}</td>
+        <td width="10%"><div style="font-size:1.1em;">{{ fault.severity }}</div></td>
+        <td width="50%"><div style="font-size:.8em;">{{ fault.descr }}</div></td>
+        <td width="20%">{{ fault.cause }}</td>
+        <td width="20%">{{ fault.created[:-13].replace('T',' ') }}</td>
     </tr>
     {% endfor %}
     </tbody>

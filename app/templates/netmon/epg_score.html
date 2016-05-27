@@ -1,5 +1,9 @@
 {% if score < 70 %}
-<label style="font-size:x-large" class="label label-danger">{{ score }}</label>
+<label style="font-size:x-large;float:right;" class="label label-warning">Health
+    <label style="font-size:x-large" class="label label-danger">{{ score }}</label>
+</label>
 {% else %}
-<label style="font-size:x-large" class="label label-success">{{ score }}</label>
+<label style="font-size:x-large;float:right;" class="label label-info">Health
+    <label style="font-size:x-large" class="label label-success">{{ score }}</label>
+</label>
 {% endif %}
