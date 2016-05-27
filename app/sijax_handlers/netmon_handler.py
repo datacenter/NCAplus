@@ -147,7 +147,7 @@ class netmon_handler(base_handler2):
             data = []
             for traffic in traffic_list:
                 date = datetime.datetime.strptime(traffic.repIntvEnd[:-13], "%Y-%m-%dT%H:%M")
-                labels.append(str(date.hour) + ':' + str(date.minute))
+                labels.append(date.strftime('%H:%M'))
                 data.append(traffic.unicastPer)
             obj_response.script("load_traffic_chart(%s, %s)" % (labels, data))
         except Exception as e:
@@ -158,6 +158,12 @@ class netmon_handler(base_handler2):
             g.db.close()
 
     def get_faults(self, obj_response, form_values):
+        """
+        Return the active faults within the epg
+        :param obj_response:
+        :param form_values:
+        :return:
+        """
         if self.exception is not None:
             obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
                                     replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
@@ -177,7 +183,8 @@ class netmon_handler(base_handler2):
 
     def get_endpoint_track(self, obj_response, form_values):
         """
-        This operation is not suported in cobra, we are using direct api calls
+        Shows the endpoint track
+        This operation is not supported in cobra, we are using direct api calls
         :param obj_response:
         :param form_values:
         :return:

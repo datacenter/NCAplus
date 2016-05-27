@@ -39,7 +39,7 @@
                             <li><a href="/access_switches">Access switches</a></li>
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">Monitoring</li>
-                            <li><a href="/monitor">Monitor</a></li>
+                            <!--<li><a href="/monitor">Monitor</a></li>-->
                             <li><a href="/netmon">Network Monitor</a></li>
                         </ul>
                     </li>
@@ -93,35 +93,3 @@
     </div>
 </div>
 {% endblock content %}
-{% block scripts %}
-{{ super() }}
-<script>
-/*$().ready(function() {
-		// validations
-		$("#network_form").validate({
-		    errorClass: "error",
-            errorElement: "label",
-            rules: {
-
-			},
-			highlight: function(element, errorClass) {
-                $(element).removeClass(errorClass);
-            }
-		});
-		get_groups();
-        get_tenants();
-        get_network_list();
-        get_network_profile_list();
-		get_leafs();
-		get_vpcs();
-		get_vpc_group_list();
-		get_vpc_list();
-		get_vpc_assignment_list();
-		get_network_profiles();
-		get_vpc_groups();
-		get_access_switches();
-		get_access_switch_list();
-});*/
-
-</script>
-{% endblock scripts %}
