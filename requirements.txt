@@ -1,5 +1,3 @@
-acicobra===1.3-1g
-acimodel===1.3-1g
 CoffeeScript==1.1.2
 dominate==2.2.0
 enum34==1.1.5
