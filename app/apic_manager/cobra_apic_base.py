@@ -21,7 +21,7 @@ class cobra_apic_base:
         self.moDir = None
         self.configReq = None
         self.uniMo = None
-        
+
     """ Authentication """
     def login(self, url, user, password):
         """

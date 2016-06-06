@@ -1,26 +1,3 @@
-/*
-
-This file contains all Ajax calls that are made using sijax. All methods have the following structure
-- Validation rules are added to when some field is required for the operation
-- Check if the required fields are valid
-- If valid, perform the operation sending an Ajax request to the server and show the loading gif
-- Remove validation rules to required fields
-*/
-
-function submit_network_form() {
-    if($('#network_form').valid()){
-        Sijax.request('network_form_handler', [Sijax.getFormValues('#network_form')]);
-    }
-}
-
-/**
- * Submit the network_form using Sijax
- */
-function submit_form(handler_name) {
-    if($('#network_form').valid()){
-        Sijax.request(handler_name, [Sijax.getFormValues('#network_form')]);
-    }
-}
 
 /**
  * Makes a call to the group handler and set the operation to create_group.
@@ -75,8 +52,7 @@ function delete_group() {
  * If successfully, will populate the network list
  */
 function get_network_list(){
-    $('#operation').val('get_network_list');
-    submit_form('network_handler')
+    Sijax.request('get_network_list');
     $('#network_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
@@ -89,9 +65,7 @@ function create_network(){
     $('#create_network_encapsulation').rules("add", "required");
     $('#sel_create_network_group').rules("add", "required");
     if($('#network_form').valid()){
-        //Set operation hidden input value
-        $('#operation').val('create_network')
-        submit_form('network_handler')
+        Sijax.request('create_network', [Sijax.getFormValues('#network_form')]);
         $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#create_network_name').rules("remove", "required");
@@ -107,10 +81,8 @@ function create_network(){
 function get_sel_delete_networks() {
     $('#sel_delete_network_group').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_sel_delete_networks')
-            submit_form('network_handler')
-            $('#delete_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_sel_delete_networks', [Sijax.getFormValues('#network_form')]);
+        $('#delete_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_network_group').rules("remove", "required");
 }
@@ -123,9 +95,7 @@ function delete_network() {
     $('#sel_delete_network_group').rules("add", "required");
     $('#sel_delete_network_name').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_network')
-            submit_form('network_handler')
+            Sijax.request('delete_network', [Sijax.getFormValues('#network_form')]);
             $('#delete_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_network_name').rules("remove", "required");
@@ -138,9 +108,7 @@ function delete_network() {
  */
 function get_leafs(){
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_leafs')
-            submit_form('fabric_handler')
+            Sijax.request('get_leafs');
             $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
@@ -153,10 +121,8 @@ function get_ports(){
     $('#sel_leaf_create_vpc').rules("add", "required");
     $('#sel_port_create_vpc').html("");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_ports')
-            submit_form('fabric_handler')
-            $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_ports', [Sijax.getFormValues('#network_form')]);
+        $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_leaf_create_vpc').rules("remove", "required");
 }
@@ -215,9 +181,7 @@ function add_port(){
  * If successfully, will populate the virtual port channel list with the ports that are part of the vpc
  */
 function get_vpc_list(){
-    //Set operation hidden input value
-    $('#operation').val('get_vpc_list');
-    submit_form('vpc_handler')
+    Sijax.request('get_vpc_list');
     $('#vpc_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
@@ -274,10 +238,8 @@ function create_vpc(){
     $('#port_dns').val(port_dns);
     $('#create_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('create_vpc')
-            submit_form('vpc_handler')
-            $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('create_vpc', [Sijax.getFormValues('#network_form')]);
+        $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#create_vpc_name').rules("remove", "required");
 }
@@ -290,11 +252,9 @@ function create_vpc(){
 function get_delete_vpc_assigned_ports(){
     $('#sel_delete_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
-            $('#delete_vpc_ports').html('')
-            //Set operation hidden input value
-            $('#operation').val('get_delete_vpc_assigned_ports')
-            submit_form('vpc_handler')
-            $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        $('#delete_vpc_ports').html('')
+        Sijax.request('get_delete_vpc_assigned_ports', [Sijax.getFormValues('#network_form')]);
+        $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_vpc_name').rules("remove", "required");
 }
@@ -305,10 +265,8 @@ function get_delete_vpc_assigned_ports(){
  */
 function get_vpcs(){
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_vpcs')
-            submit_form('vpc_handler')
-            $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_vpcs');
+        $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
@@ -319,10 +277,8 @@ function get_vpcs(){
 function delete_vpc(){
     $('#sel_delete_vpc_name').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_vpc')
-            submit_form('vpc_handler')
-            $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('delete_vpc', [Sijax.getFormValues('#network_form')]);
+        $('#delete_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_vpc_name').rules("remove", "required");
 }
@@ -334,10 +290,8 @@ function delete_vpc(){
 function get_create_vpc_access_networks() {
     $('#sel_group_create_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_create_vpc_access_networks')
-            submit_form('vpc_access_handler')
-            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_create_vpc_access_networks', [Sijax.getFormValues('#network_form')]);
+        $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_group_create_vpc_access').rules("remove", "required");
 }
@@ -347,9 +301,7 @@ function get_create_vpc_access_networks() {
  * If successfully, will populate the vpc assignment list
  */
 function get_vpc_assignment_list(){
-    //Set operation hidden input value
-    $('#operation').val('get_vpc_assignment_list');
-    submit_form('vpc_access_handler')
+    Sijax.request('get_vpc_assignment_list');
     $('#vpc_assignment_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
@@ -362,10 +314,8 @@ function create_vpc_access(){
     $('#sel_network_create_vpc_access').rules("add", "required");
     $('#sel_vpc_create_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('create_vpc_access')
-            submit_form('vpc_access_handler')
-            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('create_vpc_access', [Sijax.getFormValues('#network_form')]);
+        $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_group_create_vpc_access').rules("remove", "required");
     $('#sel_network_create_vpc_access').rules("remove", "required");
@@ -380,10 +330,8 @@ function create_vpc_access(){
 function get_delete_vpc_access_networks(){
     $('#sel_group_delete_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_delete_vpc_access_networks')
-            submit_form('vpc_access_handler')
-            $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_delete_vpc_access_networks', [Sijax.getFormValues('#network_form')]);
+        $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_group_delete_vpc_access').rules("remove", "required");
 }
@@ -397,10 +345,8 @@ function get_delete_vpc_access_assignments(){
     $('#sel_group_delete_vpc_access').rules("add", "required");
     $('#sel_network_delete_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_delete_vpc_access_assignments')
-            submit_form('vpc_access_handler')
-            $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_delete_vpc_access_assignments', [Sijax.getFormValues('#network_form')]);
+        $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_group_delete_vpc_access').rules("remove", "required");
     $('#sel_network_delete_vpc_access').rules("remove", "required");
@@ -415,10 +361,8 @@ function delete_network_vpc_assignments(){
     $('#sel_network_delete_vpc_access').rules("add", "required");
     $('#sel_vpc_delete_vpc_access').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_vpc_access')
-            submit_form('vpc_access_handler')
-            $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('delete_vpc_access', [Sijax.getFormValues('#network_form')]);
+        $('#div_delete_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_group_delete_vpc_access').rules("remove", "required");
     $('#sel_network_delete_vpc_access').rules("remove", "required");
@@ -433,9 +377,7 @@ function delete_network_vpc_assignments(){
 function get_create_single_access_networks() {
     $('#sel_create_single_access_group').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_create_single_access_networks')
-            submit_form('single_access_handler')
+            Sijax.request('get_create_single_access_networks', [Sijax.getFormValues('#network_form')]);
             $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_single_access_group').rules("remove", "required");
@@ -446,13 +388,11 @@ function get_create_single_access_networks() {
  * If successfully, will populate the sel_create_single_access_leaf select with the available ports of the
  * selected leaf
  */
-function get_create_single_access_ports () {
+function get_create_single_access_ports() {
     $('#sel_create_single_access_leaf').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_create_single_access_ports')
-            submit_form('single_access_handler')
-            $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_create_single_access_ports', [Sijax.getFormValues('#network_form')]);
+        $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_single_access_leaf').rules("remove", "required");
 }
@@ -467,10 +407,8 @@ function create_single_access(){
     $('#sel_create_single_access_network').rules("add", "required");
     $('#sel_create_single_access_port').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('create_single_access')
-            submit_form('single_access_handler')
-            $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('create_single_access', [Sijax.getFormValues('#network_form')]);
+        $('#create_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_single_access_port').rules("remove", "required");
     $('#sel_create_single_access_network').rules("remove", "required");
@@ -486,10 +424,8 @@ function create_single_access(){
 function get_delete_single_access_networks() {
     $('#sel_delete_single_access_group').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_delete_single_access_networks')
-            submit_form('single_access_handler')
-            $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_delete_single_access_networks', [Sijax.getFormValues('#network_form')]);
+        $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_single_access_group').rules("remove", "required");
 }
@@ -501,10 +437,8 @@ function get_delete_single_access_networks() {
 function get_delete_single_access_ports () {
     $('#sel_delete_single_access_leaf').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_delete_single_access_ports')
-            submit_form('single_access_handler')
-            $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_delete_single_access_ports', [Sijax.getFormValues('#network_form')]);
+        $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_single_access_leaf').rules("remove", "required");
 }
@@ -516,10 +450,8 @@ function delete_single_access(){
     $('#sel_delete_single_access_network').rules("add", "required");
     $('#sel_delete_single_access_port').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_single_access')
-            submit_form('single_access_handler')
-            $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('delete_single_access', [Sijax.getFormValues('#network_form')]);
+        $('#delete_single_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_single_access_port').rules("remove", "required");
     $('#sel_delete_single_access_network').rules("remove", "required");
@@ -531,9 +463,7 @@ function delete_single_access(){
 function get_create_network_profile_networks(){
     $('#sel_create_network_profile_group').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_create_network_profile_networks')
-            submit_form('network_handler')
+            Sijax.request('get_create_network_profile_networks', [Sijax.getFormValues('#network_form')]);
             $('#create_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_network_profile_group').rules('remove','required')
@@ -599,10 +529,8 @@ function create_network_profile(){
     $('#create_network_profile_dns').val(network_dns);
     $('#create_network_profile_name').rules("add", "required");
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('create_network_profile')
-            submit_form('network_handler')
-            $('#create_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('create_network_profile', [Sijax.getFormValues('#network_form')]);
+        $('#create_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#create_network_profile_name').rules("remove", "required");
 
@@ -610,30 +538,22 @@ function create_network_profile(){
 
 
 function get_network_profile_list(){
-    //Set operation hidden input value
-    $('#operation').val('get_network_profile_list');
-    submit_form('network_handler')
+    Sijax.request('get_network_profile_list');
     $('#network_profile_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 
 function get_network_profiles(){
-    if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_network_profiles')
-            submit_form('network_handler')
-            $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
-    }
+    Sijax.request('get_network_profiles');
+    $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 
 function get_delete_network_profile_networks(){
     $('#sel_delete_network_profile').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_delete_network_profile_networks')
-            submit_form('network_handler')
-            $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_delete_network_profile_networks', [Sijax.getFormValues('#network_form')]);
+        $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_network_profile').rules('remove','required')
 }
@@ -642,10 +562,8 @@ function get_delete_network_profile_networks(){
 function delete_network_profile(){
     $('#sel_delete_network_profile').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_network_profile')
-            submit_form('network_handler')
-            $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('delete_network_profile', [Sijax.getFormValues('#network_form')]);
+        $('#delete_network_profile_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_network_profile').rules('remove','required')
 }
@@ -768,10 +686,8 @@ function create_vpc_group() {
     $('#sel_create_vpc_group_leaf_1').rules('add','required')
     $('#sel_create_vpc_group_leaf_2').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('create_vpc_group')
-            submit_form('vpc_handler')
-            $('#div_create_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('create_vpc_group', [Sijax.getFormValues('#network_form')]);
+        $('#div_create_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_create_vpc_group_leaf_1').rules('remove','required')
     $('#sel_create_vpc_group_leaf_2').rules('remove','required')
@@ -780,18 +696,15 @@ function create_vpc_group() {
 
 function get_vpc_group_list(){
     //Set operation hidden input value
-    $('#operation').val('get_vpc_group_list');
-    submit_form('vpc_handler')
+    Sijax.request('get_vpc_group_list');
     $('#vpc_group_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
 
 function get_vpc_groups(){
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_vpc_groups')
-            submit_form('vpc_handler')
-            $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_vpc_groups');
+        $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
 }
 
@@ -799,10 +712,8 @@ function get_vpc_groups(){
 function get_leafs_by_vpc_group() {
     $('#sel_vpc_group_create_vpc').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_leafs_by_vpc_group')
-            submit_form('vpc_handler')
-            $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('get_leafs_by_vpc_group', [Sijax.getFormValues('#network_form')]);
+        $('#create_vpc_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_vpc_group_create_vpc').rules('remove','required')
 }
@@ -811,10 +722,8 @@ function get_leafs_by_vpc_group() {
 function delete_vpc_group(){
     $('#sel_delete_vpc_group_name').rules('add','required')
     if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('delete_vpc_group')
-            submit_form('vpc_handler')
-            $('#delete_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
+        Sijax.request('delete_vpc_group', [Sijax.getFormValues('#network_form')]);
+        $('#delete_vpc_group_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
     }
     $('#sel_delete_vpc_group_name').rules('remove','required')
 }
@@ -858,18 +767,6 @@ function clean_inputs(){
     $('.label-danger').remove();
     $('.error').remove();
     $('tbody').html('<tr></tr>')
-}
-
-
-function get_health_dashboard(){
-    if($('#network_form').valid()){
-            //Set operation hidden input value
-            $('#operation').val('get_health_dashboard')
-            submit_form('fabric_handler')
-            $('#noc_monitor_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
-    }
-    // Refresh the health scores each 10 seconds
-    setTimeout(get_health_dashboard,30000)
 }
 
 function netmon_netlist(){

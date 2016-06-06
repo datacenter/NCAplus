@@ -1,0 +1,22 @@
+<thead>
+<tr>
+    <th>Switch</th>
+    <th>Port</th>
+</tr>
+</thead>
+<tbody>
+{% if item_table|length == 0 %}
+<tr>
+</tr>
+{% endif %}
+{% for item in item_table %}
+<tr>
+    <td>
+        {{ item.rn }}
+    </td>
+    <td>
+        {{ item.tSKey }}
+    </td>
+</tr>
+{% endfor %}
+</tbody>

@@ -5,7 +5,7 @@ Sijax Handler for the access switches operations
 from base_handler import base_handler2
 import traceback
 import app.model
-from flask import g
+from flask import g, render_template
 from app.access_switch_manager import switch_controller
 
 
@@ -114,11 +114,15 @@ class access_switch_handler(base_handler2):
             return
         try:
             access_switches = app.model.access_switch.select()
-            option_list = '<option value="">Select</option>'
+            item_list = []
             for switch in access_switches:
-                option_list += '<option value="' + str(switch.ip) + '">' + switch.ip + \
-                               ' (' + switch.hostname + ')</option>'
-            obj_response.html(".sel-access-switch", option_list)
+                # Creates a dynamic object
+                access_switch_do = type('access_switch_do', (object,), {})
+                access_switch_do.key = str(switch.ip)
+                access_switch_do.text = switch.ip + ' (' + switch.hostname + ')'
+                item_list.append(access_switch_do)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html(".sel-access-switch", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script(
@@ -136,10 +140,14 @@ class access_switch_handler(base_handler2):
             return
         try:
             access_switches = app.model.access_switch.select()
-            access_switch_list_str = ''
+            item_list = []
             for switch in access_switches:
-                access_switch_list_str += switch.hostname + ' - ' + switch.ip
-            obj_response.html("#access_switch_list", access_switch_list_str)
+                # Creates a dynamic object
+                switch_do = type('switch_do', (object,), {})
+                switch_do.name = switch.hostname + ' - ' + switch.ip
+                item_list.append(switch_do)
+            html_response = render_template('list_partial.html', item_list=item_list)
+            obj_response.html("#access_switch_list", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script(

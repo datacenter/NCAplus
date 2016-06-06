@@ -16,8 +16,6 @@ class netmon_handler(base_handler2):
     def __init__(self):
         """
         Manages all the operations related with network monitoring
-        :param obj_response:
-        :param formvalues:
         :return:
         """
         try:

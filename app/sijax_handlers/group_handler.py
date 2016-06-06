@@ -12,8 +12,6 @@ class group_handler(base_handler2):
     def __init__(self):
         """
         Manages all operations related to groups or tenants
-        :param obj_response:
-        :param formvalues:
         :return:
         """
         try:
@@ -24,6 +22,11 @@ class group_handler(base_handler2):
             print traceback.print_exc()
 
     def get_groups(self, obj_response):
+        # Check if there has been connection errors
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
         # Load the selects that show the groups
         try:
             # Creates dynamic object list to use it in select_template.html
@@ -35,7 +38,7 @@ class group_handler(base_handler2):
                 tenant_do.key = str(tenant.dn)
                 tenant_do.text = tenant.name
                 tenant_do_list.append(tenant_do)
-            option_list = render_template('select_partial.html', tem_list=tenant_do_list)
+            option_list = render_template('select_partial.html', item_list=tenant_do_list)
             obj_response.html(".sel-group", option_list)
         except Exception as e:
             print traceback.print_exc()
@@ -46,15 +49,23 @@ class group_handler(base_handler2):
             obj_response.html("#create_network_response", '')
 
     def tenant_list(self, obj_response):
+        # Check if there has been connection errors
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
         # Load the list that shows all the tenants that have been created, avoids the defaults
         # (common, mgmt and fabric)
         try:
             tenants = self.cobra_apic_object.get_all_tenants()
-            all_tenants_list = '<ul style="padding-left:10px;">'
+            tenant_list = []
             for tenant in [elem for elem in tenants if elem.name not in REMOVED_TENANTS]:
-                all_tenants_list += '<li><div style="font-size:.9em;">' + str(tenant.name) + '</div></li>'
-            all_tenants_list += '</ul>'
-            obj_response.html("#tenant_list", all_tenants_list)
+                # Creates a dynamic object
+                tenant_do = type('tenant_do', (object,), {})
+                tenant_do.name = tenant.name
+                tenant_list.append(tenant_do)
+            html_response = render_template('list_partial.html', item_list=tenant_list)
+            obj_response.html("#tenant_list", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve group list', '" + str(e).replace("'", "").
@@ -63,6 +74,11 @@ class group_handler(base_handler2):
             g.db.close()
 
     def create_group(self, obj_response, form_values):
+        # Check if there has been connection errors
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
         # Creates a tenant in ACI
         try:
             self.cobra_apic_object.create_group(form_values['create_group_name'])
@@ -78,6 +94,11 @@ class group_handler(base_handler2):
             obj_response.html("#create_group_response", '')
 
     def delete_group(self, obj_response, form_values):
+        # Check if there has been connection errors
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
         # Removes a tenant from ACI
         try:
             self.cobra_apic_object.delete_tenant(form_values['sel_delete_group_name'])

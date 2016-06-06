@@ -1,0 +1,22 @@
+<thead>
+<tr>
+    <th>Group</th>
+    <th>Network</th>
+</tr>
+</thead>
+<tbody>
+{% if item_table|length == 0 %}
+<tr>
+</tr>
+{% endif %}
+{% for item in item_table %}
+<tr>
+    <td>
+        {{ item.group_name }}
+    </td>
+    <td>
+        {{ item.network_profile_name }}
+    </td>
+</tr>
+{% endfor %}
+</tbody>

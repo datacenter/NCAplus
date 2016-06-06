@@ -1,0 +1,14 @@
+{% for item in item_list %}
+<label data-toggle="collapse" data-target="#{{ item.name }}" style="float:left;cursor:pointer;width:100%">
+    <i class="fa fa-chevron-circle-down" aria-hidden="true"></i>
+    &nbsp;{{ item.name }}
+</label>
+<div id="{{ item.name }}" class="collapse" style="width:100%">
+    {% for sub_item in item.sub_item_list %}
+    <div style="clear:both; padding-left:10px;font-size:.8em">
+        {{ sub_item.name }}
+    </div>
+    {% endfor %}
+</div>
+</ul>
+{% endfor %}

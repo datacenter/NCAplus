@@ -3,7 +3,7 @@
 
 {% block head %}
 {{ super() }}
-<title>ACI Migration Tool</title>
+<title>NCA Plus</title>
 {% endblock head %}
 {% block navbar %}
 
@@ -78,14 +78,15 @@
 
 <div class="container">
     <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
-        <div style='' id="sidecompanylogo">&nbsp;</div>
+        <div style='' id="div_logo">&nbsp;
+        <img id="sidecompanylogo" src="/static/images/company_logo.png">
+        </div>
     </div>
     <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">
         <form action="javascript:void(null);"
               onsubmit="submit_network_form()"
               id="network_form"
               class="form-horizontal">
-            <input type="hidden" id="operation" name="operation" value="">
             <input type="hidden" id="sub_operation" name="sub_operation" value="">
             {% block subcontent %}
             {% endblock subcontent %}

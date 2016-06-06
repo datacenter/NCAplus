@@ -105,7 +105,7 @@ def networks():
         return redirect('/login')
 
     if g.sijax.is_sijax_request:
-        g.sijax.register_object(network_handler)
+        g.sijax.register_object(network_handler())
         network_handler.handler_app = app
         g.sijax.register_object(group_handler())
         group_handler.handler_app = app
@@ -119,9 +119,9 @@ def vpcs():
         return redirect('/login')
 
     if g.sijax.is_sijax_request:
-        g.sijax.register_object(fabric_handler)
+        g.sijax.register_object(fabric_handler())
         fabric_handler.handler_app = app
-        g.sijax.register_object(vpc_handler)
+        g.sijax.register_object(vpc_handler())
         vpc_handler.handler_app = app
         g.sijax.register_object(group_handler())
         group_handler.handler_app = app
@@ -136,15 +136,15 @@ def vpc_access():
         return redirect('/login')
 
     if g.sijax.is_sijax_request:
-        g.sijax.register_object(network_handler)
+        g.sijax.register_object(network_handler())
         network_handler.handler_app = app
-        g.sijax.register_object(fabric_handler)
+        g.sijax.register_object(fabric_handler())
         fabric_handler.handler_app = app
-        g.sijax.register_object(vpc_handler)
+        g.sijax.register_object(vpc_handler())
         vpc_handler.handler_app = app
         g.sijax.register_object(group_handler())
         group_handler.handler_app = app
-        g.sijax.register_object(vpc_access_handler)
+        g.sijax.register_object(vpc_access_handler())
         vpc_access_handler.handler_app = app
         return g.sijax.process_request()
 
@@ -156,15 +156,15 @@ def single_access():
         return redirect('/login')
 
     if g.sijax.is_sijax_request:
-        g.sijax.register_object(network_handler)
+        g.sijax.register_object(network_handler())
         network_handler.handler_app = app
-        g.sijax.register_object(fabric_handler)
+        g.sijax.register_object(fabric_handler())
         fabric_handler.handler_app = app
-        g.sijax.register_object(vpc_handler)
+        g.sijax.register_object(vpc_handler())
         vpc_handler.handler_app = app
         g.sijax.register_object(group_handler())
         group_handler.handler_app = app
-        g.sijax.register_object(single_access_handler)
+        g.sijax.register_object(single_access_handler())
         single_access_handler.handler_app = app
         return g.sijax.process_request()
 
@@ -182,17 +182,6 @@ def access_switches():
 
     return render_template('access_switches.html')
 
-@flask_sijax.route(app, '/monitor')
-def monitor():
-    if not session.get('login_apic_url'):
-        return redirect('/login')
-
-    if g.sijax.is_sijax_request:
-        g.sijax.register_object(fabric_handler)
-        fabric_handler.handler_app = app
-        return g.sijax.process_request()
-
-    return render_template('monitor.html')
 
 @flask_sijax.route(app, '/netmon')
 def netmon():
