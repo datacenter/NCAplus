@@ -2,14 +2,14 @@
 Sijax Handler for the access switches operations
 
 """
-from base_handler import base_handler2
+from base_handler import base_handler
 import traceback
 import app.model
 from flask import g, render_template
 from app.access_switch_manager import switch_controller
 
 
-class access_switch_handler(base_handler2):
+class access_switch_handler(base_handler):
 
     def __init__(self):
         """

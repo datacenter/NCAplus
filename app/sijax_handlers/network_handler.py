@@ -3,13 +3,13 @@
 Helper for views.py
 
 """
-from base_handler import base_handler2, REMOVED_TENANTS
+from base_handler import base_handler, REMOVED_TENANTS
 import traceback
 import app.model
 from flask import g, render_template
 
 
-class network_handler(base_handler2):
+class network_handler(base_handler):
 
     def __init__(self):
         """
@@ -43,7 +43,7 @@ class network_handler(base_handler2):
                 app.model.network.id == network_object.id).execute()
             obj_response.script("create_notification('Created', '', 'success', 5000);")
             # Executes javascript function (only after the response is received by the browser)
-            obj_response.script("get_sel_delete_networks();get_network_list();")
+            obj_response.script("get_network_list();")
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not create network', '" + str(e).replace("'", "").

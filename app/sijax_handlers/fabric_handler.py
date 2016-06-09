@@ -2,12 +2,12 @@
 Helper for views.py
 
 """
-from base_handler import base_handler2
+from base_handler import base_handler
 import traceback
 import app.model
 from flask import g, render_template
 
-class fabric_handler(base_handler2):
+class fabric_handler(base_handler):
 
     def __init__(self):
         """

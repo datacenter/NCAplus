@@ -3,12 +3,12 @@
 Helper for views.py
 
 """
-from base_handler import base_handler2
+from base_handler import base_handler
 import traceback
 import app.model
 from flask import g, render_template
 
-class vpc_handler(base_handler2):
+class vpc_handler(base_handler):
 
     def __init__(self):
         """

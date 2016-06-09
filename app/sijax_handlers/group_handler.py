@@ -3,11 +3,11 @@
 Helper for views.py
 
 """
-from base_handler import base_handler2, REMOVED_TENANTS
+from base_handler import base_handler, REMOVED_TENANTS
 import traceback
 from flask import g, render_template
 
-class group_handler(base_handler2):
+class group_handler(base_handler):
 
     def __init__(self):
         """
