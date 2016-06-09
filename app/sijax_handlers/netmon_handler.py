@@ -38,9 +38,9 @@ class netmon_handler(base_handler2):
         try:
             html_response = ''
             for tenant in self.cobra_apic_object.get_all_tenants():
-                network_aps = self.cobra_apic_object.get_ap_by_tenant(str(tenant.dn))
-                if len(network_aps) > 0:
-                    if tenant.name not in REMOVED_TENANTS:
+                if tenant.name not in REMOVED_TENANTS:
+                    network_aps = self.cobra_apic_object.get_ap_by_tenant(str(tenant.dn))
+                    if len(network_aps) > 0:
                         networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
                         html_response += render_template('netmon/network_list.html', tenant=tenant, networks=networks)
             obj_response.html("#network_list", html_response)
