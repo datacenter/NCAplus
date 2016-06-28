@@ -194,8 +194,9 @@ def netmon():
 
     return render_template('netmon/netmon.html')
 
-@flask_sijax.route(app, '/netmon/<tenant_name>/<network_name>')
-def network_dashboard(tenant_name, network_name):
+
+@flask_sijax.route(app, '/netmon/<tenant_name>/<ap_name>/<network_name>')
+def network_dashboard(tenant_name, ap_name, network_name):
     if not session.get('login_apic_url'):
         return redirect('/login')
 
@@ -203,10 +204,11 @@ def network_dashboard(tenant_name, network_name):
         g.sijax.register_object(netmon_handler())
         return g.sijax.process_request()
 
-    return render_template('netmon/network_dashboard.html', tenant=tenant_name, network=network_name)
+    return render_template('netmon/network_dashboard.html', tenant=tenant_name, ap=ap_name, network=network_name)
 
-@flask_sijax.route(app, '/netmon/<tenant_name>/<network_name>/<endpoint_mac>')
-def endpoint_track(tenant_name, network_name, endpoint_mac):
+
+@flask_sijax.route(app, '/netmon/<tenant_name>/<ap_name>/<network_name>/<endpoint_mac>')
+def endpoint_track(tenant_name, ap_name, network_name, endpoint_mac):
     if not session.get('login_apic_url'):
         return redirect('/login')
 
@@ -214,5 +216,5 @@ def endpoint_track(tenant_name, network_name, endpoint_mac):
         g.sijax.register_object(netmon_handler())
         return g.sijax.process_request()
 
-    return render_template('netmon/endpoint_track.html', tenant=tenant_name, network=network_name,
+    return render_template('netmon/endpoint_track.html', tenant=tenant_name, network=network_name, ap=ap_name,
                            endpoint_mac=endpoint_mac)

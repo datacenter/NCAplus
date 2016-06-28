@@ -71,6 +71,37 @@
                     </div>
                 </div>
                 <div class="form-group">
+                    <label class="{{ labelclasslg }}"> L3 Gateway
+                                    <span class="fa fa-info-circle" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="L3 Gateway"
+                                          data-content="Select if you want to set your L3 gateway within the fabric">
+                                    </span>
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="checkbox" id="create_network_l3_gateway"
+                               value="false" name="create_network_l3_gateway" style="margin-top:15px"
+                               onclick="$('#div_l3_gateway_ip').slideToggle();
+                               $('#create_network_l3_gateway').val(document.getElementById('create_network_l3_gateway').checked)"/>
+
+                    </div>
+                </div>
+                <div id="div_l3_gateway_ip" class="form-group" style="display:none">
+                    <label class="{{ labelclasslg }}"> L3 Gateway IP
+                                    <span class="fa fa-info-circle" aria-hidden="true"
+                                          data-toggle="popover"
+                                          data-trigger="hover"
+                                          title="L3 Gateway IP"
+                                          data-content="IP of the default gateway">
+                                    </span>
+                    </label>
+                    <div class="{{ txtinputclassmd }}">
+                        <input type="text" class="form-control" maxlength="50" id="create_network_gateway_ip"
+                               value="" name="create_network_gateway_ip" placeholder="x.x.x.x/x">
+                    </div>
+                </div>
+                <div class="form-group">
                     <label class="{{ labelclasslg }}"> Group
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"

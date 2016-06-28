@@ -9,7 +9,7 @@
     <tbody>
     {% for endpoint in endpoints %}
     <tr>
-        <td><a href="/netmon/{{ tenant }}/{{ network }}/{{ endpoint.mac }}" style="font-size:.8em;font-family: menlo">{{ endpoint.mac }}</a></td>
+        <td><a href="/netmon/{{ tenant }}/{{ ap }}/{{ network }}/{{ endpoint.mac }}" style="font-size:.8em;font-family: menlo">{{ endpoint.mac }}</a></td>
         <td><div style="font-size:.9em;font-family: menlo">{{ endpoint.ip }}</div></td>
         <td>{{ endpoint.interface }}</td>
     </tr>

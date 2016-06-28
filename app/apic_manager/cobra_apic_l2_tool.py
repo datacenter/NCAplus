@@ -40,6 +40,7 @@ from cobra.modelimpl.cdp.ifpol import IfPol
 from cobra.modelimpl.fv.ctx import Ctx
 from cobra.modelimpl.infra.accportgrp import AccPortGrp
 from cobra.mit.request import DnQuery
+from cobra.modelimpl.fv.subnet import Subnet
 from constant import *
 import re
 
@@ -75,23 +76,26 @@ class cobra_apic_l2_tool(cobra_apic_base):
         # Query the children bellow the tenant
         tenant_children = self.query_child_objects(network_o.group)
         # Filters the children in memory looking for the ones that belongs to the Ap class and with an specific name.
-        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + AP_SUFIX,
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == AP_NAME,
                          tenant_children)
         # Check if Application profile exists, if not creates one.
         if len(ap_list) == 0:
-            network_ap = self.create_ap(str(tenant_mo.dn), tenant_mo.name + AP_SUFIX)
+            network_ap = self.create_ap(str(tenant_mo.dn), AP_NAME)
         else:
             network_ap = ap_list[0]
 
         # Creates bridge domain
         bd_mo = self.create_bd('vlan' + str(network_o.encapsulation), tenant_mo, None)
 
-        # Set BD parameters. This one are needed so that the bridge domain floods the VLAN packets across the fabric
-        bd_mo.arpFlood = YES
-        bd_mo.multiDstPktAct = BD_FLOOD
-        bd_mo.unicastRoute = NO
-        bd_mo.unkMacUcastAct = FLOOD
-        bd_mo.unkMcastAct = FLOOD
+        if not network_o.is_l3:
+            # Set BD parameters. This one are needed so that the bridge domain floods the VLAN packets across the fabric
+            bd_mo.arpFlood = YES
+            bd_mo.multiDstPktAct = BD_FLOOD
+            bd_mo.unicastRoute = NO
+            bd_mo.unkMacUcastAct = FLOOD
+            bd_mo.unkMcastAct = FLOOD
+        else:
+            Subnet(bd_mo, network_o.l3_default_gateway)
         self.commit(bd_mo)
 
         # Filters the tenant children in memory looking for the ones that belongs to the Ctx
@@ -127,7 +131,7 @@ class cobra_apic_l2_tool(cobra_apic_base):
         tenant_mo = self.moDir.lookupByDn(network_o.group)
 
         # Filters the tenant children in memory looking for the ones that belongs to the Ap class with an specific name
-        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == tenant_mo.name + AP_SUFIX,
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == AP_NAME,
                          self.query_child_objects(str(tenant_mo.dn)))
         if len(ap_list) > 0:
             network_ap = ap_list[0]
@@ -962,14 +966,15 @@ class cobra_apic_l2_tool(cobra_apic_base):
     def get_epg_health_score(self, epg_dn):
         return self.moDir.lookupByDn(epg_dn + '/health').cur
 
-    def get_epg(self, tenant_name, epg_name):
+    def get_epg(self, tenant_name, ap_name, epg_name):
         """
-        Retrieves the tenant
+        Retrieves the epg
         :param tenant_name:
+        :param ap_name:
         :param epg_name:
         :return:
         """
-        ap_list = filter(lambda x: type(x).__name__ == 'Ap',
+        ap_list = filter(lambda x: type(x).__name__ == 'Ap' and x.name == ap_name,
                           self.query_child_objects('uni/tn-%s' % tenant_name))
         if len(ap_list) > 0:
             epg_list = filter(lambda x: type(x).__name__ == 'AEPg' and x.name == epg_name,
@@ -1015,3 +1020,9 @@ class cobra_apic_l2_tool(cobra_apic_base):
         for child in mo.children:
                 self.get_faults_from_tree(child, faults)
         return faults
+
+    def get_nca_ap(self, tenant_dn):
+        aps = self.get_ap_by_tenant(tenant_dn)
+        for ap in aps:
+            if ap.name == AP_NAME:
+                return ap

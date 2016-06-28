@@ -15,6 +15,7 @@ __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 COMMAND_WAIT_TIME = 1
 PEXPECT_TIME_OUT = 3
 
+
 class switch_controller:
 
     def __init__(self):

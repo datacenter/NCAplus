@@ -31,18 +31,18 @@ class single_access_handler(base_handler):
             return
         # Load the sel_create_single_access_network select with the networks within the selected group
         try:
-            network_aps = self.cobra_apic_object.get_ap_by_tenant(form_values['sel_create_single_access_group'])
-            if len(network_aps) > 0:
-                networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                item_list = []
+            network_ap = self.cobra_apic_object.get_nca_ap(form_values['sel_create_single_access_group'])
+            item_list = []
+            if network_ap is not None:
+                networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                 for network in networks:
                     # Creates a dynamic object
                     network_do = type('network_do', (object,), {})
                     network_do.key = str(network.dn)
                     network_do.text = network.name
                     item_list.append(network_do)
-                html_response = render_template('select_partial.html', item_list=item_list)
-                obj_response.html("#sel_create_single_access_network", html_response)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html("#sel_create_single_access_network", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
@@ -137,18 +137,18 @@ class single_access_handler(base_handler):
             return
         # Load the sel_delete_single_access_network select with the network within the selected group
         try:
-            network_aps = self.cobra_apic_object.get_ap_by_tenant(form_values['sel_delete_single_access_group'])
-            if len(network_aps) > 0:
-                networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                item_list = []
+            network_ap = self.cobra_apic_object.get_nca_ap(form_values['sel_delete_single_access_group'])
+            item_list = []
+            if network_ap is not None:
+                networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                 for network in networks:
                     # Creates a dynamic object
                     network_do = type('network_do', (object,), {})
                     network_do.key = str(network.dn)
                     network_do.text = network.name
                     item_list.append(network_do)
-                html_response = render_template('select_partial.html', item_list=item_list)
-                obj_response.html("#sel_delete_single_access_network", html_response)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html("#sel_delete_single_access_network", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").

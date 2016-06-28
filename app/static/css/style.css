@@ -10,3 +10,7 @@ body{
     height: 300px;
     margin-top:50px;
 }
+
+.error {
+    color: #d9534f;
+}

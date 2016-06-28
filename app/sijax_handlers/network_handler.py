@@ -32,10 +32,20 @@ class network_handler(base_handler):
         # Creates a network in the local database and in ACI creates bridge domains, EPGs and if it
         # is not created, application profiles and VRFs
         try:
-            network_object = app.model.network.create(name=form_values['create_network_name'],
-                                                      encapsulation=int(form_values['create_network_encapsulation']),
-                                                      group=form_values['sel_create_network_group'],
-                                                      epg_dn='')
+            if form_values.keys().__contains__('create_network_l3_gateway') and form_values['create_network_l3_gateway'] == "true":
+                network_object = app.model.network.create(name=form_values['create_network_name'],
+                                                          encapsulation=int(form_values['create_network_encapsulation']),
+                                                          group=form_values['sel_create_network_group'],
+                                                          epg_dn='',
+                                                          is_l3=True,
+                                                          l3_default_gateway=form_values['create_network_gateway_ip'])
+            else:
+                network_object = app.model.network.create(name=form_values['create_network_name'],
+                                                          encapsulation=int(form_values['create_network_encapsulation']),
+                                                          group=form_values['sel_create_network_group'],
+                                                          epg_dn='',
+                                                          is_l3=False,
+                                                          l3_default_gateway=None)
             self.cobra_apic_object.add_vlan(network_object.encapsulation, 'migration-tool')
             epg = self.cobra_apic_object.create_network(network_object)
             self.cobra_apic_object.associate_epg_physical_domain(str(epg.dn), 'migration-tool')
@@ -60,18 +70,18 @@ class network_handler(base_handler):
             return
         # Load the sel_delete_network_name select with the networks available within the tenant selected
         try:
-            network_aps = self.cobra_apic_object.get_ap_by_tenant(form_values['sel_delete_network_group'])
-            if len(network_aps) > 0:
-                networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                item_list = []
+            network_ap = self.cobra_apic_object.get_nca_ap(form_values['sel_delete_network_group'])
+            item_list = []
+            if network_ap is not None:
+                networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                 for network in networks:
                     # Creates a dynamic object
                     network_do = type('network_do', (object,), {})
                     network_do.key = str(network.dn)
                     network_do.text = network.name
                     item_list.append(network_do)
-                html_response = render_template('select_partial.html', item_list=item_list)
-                obj_response.html("#sel_delete_network_name", html_response)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html("#sel_delete_network_name", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
@@ -122,18 +132,18 @@ class network_handler(base_handler):
             return
         # Load the select sel_create_network_profile_network with the available EPGs within the selected tenant
         try:
-            network_aps = self.cobra_apic_object.get_ap_by_tenant(form_values['sel_create_network_profile_group'])
-            if len(network_aps) > 0:
-                networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                item_list = []
+            network_ap = self.cobra_apic_object.get_nca_ap(form_values['sel_create_network_profile_group'])
+            item_list = []
+            if network_ap is not None:
+                networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                 for network in networks:
                     # Creates a dynamic object
                     network_do = type('network_do', (object,), {})
                     network_do.key = str(network.dn)
                     network_do.text = network.name
                     item_list.append(network_do)
-                html_response = render_template('select_partial.html', item_list=item_list)
-                obj_response.html("#sel_create_network_profile_network", html_response)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html("#sel_create_network_profile_network", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script(
@@ -286,9 +296,9 @@ class network_handler(base_handler):
             item_list = []
             for tenant in self.cobra_apic_object.get_all_tenants():
                 if tenant.name not in REMOVED_TENANTS:
-                    network_aps = self.cobra_apic_object.get_ap_by_tenant(str(tenant.dn))
-                    if len(network_aps) > 0:
-                        networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
+                    network_ap = self.cobra_apic_object.get_nca_ap(str(tenant.dn))
+                    if network_ap is not None:
+                        networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                         # Creates a dynamic object
                         item = type('item', (object,), {})
                         item.name = tenant.name

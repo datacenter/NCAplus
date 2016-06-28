@@ -64,6 +64,9 @@ function create_network(){
     $('#create_network_name').rules("add", "required");
     $('#create_network_encapsulation').rules("add", "required");
     $('#sel_create_network_group').rules("add", "required");
+    if($('#create_network_l3_gateway').val() == "true") {
+        $('#create_network_gateway_ip').rules("add", "required");
+    }
     if($('#network_form').valid()){
         Sijax.request('create_network', [Sijax.getFormValues('#network_form')]);
         $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -71,6 +74,7 @@ function create_network(){
     $('#create_network_name').rules("remove", "required");
     $('#create_network_encapsulation').rules("remove", "required");
     $('#sel_create_network_group').rules("remove", "required");
+    $('#create_network_gateway_ip').rules("remove", "required");
 }
 
 
@@ -443,7 +447,10 @@ function get_delete_single_access_ports () {
     $('#sel_delete_single_access_leaf').rules("remove", "required");
 }
 
-
+/**
+ * Makes a call to the single access handler and set the operation to delete_single_access.
+ * If successfully, will remove the vlan from the port
+ */
 function delete_single_access(){
     $('#sel_delete_single_access_leaf').rules("add", "required");
     $('#sel_delete_single_access_group').rules("add", "required");
@@ -459,7 +466,10 @@ function delete_single_access(){
     $('#sel_delete_single_access_leaf').rules("remove", "required");
 }
 
-
+/**
+ * Makes a call to the network handler and set the operation to get_create_network_profile_networks.
+ * If successfully, will populate the network profile networks select
+ */
 function get_create_network_profile_networks(){
     $('#sel_create_network_profile_group').rules('add','required')
     if($('#network_form').valid()){
@@ -469,7 +479,9 @@ function get_create_network_profile_networks(){
     $('#sel_create_network_profile_group').rules('remove','required')
 }
 
-
+/**
+ * Add a new network to the network profile
+ */
 function add_create_network_profile(){
     $('#create_network_profile_response').html('')
     $('#sel_create_network_profile_group').rules("add", "required");
@@ -511,7 +523,10 @@ function add_create_network_profile(){
     $('#sel_create_network_profile_network').rules("remove", "required");
 }
 
-
+/**
+ * Makes a call to the network handler and set the operation to create_network_profile.
+ * If successfully, will create a network profile
+ */
 function create_network_profile(){
     if($("#table_create_network_profile tr").length - 2 <= 0){
         $('#create_network_profile_response').html(
@@ -536,19 +551,28 @@ function create_network_profile(){
 
 }
 
-
+/**
+ * Makes a call to the network handler and set the operation to get_network_profile_list.
+ * If successfully, will populate the network profile list
+ */
 function get_network_profile_list(){
     Sijax.request('get_network_profile_list');
     $('#network_profile_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
-
+/**
+ * Makes a call to the network handler and set the operation to get_network_profiles.
+ * If successfully, will populate the network profile selects
+ */
 function get_network_profiles(){
     Sijax.request('get_network_profiles');
     $('#div_create_vpc_access_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
-
+/**
+ * Makes a call to the network handler and set the operation to get_delete_network_profile_networks.
+ * If successfully, will populate the networks of the selected profile
+ */
 function get_delete_network_profile_networks(){
     $('#sel_delete_network_profile').rules('add','required')
     if($('#network_form').valid()){
@@ -559,6 +583,10 @@ function get_delete_network_profile_networks(){
 }
 
 
+/**
+ * Makes a call to the network handler and set the operation to delete_network_profile.
+ * If successfully, will delete a network profile
+ */
 function delete_network_profile(){
     $('#sel_delete_network_profile').rules('add','required')
     if($('#network_form').valid()){
@@ -569,6 +597,10 @@ function delete_network_profile(){
 }
 
 
+/**
+ * Makes a call to the access switch handler and set the operation to create_access_switch.
+ * If successfully, will create a new switch
+ */
 function create_access_switch(){
     $('#access_switch_hostname').rules('add','required')
     $('#access_switch_ip').rules('add','required')
@@ -582,13 +614,19 @@ function create_access_switch(){
     $('#access_switch_user').rules('remove','required')
 }
 
-
+/**
+ * Makes a call to the access switch handler and set the operation to get_access_switch_list.
+ * If successfully, will populate access switch list
+ */
 function get_access_switch_list(){
     Sijax.request('get_access_switch_list');
     $('#access_switch_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
-
+/**
+ * Makes a call to the access switch handler and set the operation to configure_access_switches.
+ * If successfully, will send the commands to the access switch
+ */
 function configure_access_switches(){
     if ($("#table_access_switches tr").length < 3){
         $('#access_switch_response').html(
@@ -618,13 +656,19 @@ function configure_access_switches(){
     $('#access_switch_commands').rules('remove','required')
 }
 
-
+/**
+ * Makes a call to the access switch handler and set the operation to get_access_switches.
+ * If successfully, will populate access switch selects
+ */
 function get_access_switches(){
     Sijax.request('get_access_switches');
     $('#access_switch_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
-
+/**
+ * Makes a call to the access switch handler and set the operation to delete_access_switch.
+ * If successfully, will delete the selected access switch
+ */
 function delete_access_switch(){
     $('#sel_delete_access_switch').rules('add','required')
     if($('#network_form').valid()){
@@ -634,7 +678,9 @@ function delete_access_switch(){
     $('#sel_delete_access_switch').rules('remove','required')
 }
 
-
+/**
+ * Add a switch to the switch list. The switches within this list, the commands will be sent
+ */
 function add_switch(){
     $('#access_switch_response').html('')
     $('#sel_access_switch').rules("add", "required");
@@ -675,7 +721,10 @@ function add_switch(){
     $('#sel_access_switch').rules("remove", "required");
 }
 
-
+/**
+ * Makes a call to the vpc handler and set the operation to delete_access_switch.
+ * If successfully, will create a vpc group
+ */
 function create_vpc_group() {
     if ($('#sel_create_vpc_group_leaf_1').val() == $('#sel_create_vpc_group_leaf_2').val()) {
         $('#div_create_vpc_group_response').html(
@@ -693,14 +742,20 @@ function create_vpc_group() {
     $('#sel_create_vpc_group_leaf_2').rules('remove','required')
 }
 
-
+/**
+ * Makes a call to the vpc handler and set the operation to get_vpc_group_list.
+ * If successfully, will populate the vpc group list
+ */
 function get_vpc_group_list(){
     //Set operation hidden input value
     Sijax.request('get_vpc_group_list');
     $('#vpc_group_list').html('<img src="/static/images/loading.gif" style="height:20px" />');
 }
 
-
+/**
+ * Makes a call to the vpc handler and set the operation to get_vpc_groups.
+ * If successfully, will populate the vpc group selects
+ */
 function get_vpc_groups(){
     if($('#network_form').valid()){
         Sijax.request('get_vpc_groups');
@@ -708,7 +763,10 @@ function get_vpc_groups(){
     }
 }
 
-
+/**
+ * Makes a call to the vpc handler and set the operation to get_leafs_by_vpc_group.
+ * If successfully, will populate the leaves associated with the group
+ */
 function get_leafs_by_vpc_group() {
     $('#sel_vpc_group_create_vpc').rules('add','required')
     if($('#network_form').valid()){
@@ -719,6 +777,10 @@ function get_leafs_by_vpc_group() {
 }
 
 
+/**
+ * Makes a call to the vpc handler and set the operation to delete_vpc_group.
+ * If successfully, will populate the delete the vpc group
+ */
 function delete_vpc_group(){
     $('#sel_delete_vpc_group_name').rules('add','required')
     if($('#network_form').valid()){
@@ -728,7 +790,9 @@ function delete_vpc_group(){
     $('#sel_delete_vpc_group_name').rules('remove','required')
 }
 
-
+/**
+ * Creates a notification
+ */
 function create_notification(title, message, type, delay) {
     $.notify({
         // options
@@ -759,7 +823,9 @@ function create_notification(title, message, type, delay) {
     });
 }
 
-
+/**
+ * Creates a user inputs
+ */
 function clean_inputs(){
     $('select').val('');
     $('input[type=text]').val('');
@@ -769,22 +835,37 @@ function clean_inputs(){
     $('tbody').html('<tr></tr>')
 }
 
+/**
+ * Calls to netmon handler and populates the network monitor list with tenants, application profiles and EPGs
+ */
 function netmon_netlist(){
     Sijax.request('network_list');
 }
 
+/**
+ * Calls to netmon handler and populates the end point list with endpoints associated to an EPG
+ */
 function get_endpoints(){
     Sijax.request('get_endpoints',[Sijax.getFormValues('#network_form')]);
 }
 
+/**
+ * Calls to netmon handler and get the health score of an EPG
+ */
 function get_epg_health_score(){
     Sijax.request('get_epg_health_score',[Sijax.getFormValues('#network_form')]);
 }
 
+/**
+ * Calls to netmon handler and get the fault history of an EPG
+ */
 function get_faults_history(){
     Sijax.request('get_faults_history',[Sijax.getFormValues('#network_form')]);
 }
 
+/**
+ * Load the traffic chart according to the data
+ */
 function load_traffic_chart(lables, data){
     var ctx = document.getElementById("traffic_chart");
 
@@ -826,14 +907,39 @@ function load_traffic_chart(lables, data){
     });
 }
 
+/**
+ * Calls to netmon handler and get the data for the traffic chart
+ */
 function get_traffic_chart(){
     Sijax.request('get_traffic_chart', [Sijax.getFormValues('#network_form')]);
 }
 
+/**
+ * Calls to netmon handler and get the current faults of an EPG
+ */
 function get_faults(){
     Sijax.request('get_faults', [Sijax.getFormValues('#network_form')]);
 }
 
+/**
+ * Calls to netmon handler and get the end point track of an specific endpoint
+ */
 function get_endpoint_track() {
     Sijax.request('get_endpoint_track', [Sijax.getFormValues('#network_form')]);
+}
+
+/**
+ * Calls to netmon handler and set the content of the network tree
+ */
+function set_network_tree(networks){
+    $('#network_tree').treeview({
+        data: networks,
+        onNodeSelected: function(event, data) {
+            application_profile = $('#network_tree').treeview('getParent', data);
+            tenant = $('#network_tree').treeview('getParent', application_profile);
+            window.location.href = "/netmon/" + $.trim(tenant.text) + "/" + $.trim(application_profile.text) + "/" + $.trim(data.text);
+        }
+    });
+
+    $('#network_tree').treeview('collapseAll', { silent: true });
 }

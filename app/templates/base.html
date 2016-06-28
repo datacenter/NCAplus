@@ -15,7 +15,9 @@
     <link href="/static/css/animate.css" rel="stylesheet">
     <link href="/static/css/font-awesome.min.css" rel="stylesheet">
     <link href="/static/css/flatly.css" rel="stylesheet" media="screen">
+    <link href="bootstrap.css" rel="stylesheet">
     <link href="/static/css/style.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-treeview.min.css" rel="stylesheet">
     {%- endblock styles %}
     {%- endblock head %}
     <link rel="icon" href="/static/images/cisco_icon.ico">
@@ -102,6 +104,7 @@
 <!--System functions. All sijax calls are within site-functions.js-->
 <script src="/static/js/site-functions.js"></script>
 <script src="/static/js/chart.js"></script>
+<script src="/static/js/bootstrap-treeview.min.js"></script>
 <script type="text/javascript">
     {{ g.sijax.get_js()|safe }}
 
@@ -111,6 +114,40 @@ $(function () {
       html: true
   })
 })
+
+var tree = [
+  {
+    text: "Parent 1",
+    nodes: [
+      {
+        text: "Child 1",
+        nodes: [
+          {
+            text: "Grandchild 1"
+          },
+          {
+            text: "Grandchild 2"
+          }
+        ]
+      },
+      {
+        text: "Child 2"
+      }
+    ]
+  },
+  {
+    text: "Parent 2"
+  },
+  {
+    text: "Parent 3"
+  },
+  {
+    text: "Parent 4"
+  },
+  {
+    text: "Parent 5"
+  }
+];
 </script>
 {%- endblock scripts %}
 {%- endblock html %}

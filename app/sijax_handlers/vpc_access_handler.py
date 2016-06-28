@@ -63,18 +63,18 @@ class vpc_access_handler(base_handler):
     def get_create_vpc_access_networks(self, obj_response, form_values):
         # Load the sel_network_create_vpc_access with the networks within the selected group
         try:
-            network_aps = self.cobra_apic_object.get_ap_by_tenant(form_values['sel_group_create_vpc_access'])
-            if len(network_aps) > 0:
-                networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                item_list = []
+            network_ap = self.cobra_apic_object.get_nca_ap(form_values['sel_group_create_vpc_access'])
+            item_list = []
+            if network_ap is not None:
+                networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                 for network in networks:
                     # Creates a dynamic object
                     network_do = type('network_do', (object,), {})
                     network_do.key = str(network.dn)
                     network_do.text = network.name
                     item_list.append(network_do)
-                html_response = render_template('select_partial.html', item_list=item_list)
-                obj_response.html("#sel_network_create_vpc_access", html_response)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html("#sel_network_create_vpc_access", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").
@@ -86,18 +86,18 @@ class vpc_access_handler(base_handler):
     def get_delete_vpc_access_networks(self, obj_response, form_values):
         # Load the sel_network_delete_vpc_access with the networks within the selected group
         try:
-            network_aps = self.cobra_apic_object.get_ap_by_tenant(form_values['sel_group_delete_vpc_access'])
-            if len(network_aps) > 0:
-                networks = self.cobra_apic_object.get_epg_by_ap(str(network_aps[0].dn))
-                item_list = []
+            network_ap = self.cobra_apic_object.get_nca_ap(form_values['sel_group_delete_vpc_access'])
+            item_list = []
+            if network_ap is not None:
+                networks = self.cobra_apic_object.get_epg_by_ap(str(network_ap.dn))
                 for network in networks:
                     # Creates a dynamic object
                     network_do = type('network_do', (object,), {})
                     network_do.key = str(network.dn)
                     network_do.text = network.name
                     item_list.append(network_do)
-                html_response = render_template('select_partial.html', item_list=item_list)
-                obj_response.html("#sel_network_delete_vpc_access", html_response)
+            html_response = render_template('select_partial.html', item_list=item_list)
+            obj_response.html("#sel_network_delete_vpc_access", html_response)
         except Exception as e:
             print traceback.print_exc()
             obj_response.script("create_notification('Can not retrieve networks', '" + str(e).replace("'", "").

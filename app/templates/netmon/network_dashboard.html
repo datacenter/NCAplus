@@ -9,7 +9,7 @@
         {{ network }}
     </div>
     <div style="font-size:1.0em; padding-left:20px;">
-        Net Group:&nbsp;{{tenant}}
+        Net Group:&nbsp;{{tenant}} -> {{ap}}
     </div>
 </div>
 <div id="epg_score" style="margin-top: 25px;margin-bottom: 25px;"
@@ -20,6 +20,7 @@
 </div>
 <hr/>
 <input type="hidden" value="{{ tenant }}" name="tenant"/>
+<input type="hidden" value="{{ ap }}" name="ap"/>
 <input type="hidden" value="{{ network }}" name="network"/>
 
 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" >

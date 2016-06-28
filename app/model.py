@@ -19,6 +19,8 @@ class network(base):
     group = CharField()
     epg_dn = CharField()
     network_profile = CharField(null=True)
+    is_l3 = BooleanField()
+    l3_default_gateway = CharField(null=True)
 
 class vpc(base):
     name = CharField(unique=True)
