@@ -1,7 +1,4 @@
 """
-*************************************************************************
- Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-*************************************************************************
 Main point of entry for the web application
 
 """

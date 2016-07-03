@@ -50,7 +50,7 @@
                            aria-expanded="false">System <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a target="blank" data-toggle="modal" data-target="#ABOUT"
-                                                 href="#">About</a></li>
+                                   href="#">About</a></li>
                             <li role="separator" class="divider"></li>
                             <li><a href="/logout">Logout</a></li>
                         </ul>
@@ -77,9 +77,11 @@
 {% set apicinputs = "col-lg-2 col-md-2 col-sm-2 col-xs-6" %}
 
 <div class="container">
+    <div id="div_error_banner" class="alert alert-warning" role="alert" style="display:none;text-align:center">
+    </div>
     <div class="col-lg-2 col-md-2 hidden-sm hidden-xs">
         <div style='' id="div_logo">&nbsp;
-        <img id="sidecompanylogo" src="/static/images/company_logo.png">
+            <img id="sidecompanylogo" src="/static/images/company_logo.png">
         </div>
     </div>
     <div class="col-lg-10 col-md-10 col-sm-12 col-xs-12">

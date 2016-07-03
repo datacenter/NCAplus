@@ -2,12 +2,10 @@ import traceback
 import app.model
 
 from app.apic_manager import cobra_apic_l2_tool, api_apic_base
-from app.routefunc import get_values
 from flask import g, session
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 COMMAND_WAIT_TIME = 1
-handler_app = None
 REMOVED_TENANTS=['mgmt','common','infra']
 
 
@@ -32,6 +30,4 @@ class base_handler:
     @staticmethod
     def create_api_apic():
         return api_apic_base.api_apic_base(session['login_apic_url'], session['username'], session['password'])
-
-
 

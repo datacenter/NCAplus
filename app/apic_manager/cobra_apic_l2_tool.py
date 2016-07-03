@@ -1026,3 +1026,11 @@ class cobra_apic_l2_tool(cobra_apic_base):
         for ap in aps:
             if ap.name == AP_NAME:
                 return ap
+
+    def assign_any_to_any_contract(self, network_o):
+        contract_mo = self.create_contract(network_o.group, ANY_TO_ANY_CONTRACT_NAME)
+        filter_mo = self.create_filter(network_o.group,ANY_TO_ANY_FILTER_NAME)
+        self.create_entry(filter_mo.dn, ANY_TO_ANY_ENTRY_NAME, 'ip')
+        self.create_subject(filter_mo.dn, contract_mo.dn, ANY_TO_ANY_SUBJ_NAME)
+        self.assign_contract(network_o.epg_dn, contract_mo.dn, contract_mo.dn)
+

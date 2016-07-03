@@ -9,8 +9,12 @@ from cobra.mit.session import LoginSession
 from cobra.mit.request import ConfigRequest, CommitError
 from constant import *
 from cobra.mit.request import DnQuery
-from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsProv, RsCons, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
+from cobra.modelimpl.fv.rscons import RsCons
+from cobra.modelimpl.fv.rsprov import RsProv
+from cobra.model.fv import Tenant, BD, Subnet, AEPg, Ap, RsDomAtt, RsPathAtt, RsCtx, RsPathAtt
 from cobra.mit.request import ClassQuery
+from cobra.modelimpl.vz.entry import Entry
+import pip
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
@@ -31,6 +35,7 @@ class cobra_apic_base:
         :param password:
         :return:
         """
+        self.get_cobra_version()
         self.apic_url = url
         self.apic_user = user
         self.session = LoginSession(url, user, password)
@@ -194,6 +199,7 @@ class cobra_apic_base:
         """
         vz_filter_mo = Filter(tenant_dn, filter_name)
         self.commit(vz_filter_mo)
+        return vz_filter_mo
 
     def delete_filter(self, filter_dn):
         """
@@ -223,6 +229,7 @@ class cobra_apic_base:
         """
         vz_contract = BrCP(tenant_dn, contract_name)
         self.commit(vz_contract)
+        return vz_contract
 
     def delete_contract(self, contract_dn):
         """
@@ -298,6 +305,7 @@ class cobra_apic_base:
         filter_mo = self.moDir.lookupByDn(filter_dn)
         rs_filter_subject = RsSubjFiltAtt(subject_dn, filter_mo.name)
         self.commit(rs_filter_subject)
+        return rs_filter_subject
 
     def get_subjects_by_contract(self, contract_dn):
         """
@@ -388,3 +396,19 @@ class cobra_apic_base:
 
     def __repr__(self):
         return 'Connected to %s with userid: %s' % (self.apic_url, self.apic_user)
+
+    def create_entry(self, filter_dn, entry_name, ether_type):
+        vz_entry = Entry(filter_dn,entry_name)
+        vz_entry.etherT = ether_type
+        self.commit(vz_entry)
+        return vz_entry
+
+    def get_cobra_version(self):
+        """
+        :return: acicobra package version
+        """
+        installed_packages = pip.get_installed_distributions()
+        for package in installed_packages:
+            if package.key == 'acicobra':
+                return package.version
+

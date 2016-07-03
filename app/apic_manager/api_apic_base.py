@@ -16,20 +16,23 @@ class api_apic_base:
         :param password:
         :return:
         """
+        self.apic_version = ''
         self.url = url
         self.user = user
         self.auth_token = ''
         self.cookies = {}
         credentials = {'aaaUser': {'attributes': {'name': user, 'pwd': password}}}
         json_credentials = json.dumps(credentials)
+        if url[len(url) - 1] != '/':
+            url += '/'
         login_url = url + API_URL + 'aaaLogin.json'
         try:
-            post_response = requests.post(login_url, data=json_credentials)
+            post_response = requests.post(login_url, data=json_credentials, verify=False)
             auth = json.loads(post_response.text)
             login_attributes = auth['imdata'][0]['aaaLogin']['attributes']
             self.auth_token = login_attributes['token']
-
             self.cookies['APIC-Cookie'] = login_attributes['token']
+            self.apic_version = login_attributes['version']
             self.connected = True
 
         except Exception, e:
@@ -45,6 +48,8 @@ class api_apic_base:
         :param endpoint_dn:
         :return:
         """
+        if self.url[len(self.url) - 1] != '/':
+            self.url += '/'
         call_url = self.url + MQ_API2_URL + 'troubleshoot.eptracker.json?ep=' + endpoint_dn
         get_response = requests.get(call_url, cookies=self.cookies, verify=False)
         inbounddata = get_response.json()
@@ -62,3 +67,8 @@ class api_apic_base:
             end_point_track_list.append(end_point_track)
         return end_point_track_list
 
+    def get_apic_version(self):
+        """
+        :return: APIC version that the user has logged
+        """
+        return self.apic_version

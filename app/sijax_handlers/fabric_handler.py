@@ -16,6 +16,7 @@ class fabric_handler(base_handler):
         """
         try:
             self.cobra_apic_object = fabric_handler.init_connections()
+            self.api_apic_object = fabric_handler.create_api_apic()
             self.exception = None
         except Exception as e:
             self.exception = e
@@ -86,3 +87,15 @@ class fabric_handler(base_handler):
         finally:
             g.db.close()
             obj_response.html("#create_vpc_response", '')
+
+    def get_cobra_compatibility(self, obj_response):
+        # Check if there has been connection errors
+        if self.exception is not None:
+            obj_response.script("create_notification('Connection problem', '" + str(self.exception).replace("'", "").
+                                    replace('"', '').replace("\n", "")[0:100] + "', 'danger', 0)")
+            return
+        # Check if APIC and Cobra are in the same version
+        if self.cobra_apic_object.get_cobra_version() != self.api_apic_object.apic_version.replace('(','-').replace(')',''):
+            obj_response.script(
+                "compatibility_check(false,'" + self.cobra_apic_object.get_cobra_version() +
+                "','" + self.api_apic_object.apic_version.replace('(','-').replace(')','') + "');")

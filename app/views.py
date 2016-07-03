@@ -1,7 +1,4 @@
 """
-*************************************************************************
- Copyright (c) 2016 Cisco Systems, Inc.  All rights reserved.
-*************************************************************************
 Main point of entry for the web application
 
 """
@@ -20,7 +17,6 @@ from sijax_handlers.vpc_access_handler import vpc_access_handler
 from sijax_handlers.single_access_handler import single_access_handler
 from sijax_handlers.access_switch_handler import access_switch_handler
 from sijax_handlers.netmon_handler import netmon_handler
-from routefunc import get_values
 
 __author__ = 'Santiago Flores Kanter (sfloresk@cisco.com)'
 
@@ -41,7 +37,7 @@ def page_not_found(e):
 def login():
     if not session.get('login_apic_url'):
         if request.method == 'POST':
-            values = get_values(request.form)
+            values = request.form
             try:
                 if len(values['login_username']) == 0:
                     ex = Exception()
@@ -55,6 +51,10 @@ def login():
                     ex = Exception()
                     ex.message = 'Apic URL is required'
                     raise ex
+                elif not values['login_apic_url'].startswith('http'):
+                    ex = Exception()
+                    ex.message = 'Please specify protocol (http/https)'
+                    raise ex
                 else:
                     apic_object = cobra_apic_l2_tool.cobra_apic_l2_tool()
                     apic_object.login(values['login_apic_url'], values['login_username'], values['login_password'])
@@ -64,7 +64,7 @@ def login():
                     return redirect('/')
             except Exception as e:
                 return render_template('login.html',
-                                       error=str(e).replace("'", "").replace('"', '').replace("\n", "")[0:100],
+                                       error=e.message.replace("'", "").replace('"', '').replace("\n", "")[0:200],
                                        login_apic_url=values['login_apic_url'],
                                        login_username=values['login_username'])
         return render_template('login.html')
@@ -94,7 +94,9 @@ def groups():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(group_handler())
-        group_handler.handler_app = app
+
+        g.sijax.register_object(fabric_handler())
+
         return g.sijax.process_request()
 
     return render_template('groups.html')
@@ -106,12 +108,14 @@ def networks():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(network_handler())
-        network_handler.handler_app = app
+
         g.sijax.register_object(group_handler())
-        group_handler.handler_app = app
+
+        g.sijax.register_object(fabric_handler())
+
         return g.sijax.process_request()
 
-    return render_template('networks.html')
+    return render_template('network/networks.html')
 
 @flask_sijax.route(app, '/vpcs')
 def vpcs():
@@ -120,11 +124,10 @@ def vpcs():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(fabric_handler())
-        fabric_handler.handler_app = app
+
         g.sijax.register_object(vpc_handler())
-        vpc_handler.handler_app = app
+
         g.sijax.register_object(group_handler())
-        group_handler.handler_app = app
 
         return g.sijax.process_request()
 
@@ -137,15 +140,15 @@ def vpc_access():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(network_handler())
-        network_handler.handler_app = app
+
         g.sijax.register_object(fabric_handler())
-        fabric_handler.handler_app = app
+
         g.sijax.register_object(vpc_handler())
-        vpc_handler.handler_app = app
+
         g.sijax.register_object(group_handler())
-        group_handler.handler_app = app
+
         g.sijax.register_object(vpc_access_handler())
-        vpc_access_handler.handler_app = app
+
         return g.sijax.process_request()
 
     return render_template('vpc_access.html')
@@ -157,15 +160,15 @@ def single_access():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(network_handler())
-        network_handler.handler_app = app
+
         g.sijax.register_object(fabric_handler())
-        fabric_handler.handler_app = app
+
         g.sijax.register_object(vpc_handler())
-        vpc_handler.handler_app = app
+
         g.sijax.register_object(group_handler())
-        group_handler.handler_app = app
+
         g.sijax.register_object(single_access_handler())
-        single_access_handler.handler_app = app
+
         return g.sijax.process_request()
 
     return render_template('single_access.html')
@@ -177,7 +180,6 @@ def access_switches():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(access_switch_handler())
-        access_switch_handler.handler_app = app
         return g.sijax.process_request()
 
     return render_template('access_switches.html')
@@ -190,6 +192,7 @@ def netmon():
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(netmon_handler())
+        g.sijax.register_object(fabric_handler())
         return g.sijax.process_request()
 
     return render_template('netmon/netmon.html')
@@ -202,6 +205,7 @@ def network_dashboard(tenant_name, ap_name, network_name):
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(netmon_handler())
+        g.sijax.register_object(fabric_handler())
         return g.sijax.process_request()
 
     return render_template('netmon/network_dashboard.html', tenant=tenant_name, ap=ap_name, network=network_name)
@@ -214,6 +218,7 @@ def endpoint_track(tenant_name, ap_name, network_name, endpoint_mac):
 
     if g.sijax.is_sijax_request:
         g.sijax.register_object(netmon_handler())
+        g.sijax.register_object(fabric_handler())
         return g.sijax.process_request()
 
     return render_template('netmon/endpoint_track.html', tenant=tenant_name, network=network_name, ap=ap_name,
