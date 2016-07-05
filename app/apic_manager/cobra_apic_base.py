@@ -35,7 +35,6 @@ class cobra_apic_base:
         :param password:
         :return:
         """
-        self.get_cobra_version()
         self.apic_url = url
         self.apic_user = user
         self.session = LoginSession(url, user, password)
@@ -403,7 +402,8 @@ class cobra_apic_base:
         self.commit(vz_entry)
         return vz_entry
 
-    def get_cobra_version(self):
+    @staticmethod
+    def get_cobra_version():
         """
         :return: acicobra package version
         """

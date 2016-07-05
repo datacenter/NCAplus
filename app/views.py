@@ -64,10 +64,12 @@ def login():
                     return redirect('/')
             except Exception as e:
                 return render_template('login.html',
-                                       error=e.message.replace("'", "").replace('"', '').replace("\n", "")[0:200],
+                                       error=str(e).replace("'", "").replace('"', '').replace("\n", "")[0:200],
                                        login_apic_url=values['login_apic_url'],
-                                       login_username=values['login_username'])
-        return render_template('login.html')
+                                       login_username=values['login_username'],
+                                       cobra_version=cobra_apic_l2_tool.cobra_apic_base.get_cobra_version())
+        return render_template('login.html',
+                               cobra_version=cobra_apic_l2_tool.cobra_apic_base.get_cobra_version())
     else:
         return redirect('/')
 

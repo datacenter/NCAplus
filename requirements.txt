@@ -22,4 +22,3 @@ stevedore==1.13.0
 visitor==0.1.2
 Werkzeug==0.11.9
 yolk==0.4.3
-pip==8.1.8

@@ -42,6 +42,9 @@
 {% block content %}
 
 <div class="container" style="max-width:650px">
+    <div id="div_error_banner" class="alert alert-warning" role="alert" style="text-align:center">
+        Cobra version is {{ cobra_version }}. APIC with a different version may cause issues
+    </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <form action="login"
               id="login_form" method=post class="form-horizontal">
