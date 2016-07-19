@@ -586,12 +586,8 @@ class cobra_apic_l2_tool(cobra_apic_base):
         self.commit(
             RsCdpIfPol(policy_group_mo.dn, tnCdpIfPolName=IfPolmo.name)
         )
-        HIfPolmo = self.moDir.lookupByDn('uni/infra/hintfpol-1GB')
-        if not HIfPolmo:
-            HIfPolmo = HIfPol('uni/infra', '1GB', speed='1G')
-            self.commit(HIfPolmo)
         self.commit(
-            RsHIfPol(policy_group_mo.dn, tnFabricHIfPolName=HIfPolmo.name)
+            RsHIfPol(policy_group_mo.dn, tnFabricHIfPolName='default')
         )
         self.commit(
             RsL2IfPol(policy_group_mo.dn, tnL2IfPolName='default')
