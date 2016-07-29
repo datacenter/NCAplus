@@ -32,28 +32,16 @@ class network_handler(base_handler):
         # Creates a network in the local database and in ACI creates bridge domains, EPGs and if it
         # is not created, application profiles and VRFs
         try:
-            if form_values.keys().__contains__('create_network_l3_gateway') and form_values['create_network_l3_gateway'] == "true":
-                network_object = app.model.network.create(name=form_values['create_network_name'],
+            network_object = app.model.network.create(name=form_values['create_network_name'],
                                                           encapsulation=int(form_values['create_network_encapsulation']),
                                                           group=form_values['sel_create_network_group'],
-                                                          epg_dn='',
-                                                          is_l3=True,
-                                                          l3_default_gateway=form_values['create_network_gateway_ip'])
-            else:
-                network_object = app.model.network.create(name=form_values['create_network_name'],
-                                                          encapsulation=int(form_values['create_network_encapsulation']),
-                                                          group=form_values['sel_create_network_group'],
-                                                          epg_dn='',
-                                                          is_l3=False,
-                                                          l3_default_gateway=None)
+                                                          epg_dn='')
             self.cobra_apic_object.add_vlan(network_object.encapsulation, 'migration-tool')
             epg = self.cobra_apic_object.create_network(network_object)
             self.cobra_apic_object.associate_epg_physical_domain(str(epg.dn), 'migration-tool')
             network_object.update(epg_dn=str(epg.dn)).where(
                 app.model.network.id == network_object.id).execute()
             network_object.epg_dn = str(epg.dn)
-            if form_values.keys().__contains__('create_network_l3_contracts') and form_values['create_network_l3_contracts'] == "true":
-                self.cobra_apic_object.assign_any_to_any_contract(network_object)
             obj_response.script("create_notification('Created', '', 'success', 5000);")
             # Executes javascript function (only after the response is received by the browser)
             obj_response.script("get_network_list();")

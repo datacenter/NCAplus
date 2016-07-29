@@ -87,15 +87,14 @@ class cobra_apic_l2_tool(cobra_apic_base):
         # Creates bridge domain
         bd_mo = self.create_bd('vlan' + str(network_o.encapsulation), tenant_mo, None)
 
-        if not network_o.is_l3:
-            # Set BD parameters. This one are needed so that the bridge domain floods the VLAN packets across the fabric
-            bd_mo.arpFlood = YES
-            bd_mo.multiDstPktAct = BD_FLOOD
-            bd_mo.unicastRoute = NO
-            bd_mo.unkMacUcastAct = FLOOD
-            bd_mo.unkMcastAct = FLOOD
-        else:
-            Subnet(bd_mo, network_o.l3_default_gateway)
+
+        # Set BD parameters. This one are needed so that the bridge domain floods the VLAN packets across the fabric
+        bd_mo.arpFlood = YES
+        bd_mo.multiDstPktAct = BD_FLOOD
+        bd_mo.unicastRoute = NO
+        bd_mo.unkMacUcastAct = FLOOD
+        bd_mo.unkMcastAct = FLOOD
+
         self.commit(bd_mo)
 
         # Filters the tenant children in memory looking for the ones that belongs to the Ctx

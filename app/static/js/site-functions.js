@@ -64,9 +64,6 @@ function create_network(){
     $('#create_network_name').rules("add", "required");
     $('#create_network_encapsulation').rules("add", "required");
     $('#sel_create_network_group').rules("add", "required");
-    if($('#create_network_l3_gateway').val() == "true") {
-        $('#create_network_gateway_ip').rules("add", "required");
-    }
     if($('#network_form').valid()){
         Sijax.request('create_network', [Sijax.getFormValues('#network_form')]);
         $('#create_network_response').html('<img src="/static/images/loading.gif" style="height:20px" />');
@@ -74,7 +71,6 @@ function create_network(){
     $('#create_network_name').rules("remove", "required");
     $('#create_network_encapsulation').rules("remove", "required");
     $('#sel_create_network_group').rules("remove", "required");
-    $('#create_network_gateway_ip').rules("remove", "required");
 }
 
 

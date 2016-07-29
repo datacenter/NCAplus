@@ -71,56 +71,6 @@
                 </div>
             </div>
             <div class="form-group">
-                <label class="{{ labelclasslg }}"> L3 Gateway
-                                    <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="L3 Gateway"
-                                          data-content="Select if you want to set your L3 gateway within the fabric">
-                                    </span>
-                </label>
-                <div class="{{ txtinputclassmd }}">
-                    <input type="checkbox" id="create_network_l3_gateway"
-                           value="false" name="create_network_l3_gateway" style="margin-top:15px"
-                           onclick="$('#l3-options').slideToggle();
-                               $('#create_network_l3_gateway').val(document.getElementById('create_network_l3_gateway').checked)"/>
-
-                </div>
-            </div>
-            <div id="l3-options" style="display:none">
-                <div id="div_l3_gateway_ip" class="form-group" >
-                    <label class="{{ labelclasslg }}"> L3 Gateway IP
-                                    <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="L3 Gateway IP"
-                                          data-content="IP of the default gateway">
-                                    </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="text" class="form-control" maxlength="50" id="create_network_gateway_ip"
-                               value="" name="create_network_gateway_ip" placeholder="x.x.x.x/x">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="{{ labelclasslg }}"> Any-to-Any contracts
-                                    <span class="fa fa-info-circle" aria-hidden="true"
-                                          data-toggle="popover"
-                                          data-trigger="hover"
-                                          title="Any to any contracts"
-                                          data-content="Check this option if you want to allow any traffic from and to
-                                          this network">
-                                    </span>
-                    </label>
-                    <div class="{{ txtinputclassmd }}">
-                        <input type="checkbox" id="create_network_l3_contracts"
-                               value="false" name="create_network_l3_contracts" style="margin-top:15px"
-                               onclick="$('#create_network_l3_contracts').val(document.getElementById('create_network_l3_contracts').checked)"/>
-
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
                 <label class="{{ labelclasslg }}"> Group
                                     <span class="fa fa-info-circle" aria-hidden="true"
                                           data-toggle="popover"
