@@ -939,16 +939,3 @@ function set_network_tree(networks){
 
     $('#network_tree').treeview('collapseAll', { silent: true });
 }
-
-
-function get_cobra_compatibility() {
-    Sijax.request('get_cobra_compatibility');
-}
-
-
-function compatibility_check(is_compatible, cobra_version, apic_version) {
-    if (!is_compatible){
-        $('#div_error_banner').html("Version mismatch: the cobra SDK installed (" + cobra_version + ") is not the same version as the APIC (" + apic_version + "). This could cause errors");
-        $('#div_error_banner').fadeIn();
-    }
-}
